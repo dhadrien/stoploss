@@ -51,11 +51,11 @@ contract SLPool {
       
       IUniswapV2Pair(uniPair).transferFrom(msg.sender, address(this), lpAmount);
       // not yet sure what to do with it, but it normalizes
-      // uint ratio = minAmountToSave.div(lpAmount);
+      uint ratio = lpAmount.div(minAmountToSave);
       if(isToken1) {
-        getStopOrdersToken1.push(StopOrder(msg.sender, lpAmount, minAmountToSave));
+        getStopOrdersToken1.push(StopOrder(msg.sender, lpAmount, ratio));
       } else {
-        getStopOrdersToken2.push(StopOrder(msg.sender, lpAmount, minAmountToSave));
+        getStopOrdersToken2.push(StopOrder(msg.sender, lpAmount, ratio));
       }
       emit StopLoss(uniPair, msg.sender, lpAmount, tokenToSave, minAmountToSave);
     }

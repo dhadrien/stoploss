@@ -100,6 +100,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const txAddOrder = await SLPool.stopLoss(parseEther('1000'), DAI_ADDRESS, parseEther('300'));
   await txAddOrder.wait();
   
+  
 
   return !useProxy; // when live network, record the script as executed to prevent rexecution
 };
