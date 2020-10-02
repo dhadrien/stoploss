@@ -1,0 +1,9 @@
+node_modules/
+deployments/
+cache/
+.newsh.json
+.env*
+!.env*.default
+jelly-stoploss-finnance.code-workspace
+.vscode/*
+!.vscode/settings.json.default
