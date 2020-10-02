@@ -17,19 +17,10 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const userSigner = await ethers.getSigner(user);
   const {deploy} = bre.deployments;
   const useProxy = !bre.network.live;
-  // Uniswap factory
-  // await deploy('ERC20Log', {from: deployer, proxy: false, args: [2], log: true});
+  // Uniswap factory, DAI, WETH from mainnet fork
   const uniFactory = await ethers.getContractAt('UniswapV2Factory', UNISWAPV2FACTORY_ADDRESS || DEFAULT_ENV_ADDRESS);
-  // Dai ERC20
   const ERC20DAI = await ethers.getContractAt('ERC20', DAI_ADDRESS || DEFAULT_ENV_ADDRESS, userSigner);
-  ERC20DAI.on('Transfer', (from, to, amount) =>
-    console.log(`${weiAmountToString(amount)} Dai transfered from ${from} ${to}`)
-  );
-  // WETH ERC20
   const ERC20WETH = await ethers.getContractAt('ERC20', WETH_ADDRESS || DEFAULT_ENV_ADDRESS, userSigner);
-  ERC20WETH.on('Transfer', (from, to, amount) =>
-    console.log(`${weiAmountToString(amount)} WETH transfered from ${from} ${to}`)
-  );
   // DAI/WETH Pool
   const daiwethAddress = await uniFactory.getPair(
     DAI_ADDRESS || DEFAULT_ENV_ADDRESS,
@@ -39,9 +30,10 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const {_reserve0, _reserve1} = await UniPairWethDai.getReserves();
   const block = await ethers.provider.getBlockNumber();
   console.log('DEPLOYING FROM MAINNET FORK #Block: ', block);
-  console.log('--------- ETH/DAI UNISWAP POOL');
+  console.log('------------ ETH/DAI UNISWAP POOL');
   console.log('ETH Reserve: ', weiAmountToString(_reserve1));
   console.log('DAI Reserve: ', weiAmountToString(_reserve0));
+  
   // Uni Router
   const uniRouter = await ethers.getContractAt(
     'UniswapV2Router02',
@@ -50,23 +42,13 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   );
 
   // INIT
-  console.log('--------------- INIT');
-  let DaiBalance = weiAmountToString(await ERC20DAI.balanceOf(user));
-  // const WethBalance = weiAmountToString(await ERC20WETH.balanceOf(user));
-  let EthBalance = weiAmountToString(await userSigner.getBalance());
-  console.log(`User has: ${DaiBalance} DAI and ${EthBalance} ETH`);
-
+  console.log(`------------ USER: ${user}`);
   // Get Dai to user
-  console.log('------------ UNISWAP ETH => DAI');
+  console.log('------------ SWAPING 2000 ETH => DAI');
   await uniRouter.swapExactETHForTokens('0', [WETH_ADDRESS, DAI_ADDRESS], user, 162156100447, {
     gasLimit: 300000,
     value: parseEther('2000'),
   });
-  DaiBalance = weiAmountToString(await ERC20DAI.balanceOf(user));
-  // const WethBalance = weiAmountToString(await ERC20WETH.balanceOf(user));
-  EthBalance = weiAmountToString(await userSigner.getBalance());
-  console.log(`User has now: ${DaiBalance} DAI and ${EthBalance} ETH`);
-
   // User add liquidity to WETH/DAI
   console.log('------------ ADDING WETH/DAI LIQUIDITY');
   await (await ERC20DAI.approve(uniRouter.address, parseEther('20000000000'))).wait();
@@ -81,11 +63,25 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
       value: parseEther('1000'),
     }
   );
-  DaiBalance = weiAmountToString(await ERC20DAI.balanceOf(user));
-  // const WethBalance = weiAmountToString(await ERC20WETH.balanceOf(user));
-  EthBalance = weiAmountToString(await userSigner.getBalance());
-  const UniLPBalance = weiAmountToString(await UniPairWethDai.balanceOf(user));
+  const [DaiBalance, EthBalance, UniLPBalance] = [
+    await ERC20DAI.balanceOf(user),
+    await userSigner.getBalance(),
+    await UniPairWethDai.balanceOf(user)
+  ].map(weiAmountToString);
   console.log(`User has now: ${DaiBalance} DAI and ${EthBalance} ETH and some LP tokens: ${UniLPBalance}`);
+  console.log('------------ DEPLOYING STOPLOSS FACTORY');
+  await deploy('SLFactory', {from: deployer, proxy: false, args: [UNISWAPV2FACTORY_ADDRESS], log: true});
+  const SLfactory = await ethers.getContract('SLFactory');
+  await SLfactory.on('PoolCreated', (token0, token1, pair, pool, uint) =>{
+    console.log(`
+    STOP LOSS Pool #${uint} created! tokens ${token0} and ${token1}, pair: ${pair}
+    new Pool Address: ${pool}e
+    `)
+  })
+  console.log('------------ CREATING STOP LOSS POOL WETH/DAI');
+  const tx = await SLfactory.createPool(WETH_ADDRESS, DAI_ADDRESS);
+  await tx.wait();
+
   return !useProxy; // when live network, record the script as executed to prevent rexecution
 };
 export default func;
