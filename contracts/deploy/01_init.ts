@@ -4,7 +4,6 @@ import {ethers as ethers2} from 'ethers';
 import {getEnv, DEFAULT_ENV_ADDRESS} from '../utils/envutils';
 import {weiAmountToString} from '../utils/ethutils';
 import path from 'path';
-import {parse} from 'querystring';
 
 const {
   utils: {parseEther},
@@ -16,9 +15,10 @@ console.log(UNISWAPV2FACTORY_ADDRESS);
 const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const {deployer, user} = await bre.getNamedAccounts();
   const userSigner = await ethers.getSigner(user);
-  // const {deploy} = bre.deployments;
+  const {deploy} = bre.deployments;
   const useProxy = !bre.network.live;
   // Uniswap factory
+  // await deploy('ERC20Log', {from: deployer, proxy: false, args: [2], log: true});
   const uniFactory = await ethers.getContractAt('UniswapV2Factory', UNISWAPV2FACTORY_ADDRESS || DEFAULT_ENV_ADDRESS);
   // Dai ERC20
   const ERC20DAI = await ethers.getContractAt('ERC20', DAI_ADDRESS || DEFAULT_ENV_ADDRESS, userSigner);

@@ -27,7 +27,6 @@
     "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
     "ethers": "^5.0.14",
-    "jelly-stoploss-finnance-common": "../common-lib",
     "mocha": "^8.1.1",
     "solidity-coverage": "^0.7.10",
     "ts-generator": "0.0.8",
@@ -39,6 +38,7 @@
   "scripts": {
     "test": "buidler compile && mocha --recursive test",
     "coverage": "buidler --network coverage coverage",
+    "send-artifacts": "cp -r ./artifacts/* ../web-ui/packages/contracts/src/artifacts/ && cp -r ./imports/*  ../web-ui/packages/contracts/src/artifacts/",
     "dev": "buidler node --reset --watch --export contractsInfo.json",
     "compile": "buidler compile",
     "local:dev": "buidler --network localhost deploy --watch",
