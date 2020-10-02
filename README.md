@@ -1,17 +1,3 @@
-# Quick Hackathon Note: 
-Looking for frontend and design help: whether using this great framework (svelte) or building a react-app
-
-What can be done today to start on the UI side: 
-
-By following the README.md of the /contracts github module, you will deploy locally: 
-- the DAI/ETH Pool, (forked from mainnet)
-- An ethereum user that will have 1. Bought dai 2. Provided Liquidity to the pool.
-
-First UI need is: 
-- Showcase the Liquidity Pool tokens you have, the corresponding tokens (here EwTH and DAI)
-- Offer the possibility to the user to estimate the effect on their asset depending on the Ether price. (for instance with a ETH/DAI price slider)
-
-Please connect on discord!
 # Stop Loss Protocol
 
 ## You take risks, you set a wort case scenario, you sleep. Stop Loss will exit your position.
@@ -27,8 +13,10 @@ CEXs also offered Stop Loss Service
 
 ## MVP UX Goal:
 
-- User provides Liquidity on ETH/DAI uniswap pair. (Price: 1 ETH = 300 DAI).
-- User goes to Stop Loss: if price of ETH < 250 DAI => I exit my LP position (convert to DAI the remaining).
+- User provides $600 of Liquidity on ETH/DAI uniswap pair. (1 ETH, 300 DAI Price: 1 ETH = 300 DAI).
+- User goes to Stop Loss: if my position goes under $500: exit in DAI
+
+(Note: A real bull would use STOP LOSS like this: if my position goes under 1.5 DAI: exit in ETH :))
 
 # Dev environment setup
 Using buidler, typescript, ganache-cli fork mode.
