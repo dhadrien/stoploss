@@ -26,7 +26,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     DAI_ADDRESS || DEFAULT_ENV_ADDRESS,
     WETH_ADDRESS || DEFAULT_ENV_ADDRESS
   );
-  const UniPairWethDai = await ethers.getContractAt('UniswapV2Pair', daiwethAddress);
+  const UniPairWethDai = await ethers.getContractAt('UniswapV2Pair', daiwethAddress, userSigner);
   const {_reserve0, _reserve1} = await UniPairWethDai.getReserves();
   const block = await ethers.provider.getBlockNumber();
   console.log('DEPLOYING FROM MAINNET FORK #Block: ', block);
@@ -74,13 +74,32 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const SLfactory = await ethers.getContract('SLFactory');
   await SLfactory.on('PoolCreated', (token0, token1, pair, pool, uint) =>{
     console.log(`
-    STOP LOSS Pool #${uint} created! tokens ${token0} and ${token1}, pair: ${pair}
-    new Pool Address: ${pool}e
+    STOP LOSS Pool #${uint} created: ${pool}
+    Token 1 ${token0} 
+    Token 2 ${token1}
+    Uniswap Pair: ${pair}
     `)
   })
+  
   console.log('------------ CREATING STOP LOSS POOL WETH/DAI');
-  const tx = await SLfactory.createPool(WETH_ADDRESS, DAI_ADDRESS);
-  await tx.wait();
+  const txCreatePool = await SLfactory.createPool(WETH_ADDRESS, DAI_ADDRESS);
+  await txCreatePool.wait();
+  const poolAddress = await SLfactory.getPoolFromPair(UniPairWethDai.address);
+  const SLPool = await ethers.getContractAt('SLPool', poolAddress, userSigner);
+  await SLPool.on('StopLoss', (uniPair, orderer, lpamount, token, amount) =>{
+    console.log(`
+    StopLoss Ordered UniPair: ${uniPair}
+    0rderer: ${orderer} 
+    LP Amount sent: ${lpamount}
+    Token to guarantee: ${token}
+    Amount to guarantee: ${amount}
+    `)
+  })
+  console.log(`------------ USER ${user} ORDERING STOPLOSS`)
+  await UniPairWethDai.approve(poolAddress, parseEther('3000000000'));
+  const txAddOrder = await SLPool.stopLoss(parseEther('1000'), DAI_ADDRESS, parseEther('300'));
+  await txAddOrder.wait();
+  
 
   return !useProxy; // when live network, record the script as executed to prevent rexecution
 };

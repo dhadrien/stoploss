@@ -20,4 +20,4 @@ services:
       - --defaultBalanceEther
       - '1000000'
       # - '2'
-      - --debug
+      #- --debug

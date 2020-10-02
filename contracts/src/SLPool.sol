@@ -12,6 +12,8 @@ contract SLPool {
     address public uniPair;
     address public token1;
     address public token2;
+
+    event StopLoss(address uniPair, address orderer, uint lpAmount, address tokenToSave, uint amountToSave);
     
     StopOrder[] public getStopOrdersToken1;
     StopOrder[] public getStopOrdersToken2;
@@ -29,7 +31,7 @@ contract SLPool {
     }
 
     // called once by the factory at time of deployment
-    function initialize(address _token1, address _token2, address _uniPair) external {
+    function initialize(address _uniPair, address _token1, address _token2) external {
         require(msg.sender == factory, 'SLPool: FORBIDDEN'); // sufficient check
         uniPair = _uniPair;
         token1 = _token1;
@@ -40,7 +42,7 @@ contract SLPool {
       return IUniswapV2Pair(uniPair).balanceOf(address(this));
     }
 
-    function stopLossPrice(uint lpAmount, address tokenToSave, uint minAmountToSave) public {
+    function stopLoss(uint lpAmount, address tokenToSave, uint minAmountToSave) public {
       bool isToken1 = true;
       if (tokenToSave != token1) {
         require(tokenToSave== token2, 'SLPOOL: Wrong Token');
@@ -49,12 +51,13 @@ contract SLPool {
       
       IUniswapV2Pair(uniPair).transferFrom(msg.sender, address(this), lpAmount);
       // not yet sure what to do with it, but it normalizes
-      uint ratio = lpAmount.div(minAmountToSave);
+      // uint ratio = minAmountToSave.div(lpAmount);
       if(isToken1) {
-        getStopOrdersToken1.push(StopOrder(msg.sender, lpAmount, ratio));
+        getStopOrdersToken1.push(StopOrder(msg.sender, lpAmount, minAmountToSave));
       } else {
-        getStopOrdersToken2.push(StopOrder(msg.sender, lpAmount, ratio));
+        getStopOrdersToken2.push(StopOrder(msg.sender, lpAmount, minAmountToSave));
       }
+      emit StopLoss(uniPair, msg.sender, lpAmount, tokenToSave, minAmountToSave);
     }
 
     // force reserves to match balances
