@@ -7,3 +7,4 @@ cache/
 jelly-stoploss-finnance.code-workspace
 .vscode/*
 !.vscode/settings.json.default
+tmp/
