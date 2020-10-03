@@ -3,7 +3,7 @@ pragma solidity 0.7.1;
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import './interfaces/IUniswapV2Pair.sol';
-
+import '@nomiclabs/buidler/console.sol';
 
 contract SLPool {
     using SafeMath  for uint;
@@ -13,7 +13,7 @@ contract SLPool {
     address public token1;
     address public token2;
 
-    event StopLoss(address uniPair, address orderer, uint lpAmount, address tokenToSave, uint amountToSave);
+    event StopLoss(address uniPair, address orderer, uint lpAmount, address tokenToSave, uint ratio);
     
     StopOrder[] public getStopOrdersToken1;
     StopOrder[] public getStopOrdersToken2;
@@ -23,8 +23,6 @@ contract SLPool {
       uint lpAmount;
       uint ratio;
     }
-
-    event Sync(uint112 reserve0, uint112 reserve1);
 
     constructor() {
         factory = msg.sender;
@@ -51,13 +49,13 @@ contract SLPool {
       
       IUniswapV2Pair(uniPair).transferFrom(msg.sender, address(this), lpAmount);
       // not yet sure what to do with it, but it normalizes
-      uint ratio = lpAmount.div(minAmountToSave);
+      uint ratio = (lpAmount.mul(1000000)).div(minAmountToSave);
       if(isToken1) {
         getStopOrdersToken1.push(StopOrder(msg.sender, lpAmount, ratio));
       } else {
         getStopOrdersToken2.push(StopOrder(msg.sender, lpAmount, ratio));
       }
-      emit StopLoss(uniPair, msg.sender, lpAmount, tokenToSave, minAmountToSave);
+      emit StopLoss(uniPair, msg.sender, lpAmount, tokenToSave, ratio);
     }
 
     // force reserves to match balances

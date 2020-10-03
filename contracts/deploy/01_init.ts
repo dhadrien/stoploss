@@ -14,19 +14,14 @@ const {
 
 // 1 Billion Tokens
 const INIT_TOKEN_SUPPLY = parseEther("1000000000");
-const INIT_LIQUIDITY = parseEther("10000");
+const INIT_LIQUIDITY = parseEther("100000");
 const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";
-const INFINITE_DEADLINE = 1000000000000000000;
+const INFINITE_DEADLINE = 262156100447;
 
 const env = getEnv(path.join(__dirname, "../.env"));
-const {
-  UNISWAPV2FACTORY_ADDRESS,
-  DAI_ADDRESS,
-  WETH_ADDRESS,
-  UNISWAPV2ROUTERV2_ADDRESS,
-} = env;
+const {UNISWAPV2FACTORY_ADDRESS, UNISWAPV2ROUTERV2_ADDRESS} = env;
 const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
-  const {deployer} = await bre.getNamedAccounts();
+  const {deployer, user} = await bre.getNamedAccounts();
   const deployerSigner = await ethers.getSigner(deployer);
   const {deploy} = bre.deployments;
   // Uniswap factory, DAI, WETH from mainnet fork
@@ -72,67 +67,103 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     UNISWAPV2ROUTERV2_ADDRESS || DEFAULT_ENV_ADDRESS,
     deployerSigner
   );
-  // await uniRouter.addLiquidity(FWETH.address, STPToken.address, INIT_LIQUIDITY, INIT_LIQUIDITY, INIT_LIQUIDITY, INIT_LIQUIDITY, deployer, INFINITE_DEADLINE, {dkzalzamk: "haha" })
+  const {_reserve0: res0, _reserve1: res1} = await pair.getReserves();
+  const [reserveBefore1, reserveBefore2] = [res0, res1].map(weiAmountToString);
+  console.log("FWETH/STP UNISWAP POOL");
+  console.log("FWETH Reserve before: ", reserveBefore1);
+  console.log("STP Reserve before: ", reserveBefore2);
+  if (reserveBefore1 === reserveBefore2 && reserveBefore2 === "0") {
+    await (await FWETH.approve(uniRouter.address, INIT_TOKEN_SUPPLY)).wait();
+    console.log("deployer approved FWET");
+    await (await STPToken.approve(uniRouter.address, INIT_TOKEN_SUPPLY)).wait();
+    console.log("deployer approved FSTP");
+    await (
+      await uniRouter.addLiquidity(
+        FWETH.address,
+        STPToken.address,
+        INIT_LIQUIDITY,
+        INIT_LIQUIDITY,
+        parseEther("1"),
+        parseEther("1"),
+        deployer,
+        INFINITE_DEADLINE,
+        {
+          gasLimit: 900000,
+        }
+      )
+    ).wait();
+    const {_reserve0: res0A, _reserve1: res1A} = await pair.getReserves();
+    console.log("FWETH/STP UNISWAP POOL");
+    console.log("FWETH Reserve after: ", weiAmountToString(res0A));
+    console.log("STP Reserve after: ", weiAmountToString(res1A));
+  } else console.log("Liquidity already exist, no need to add more");
+  const deployerLpBalance = await pair.balanceOf(deployer);
+  console.log(
+    "deployer has LP balance of: ",
+    weiAmountToString(deployerLpBalance)
+  );
 
-  // // INIT
-  // console.log(`------------ USER: ${user}`);
-  // // Get Dai to user
-  // console.log('------------ SWAPING 2000 ETH => DAI');
-  // await uniRouter.swapExactETHForTokens('0', [WETH_ADDRESS, DAI_ADDRESS], user, 162156100447, {
-  //   gasLimit: 300000,
-  //   value: parseEther('2000'),
-  // });
-  // // User add liquidity to WETH/DAI
-  // console.log('------------ ADDING WETH/DAI LIQUIDITY');
-  // await (await ERC20DAI.approve(uniRouter.address, parseEther('20000000000'))).wait();
-  // await uniRouter.addLiquidityETH(
-  //   DAI_ADDRESS,
-  //   parseEther('300000'),
-  //   parseEther('200000'),
-  //   parseEther('500'),
-  //   user,
-  //   162156100447,
-  //   {
-  //     value: parseEther('1000'),
-  //   }
-  // );
-  // const [DaiBalance, EthBalance, UniLPBalance] = [
-  //   await ERC20DAI.balanceOf(user),
-  //   await userSigner.getBalance(),
-  //   await UniPairWethDai.balanceOf(user)
-  // ].map(weiAmountToString);
-  // console.log(`User has now: ${DaiBalance} DAI and ${EthBalance} ETH and some LP tokens: ${UniLPBalance}`);
-  // console.log('------------ DEPLOYING STOPLOSS FACTORY');
-  // await deploy('SLFactory', {from: deployer, proxy: false, args: [UNISWAPV2FACTORY_ADDRESS], log: true});
-  // const SLfactory = await ethers.getContract('SLFactory');
-  // await SLfactory.on('PoolCreated', (token0, token1, pair, pool, uint) =>{
-  //   console.log(`
-  //   STOP LOSS Pool #${uint} created: ${pool}
-  //   Token 1 ${token0}
-  //   Token 2 ${token1}
-  //   Uniswap Pair: ${pair}
-  //   `)
-  // })
+  console.log("------------ DEPLOYING STOPLOSS FACTORY");
+  await deploy("SLFactory", {
+    from: deployer,
+    proxy: false,
+    args: [UNISWAPV2FACTORY_ADDRESS],
+    log: true,
+  });
+  const SLfactory = await ethers.getContract("SLFactory");
+  await SLfactory.on("PoolCreated", (token0, token1, pair, pool, uint) => {
+    console.log(`
+    STOP LOSS Pool #${uint} created: ${pool}
+    Token 1 ${token0}
+    Token 2 ${token1}
+    Uniswap Pair: ${pair}
+    `);
+  });
 
-  // console.log('------------ CREATING STOP LOSS POOL WETH/DAI');
-  // const txCreatePool = await SLfactory.createPool(WETH_ADDRESS, DAI_ADDRESS);
-  // await txCreatePool.wait();
-  // const poolAddress = await SLfactory.getPoolFromPair(UniPairWethDai.address);
-  // const SLPool = await ethers.getContractAt('SLPool', poolAddress, userSigner);
-  // await SLPool.on('StopLoss', (uniPair, orderer, lpamount, token, amount) =>{
-  //   console.log(`
-  //   StopLoss Ordered UniPair: ${uniPair}
-  //   0rderer: ${orderer}
-  //   LP Amount sent: ${lpamount}
-  //   Token to guarantee: ${token}
-  //   Amount to guarantee: ${amount}
-  //   `)
-  // })
-  // console.log(`------------ USER ${user} ORDERING STOPLOSS`)
-  // await UniPairWethDai.approve(poolAddress, parseEther('3000000000'));
-  // const txAddOrder = await SLPool.stopLoss(parseEther('1000'), DAI_ADDRESS, parseEther('300'));
-  // await txAddOrder.wait();
-
+  console.log("------------ CREATING STOP LOSS POOL FOR THE STP/FWETH PAIR");
+  const txCreatePool = await SLfactory.createPool(
+    FWETH.address,
+    STPToken.address
+  );
+  await txCreatePool.wait();
+  const poolAddress = await SLfactory.getPoolFromPair(pair.address);
+  const SLPool = await ethers.getContractAt(
+    "SLPool",
+    poolAddress,
+    deployerSigner
+  );
+  await SLPool.on("StopLoss", (uniPair, orderer, lpamount, token, ratio) => {
+    console.log(`
+    StopLoss Ordered UniPair: ${uniPair}
+    0rderer: ${orderer}
+    LP Amount sent: ${lpamount / 10 ** 18}
+    Token to guarantee: ${token}
+    Amount to guarantee: ${lpamount / 10 ** 18}
+    Strike ratio: ${ratio / 10 ** 6}
+    `);
+  });
+  await new Promise((res) => {
+    setTimeout(() => {
+      return res();
+    }, 2200);
+  });
+  console.log(`------------ USER ${user} ORDERING STOPLOSS`);
+  await pair.approve(poolAddress, INIT_TOKEN_SUPPLY);
+  const txAddOrder = await SLPool.stopLoss(
+    parseEther("1000"),
+    STPToken.address,
+    parseEther("900"),
+    {
+      gasLimit: 1200000,
+    }
+  );
+  await txAddOrder.wait();
+  // await SLfactory.getPoolFromPair(pair.address);
+  await new Promise((res) => {
+    setTimeout(() => {
+      return res();
+    }, 2200);
+  });
   return false; // when live network, record the script as executed to prevent rexecution
 };
 export default func;

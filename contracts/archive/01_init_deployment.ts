@@ -133,7 +133,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     Amount to guarantee: ${amount}
     `);
   });
-  console.log(`------------ USER ${user} ORDERING STOPLOSS`);
+  console.log(`------------ USER ${deployer} ORDERING STOPLOSS`);
   await UniPairWethDai.approve(poolAddress, parseEther("3000000000"));
   const txAddOrder = await SLPool.stopLoss(
     parseEther("1000"),
