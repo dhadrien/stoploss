@@ -23,6 +23,7 @@ console.log(UNISWAPV2FACTORY_ADDRESS);
 const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const {deployer, user} = await bre.getNamedAccounts();
   const userSigner = await ethers.getSigner(user);
+  const deployerSigner = await ethers.getSigner(deployer);
   const {deploy} = bre.deployments;
   const useProxy = !bre.network.live;
   // Uniswap factory, DAI, WETH from mainnet fork
@@ -33,12 +34,12 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const ERC20DAI = await ethers.getContractAt(
     "ERC20",
     DAI_ADDRESS || DEFAULT_ENV_ADDRESS,
-    userSigner
+    deployerSigner
   );
   const ERC20WETH = await ethers.getContractAt(
     "ERC20",
     WETH_ADDRESS || DEFAULT_ENV_ADDRESS,
-    userSigner
+    deployerSigner
   );
   // DAI/WETH Pool
   const daiwethAddress = await uniFactory.getPair(
@@ -48,7 +49,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const UniPairWethDai = await ethers.getContractAt(
     "UniswapV2Pair",
     daiwethAddress,
-    userSigner
+    deployerSigner
   );
   const {_reserve0, _reserve1} = await UniPairWethDai.getReserves();
   const block = await ethers.provider.getBlockNumber();
@@ -61,17 +62,17 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const uniRouter = await ethers.getContractAt(
     "UniswapV2Router02",
     UNISWAPV2ROUTERV2_ADDRESS || DEFAULT_ENV_ADDRESS,
-    userSigner
+    deployerSigner
   );
 
   // INIT
-  console.log(`------------ USER: ${user}`);
+  console.log(`------------ USER: ${deployer}`);
   // Get Dai to user
   console.log("------------ SWAPING 2000 ETH => DAI");
   await uniRouter.swapExactETHForTokens(
     "0",
     [WETH_ADDRESS, DAI_ADDRESS],
-    user,
+    deployer,
     162156100447,
     {
       gasLimit: 300000,
@@ -88,16 +89,16 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     parseEther("300000"),
     parseEther("200000"),
     parseEther("500"),
-    user,
+    deployer,
     162156100447,
     {
       value: parseEther("1000"),
     }
   );
   const [DaiBalance, EthBalance, UniLPBalance] = [
-    await ERC20DAI.balanceOf(user),
-    await userSigner.getBalance(),
-    await UniPairWethDai.balanceOf(user),
+    await ERC20DAI.balanceOf(deployer),
+    await deployerSigner.getBalance(),
+    await UniPairWethDai.balanceOf(deployer),
   ].map(weiAmountToString);
   console.log(
     `User has now: ${DaiBalance} DAI and ${EthBalance} ETH and some LP tokens: ${UniLPBalance}`
@@ -110,27 +111,67 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     log: true,
   });
   const SLfactory = await ethers.getContract("SLFactory");
-  await SLfactory.on("PoolCreated", (token0, token1, pair, pool, uint) => {
-    console.log(`
+  await SLfactory.on(
+    "PoolCreated",
+    (token0, token1, pair, pool, oracle, uint) => {
+      console.log(`
     STOP LOSS Pool #${uint} created: ${pool}
     Token 1 ${token0} 
     Token 2 ${token1}
     Uniswap Pair: ${pair}
+    StopLoss Oracle: ${oracle}
     `);
+    }
+  );
+
+  console.log("------------ DEPLOYING STOPLOSS ORACLE FOR WETH/DAI");
+  await deploy("SLOracle", {
+    from: deployer,
+    proxy: false,
+    args: [UNISWAPV2FACTORY_ADDRESS, DAI_ADDRESS, WETH_ADDRESS],
+    log: true,
   });
+  const SLOracle = await ethers.getContract("SLOracle");
+  await new Promise((res) => {
+    setTimeout(() => {
+      return res();
+    }, 61000);
+  });
+  console.log("------------CREATING NEW SWAP EVENT FOR ORACLE TO UPDATE");
+  await (
+    await uniRouter.swapExactETHForTokens(
+      "0",
+      [WETH_ADDRESS, DAI_ADDRESS],
+      deployer,
+      162156100447,
+      {
+        gasLimit: 300000,
+        value: parseEther("2000"),
+      }
+    )
+  ).wait();
 
   console.log("------------ CREATING STOP LOSS POOL WETH/DAI");
-  const txCreatePool = await SLfactory.createPool(WETH_ADDRESS, DAI_ADDRESS);
+  const txCreatePool = await SLfactory.createPool(
+    WETH_ADDRESS,
+    DAI_ADDRESS,
+    SLOracle.address
+  );
   await txCreatePool.wait();
   const poolAddress = await SLfactory.getPoolFromPair(UniPairWethDai.address);
-  const SLPool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
-  await SLPool.on("StopLoss", (uniPair, orderer, lpamount, token, amount) => {
+  const SLPool = await ethers.getContractAt(
+    "SLPool",
+    poolAddress,
+    deployerSigner
+  );
+  await SLPool.on("StopLoss", (uniPair, orderer, lpamount, token, ratio) => {
     console.log(`
     StopLoss Ordered UniPair: ${uniPair}
-    0rderer: ${orderer} 
-    LP Amount sent: ${lpamount}
+    0rderer: ${orderer}
+    LP Amount sent: ${lpamount / 10 ** 18}
     Token to guarantee: ${token}
-    Amount to guarantee: ${amount}
+    Amount to guarantee: ${lpamount / 10 ** 18}
+    Strike ratio: ${ratio / 10 ** 6}
     `);
   });
   console.log(`------------ USER ${deployer} ORDERING STOPLOSS`);
@@ -141,6 +182,54 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     parseEther("300")
   );
   await txAddOrder.wait();
+  await new Promise((res) => {
+    setTimeout(() => {
+      return res();
+    }, 2200);
+  });
+
+  // const initPriceA = await SLPool.priceA();
+  const initPriceB = await SLPool.priceB();
+  console.log(
+    "current price ETH/DAI from SL Pool: ",
+    weiAmountToString(initPriceB)
+  );
+  console.log("------------CREATING NEW SWAP EVENT FOR ORACLE TO UPDATE");
+  await (
+    await uniRouter.swapExactETHForTokens(
+      "0",
+      [WETH_ADDRESS, DAI_ADDRESS],
+      deployer,
+      162156100447,
+      {
+        gasLimit: 300000,
+        value: parseEther("2000"),
+      }
+    )
+  ).wait();
+  await new Promise((res) => {
+    setTimeout(() => {
+      return res();
+    }, 61000);
+  });
+  console.log(`------------ USER ${deployer} ORDERING BEW STOPLOSS`);
+  await UniPairWethDai.approve(poolAddress, parseEther("3000000000"));
+  const txAddOrder2 = await SLPool.stopLoss(
+    parseEther("100"),
+    DAI_ADDRESS,
+    parseEther("30")
+  );
+  await txAddOrder2.wait();
+  const newInitPriceB = await SLPool.priceB();
+  console.log(
+    "new updated price ETH/DAI from SL Pool: ",
+    weiAmountToString(newInitPriceB)
+  );
+  await new Promise((res) => {
+    setTimeout(() => {
+      return res();
+    }, 2200);
+  });
 
   return !useProxy; // when live network, record the script as executed to prevent rexecution
 };

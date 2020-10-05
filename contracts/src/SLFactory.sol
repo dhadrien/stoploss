@@ -19,7 +19,7 @@ contract SLFactory {
     mapping(address => address) public getPoolFromPair;
     address[] public allPools;
 
-    event PoolCreated(address indexed token0, address indexed token1, address pair, address pool, uint);
+    event PoolCreated(address indexed token0, address indexed token1, address pair, address pool, address oracle, uint);
 
     constructor(address _uniFactory) {
         uniFactory = _uniFactory;
@@ -29,7 +29,7 @@ contract SLFactory {
         return allPools.length;
     }
 
-    function createPool(address tokenA, address tokenB) external returns (address pool) {
+    function createPool(address tokenA, address tokenB, address oracle) external returns (address pool) {
         require(tokenA != tokenB, 'STOP LOSS: IDENTICAL_ADDRESSES');
         require(tokenA != address(0), 'STOP LOSS: TOKEN: ZERO_ADDRESS');
         require(tokenB != address(0), 'STOP LOSS: TOKEN: ZERO_ADDRESS');
@@ -42,11 +42,11 @@ contract SLFactory {
         assembly {
             pool := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
-        SLPool(pool).initialize(pair, tokenA, tokenB);
+        SLPool(pool).initialize(pair, tokenA, tokenB, oracle);
         getPoolFromTokens[tokenA][tokenB] = pool;
         getPoolFromTokens[tokenB][tokenA] = pool;
         getPoolFromPair[pair] = pool;
         allPools.push(pair);
-        emit PoolCreated(tokenA, tokenB, pair, pool, allPools.length);
+        emit PoolCreated(tokenA, tokenB, pair, pool, oracle, allPools.length);
     }
 }
