@@ -13,7 +13,8 @@ import "@nomiclabs/buidler/console.sol";
 contract SLFactory {
     using SafeMath for uint;
     
-    address public uniFactory;
+    address public immutable uniFactory;
+    address public immutable WETH;
     
     mapping(address => mapping(address => address)) public getPoolFromTokens; // helper, not really needed
     mapping(address => address) public getPoolFromPair;
@@ -21,8 +22,9 @@ contract SLFactory {
 
     event PoolCreated(address indexed token0, address indexed token1, address pair, address pool, address oracle, uint);
 
-    constructor(address _uniFactory) {
+    constructor(address _uniFactory, address wethtAddress) {
         uniFactory = _uniFactory;
+        WETH = wethtAddress;
     }
 
     function allPoolsLength() external view returns (uint) {
@@ -42,7 +44,7 @@ contract SLFactory {
         assembly {
             pool := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
-        SLPool(pool).initialize(pair, tokenA, tokenB, oracle);
+        SLPool(pool).initialize(pair, tokenA, tokenB, oracle, WETH, uniFactory);
         getPoolFromTokens[tokenA][tokenB] = pool;
         getPoolFromTokens[tokenB][tokenA] = pool;
         getPoolFromPair[pair] = pool;

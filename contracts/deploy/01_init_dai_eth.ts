@@ -107,7 +107,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   await deploy("SLFactory", {
     from: deployer,
     proxy: false,
-    args: [UNISWAPV2FACTORY_ADDRESS],
+    args: [UNISWAPV2FACTORY_ADDRESS, WETH_ADDRESS],
     log: true,
   });
   const SLfactory = await ethers.getContract("SLFactory");
@@ -135,7 +135,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   await new Promise((res) => {
     setTimeout(() => {
       return res();
-    }, 61000);
+    }, 11000);
   });
   console.log("------------CREATING NEW SWAP EVENT FOR ORACLE TO UPDATE");
   await (
@@ -188,12 +188,16 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     }, 2200);
   });
 
-  // const initPriceA = await SLPool.priceA();
-  const initPriceB = await SLPool.priceB();
-  console.log(
-    "current price ETH/DAI from SL Pool: ",
-    weiAmountToString(initPriceB)
-  );
+  let priceA = await SLPool.priceA();
+  let reserveA = await SLPool.reserveA();
+  let reserveB = await SLPool.reserveB();
+  let lastRatioA = await SLPool.lastRatioA();
+  let lastRatioB = await SLPool.lastRatioB();
+  console.log("current price A from SL Pool: ", weiAmountToString(priceA));
+  console.log("current reserve A from SL Pool: ", weiAmountToString(reserveA));
+  console.log("current reserve B from SL Pool: ", weiAmountToString(reserveB));
+  console.log("Last Ratio A from SL Pool: ", lastRatioA.toString());
+  console.log("Last Ratio B from SL Pool: ", lastRatioB.toString());
   console.log("------------CREATING NEW SWAP EVENT FOR ORACLE TO UPDATE");
   await (
     await uniRouter.swapExactETHForTokens(
@@ -210,7 +214,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   await new Promise((res) => {
     setTimeout(() => {
       return res();
-    }, 61000);
+    }, 11000);
   });
   console.log(`------------ USER ${deployer} ORDERING BEW STOPLOSS`);
   await UniPairWethDai.approve(poolAddress, parseEther("3000000000"));
@@ -220,11 +224,16 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     parseEther("30")
   );
   await txAddOrder2.wait();
-  const newInitPriceB = await SLPool.priceB();
-  console.log(
-    "new updated price ETH/DAI from SL Pool: ",
-    weiAmountToString(newInitPriceB)
-  );
+  priceA = await SLPool.priceA();
+  reserveA = await SLPool.reserveA();
+  reserveB = await SLPool.reserveB();
+  lastRatioA = await SLPool.lastRatioA();
+  lastRatioB = await SLPool.lastRatioB();
+  console.log("new reserve A from SL Pool: ", weiAmountToString(reserveA));
+  console.log("new reserve B from SL Pool: ", weiAmountToString(reserveB));
+  console.log("new price A from SL Pool: ", weiAmountToString(priceA));
+  console.log("Last Ratio A from SL Pool: ", lastRatioA.toString());
+  console.log("Last Ratio B from SL Pool: ", lastRatioB.toString());
   await new Promise((res) => {
     setTimeout(() => {
       return res();

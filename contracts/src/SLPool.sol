@@ -9,21 +9,31 @@ import './lib/SLOracle.sol';
 contract SLPool {
     using SafeMath  for uint;
 
-    address public immutable factory;
+    uint constant RATIO_PRECISION = 1000000;
+
+    address public immutable poolFactory;
+    address public WETH;
+    address public uniswapFactory;
     address public uniPair;
-    address public tokenA;
-    address public tokenB;
+    address public tokenA; // Is WETH if WETH Pool
+    address public tokenB; // Is Other token if WETH Pool
+    bool public inverted;// Is the sorting inverted?
 
     // oracle
     address public oracle;
-    uint public constant PERIOD = 1 minutes;
+    uint public constant PERIOD = 10 seconds;
     uint32 public blockTimestampLast;
-    uint public priceA;
-    uint public priceB;
+    uint public priceA; // 1 WETH = priceB Tokens
+    // uint public priceB; // 1 Token = priceA WETH
+    uint public reserveA; // no real need for storage
+    uint public reserveB; // no real need for storage
+    uint public totalLpSupply; //no real need for storage
+    uint public lastRatioA; 
+    uint public lastRatioB;
     
 
 
-    event StopLoss(address uniPair, address orderer, uint lpAmount, address tokenToSave, uint ratio);
+    event StopLoss(address uniPair, address orderer, uint lpAmount, address tokenToGuarantee, uint ratio);
     
     StopOrder[] public getStopOrdersToken1;
     StopOrder[] public getStopOrdersToken2;
@@ -35,16 +45,38 @@ contract SLPool {
     }
 
     constructor() {
-        factory = msg.sender;
+        poolFactory = msg.sender;
     }
 
-    // called once by the factory at time of deployment
-    function initialize(address _uniPair, address _token1, address _token2, address _oracle) external {
-        require(msg.sender == factory, 'SLPool: FORBIDDEN'); // sufficient check
+    // called once by the poolFactory at time of deployment
+    function initialize(address _uniPair, address _token1, address _token2, address _oracle, address _WETH, address _uniswapFactory) external {
+        require(msg.sender == poolFactory, 'SLPool: FORBIDDEN'); // sufficient check
         uniPair = _uniPair;
-        (tokenA, tokenB) = sortTokens(_token1, _token2);
+        uniswapFactory = _uniswapFactory;
+        WETH = _WETH;
+        (tokenA, tokenB) = specialSortTokens(_token1, _token2);
+        (address tokenATest, ) = sortTokens(_token1, _token2);
+        inverted = (tokenATest == tokenA);
         oracle = _oracle;
         initPrice();
+    }
+
+    function specialSortTokens(
+        address _tokenA,
+        address _tokenB
+    )
+        internal
+        view
+        returns (address token0, address token1)
+    {
+        // Special for the WETH pool: we want it as token A
+        if (_tokenA == WETH) {
+          (token0, token1) = (_tokenA, _tokenB);
+        } else if (_tokenB == WETH) {
+          (token0, token1) = (_tokenB, _tokenA);
+        } else {
+          (token0, token1) = sortTokens(token0, token1);
+        }
     }
 
     function sortTokens(
@@ -55,27 +87,41 @@ contract SLPool {
         pure
         returns (address token0, address token1)
     {
-        (token0, token1) = _tokenA < _tokenB ? (_tokenA, _tokenB) : (_tokenB, _tokenA);
+          (token0, token1) = _tokenA < _tokenB ? (_tokenA, _tokenB) : (_tokenB, _tokenA);
     }
 
     function initPrice()
         public
     {
       blockTimestampLast = SLOracle(oracle).blockTimestampLast();
-      updatePrice();
+      update();
     }
 
-     function updatePrice()
+     function update()
         internal
     {
         (, , uint32 blockTimestamp) =
             UniswapV2OracleLibrary.currentCumulativePrices(uniPair);
         uint32 timeElapsed = blockTimestamp - blockTimestampLast; // overflow is desired
+
         if (timeElapsed >= uint32(PERIOD)) {
+          // Update price
           SLOracle(oracle).update();
           blockTimestampLast = blockTimestamp;
-          priceA = SLOracle(oracle).consult(tokenA, 1 ether);
-          priceB = SLOracle(oracle).consult(tokenB, 1 ether);
+          // Aproximations: hold in highly liquid pools. 
+          priceA = SLOracle(oracle).consult(tokenA, 1 ether); // Priice of 1WETH in token
+          // priceB = SLOracle(oracle).consult(tokenB, 1 ether); 
+
+          // updated reserves
+          (uint reserve0, uint reserve1,) = IUniswapV2Pair(uniPair).getReserves();
+          (reserveA, reserveB) = inverted ? (reserve1, reserve0) : (reserve0, reserve1);
+          
+          // update total amount of LP
+          totalLpSupply = IUniswapV2Pair(uniPair).totalSupply(); // in storage for now, could be memory
+          uint totalReserveinB = reserveB.add((reserveA.mul(priceA.div(1 ether))));
+          uint totalReserveInA = totalReserveinB.div(priceA.div(1 ether));
+          lastRatioA = (totalReserveInA.mul(RATIO_PRECISION)).div(totalLpSupply);
+          lastRatioB = (totalReserveinB.mul(RATIO_PRECISION)).div(totalLpSupply);
         }
     }
 
@@ -83,23 +129,23 @@ contract SLPool {
       return IUniswapV2Pair(uniPair).balanceOf(address(this));
     }
 
-    function stopLoss(uint lpAmount, address tokenToSave, uint minAmountToSave) public {
+    function stopLoss(uint lpAmount, address tokenToGuarantee, uint amountToGuarantee) public {
       bool isToken1 = true;
-      if (tokenToSave != tokenA) {
-        require(tokenToSave== tokenB, 'SLPOOL: Wrong Token');
+      if (tokenToGuarantee != tokenA) {
+        require(tokenToGuarantee== tokenB, 'SLPOOL: Wrong Token');
         isToken1 = false;
       }
       
       IUniswapV2Pair(uniPair).transferFrom(msg.sender, address(this), lpAmount);
       // not yet sure what to do with it, but it normalizes
-      uint ratio = (lpAmount.mul(1000000)).div(minAmountToSave);
+      uint ratio = (amountToGuarantee.mul(RATIO_PRECISION)).div(lpAmount);
       if(isToken1) {
         getStopOrdersToken1.push(StopOrder(msg.sender, lpAmount, ratio));
       } else {
         getStopOrdersToken2.push(StopOrder(msg.sender, lpAmount, ratio));
       }
-      emit StopLoss(uniPair, msg.sender, lpAmount, tokenToSave, ratio);
-      updatePrice();
+      emit StopLoss(uniPair, msg.sender, lpAmount, tokenToGuarantee, ratio);
+      update();
     }
 
     // force reserves to match balances
