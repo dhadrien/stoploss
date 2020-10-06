@@ -3,16 +3,19 @@ pragma solidity 0.7.1;
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import './interfaces/IUniswapV2Pair.sol';
+import './interfaces/IUniswapV2Router02.sol';
 import '@nomiclabs/buidler/console.sol';
 import './lib/SLOracle.sol';
 
 contract SLPool {
     using SafeMath  for uint;
 
-    uint constant RATIO_PRECISION = 1000000;
+    uint constant RATIO_PRECISION = 1000 * 1000;
+    uint constant MARGIN_RATIO = 1000 * 50; // 5% margin => will go to liquidators
 
     address public immutable poolFactory;
     address public WETH;
+    bool public isWETH;
     address public uniswapFactory;
     address public uniPair;
     address public tokenA; // Is WETH if WETH Pool
@@ -28,18 +31,21 @@ contract SLPool {
     uint public reserveA; // no real need for storage
     uint public reserveB; // no real need for storage
     uint public totalLpSupply; //no real need for storage
-    uint public lastRatioA; 
+    uint public lastRatioA;
     uint public lastRatioB;
+
+    // Router for trading/ Liquidity removal
+    address public uniRouter;
     
 
 
-    event StopLoss(address uniPair, address orderer, uint lpAmount, address tokenToGuarantee, uint ratio);
+    event StopLoss(address uniPair, uint number, address orderer, uint lpAmount, address tokenToGuarantee, uint ratio);
     
     StopOrder[] public getStopOrdersToken1;
     StopOrder[] public getStopOrdersToken2;
     // naive struct not gas efficient
     struct StopOrder {
-      address orderer;
+      address payable orderer;
       uint lpAmount;
       uint ratio;
     }
@@ -49,11 +55,12 @@ contract SLPool {
     }
 
     // called once by the poolFactory at time of deployment
-    function initialize(address _uniPair, address _token1, address _token2, address _oracle, address _WETH, address _uniswapFactory) external {
+    function initialize(address _uniPair, address _token1, address _token2, address _oracle, address _WETH, address _uniswapFactory, address _uniRouter) external {
         require(msg.sender == poolFactory, 'SLPool: FORBIDDEN'); // sufficient check
         uniPair = _uniPair;
         uniswapFactory = _uniswapFactory;
         WETH = _WETH;
+        uniRouter = _uniRouter;
         (tokenA, tokenB) = specialSortTokens(_token1, _token2);
         (address tokenATest, ) = sortTokens(_token1, _token2);
         inverted = (tokenATest == tokenA);
@@ -66,9 +73,9 @@ contract SLPool {
         address _tokenB
     )
         internal
-        view
         returns (address token0, address token1)
     {
+        isWETH = true;
         // Special for the WETH pool: we want it as token A
         if (_tokenA == WETH) {
           (token0, token1) = (_tokenA, _tokenB);
@@ -76,6 +83,7 @@ contract SLPool {
           (token0, token1) = (_tokenB, _tokenA);
         } else {
           (token0, token1) = sortTokens(token0, token1);
+          isWETH = false;
         }
     }
 
@@ -130,22 +138,65 @@ contract SLPool {
     }
 
     function stopLoss(uint lpAmount, address tokenToGuarantee, uint amountToGuarantee) public {
-      bool isToken1 = true;
+      bool isTokenA = true; // WETH
       if (tokenToGuarantee != tokenA) {
         require(tokenToGuarantee== tokenB, 'SLPOOL: Wrong Token');
-        isToken1 = false;
+        isTokenA = false;
       }
       
       IUniswapV2Pair(uniPair).transferFrom(msg.sender, address(this), lpAmount);
       // not yet sure what to do with it, but it normalizes
       uint ratio = (amountToGuarantee.mul(RATIO_PRECISION)).div(lpAmount);
-      if(isToken1) {
+      uint length;
+      if(isTokenA) {
         getStopOrdersToken1.push(StopOrder(msg.sender, lpAmount, ratio));
+        length = getStopOrdersToken1.length;
       } else {
         getStopOrdersToken2.push(StopOrder(msg.sender, lpAmount, ratio));
+        length = getStopOrdersToken2.length;
       }
-      emit StopLoss(uniPair, msg.sender, lpAmount, tokenToGuarantee, ratio);
+      emit StopLoss(uniPair, length, msg.sender, lpAmount, tokenToGuarantee, ratio);
       update();
+    }
+
+    function executeStopLoss(uint stopLossindex, address token) public payable {
+      bool isTokenA = true; // WETH
+      StopOrder memory order = getStopOrdersToken1[stopLossindex];
+      if (token != tokenA) {
+        require(token == tokenB, 'SLPOOL: Wrong Token');
+        isTokenA = false;
+      }
+      uint lpAmount = order.lpAmount;
+      if (isTokenA) { // ETH Guaranted
+        require(lastRatioA < order.ratio - MARGIN_RATIO, 'SLPOOL: RATIO_CONDITION');
+        // if (isWeth) {
+        (uint tokenReceived, uint ethReceived) =
+          IUniswapV2Router02(uniRouter).removeLiquidityETH(tokenB, lpAmount, 0, 0, address(this), 262156100447); // infiinite deadline
+        uint ethGuaranteed = lpAmount.mul(order.ratio).div(RATIO_PRECISION);
+        address[] memory path;
+        path[0] = tokenB;
+        path[1] = WETH;
+        uint[] memory tokenSold = 
+          IUniswapV2Router02(uniRouter).swapTokensForExactETH(ethGuaranteed.sub(ethReceived), tokenReceived, path, address(this), 262156100447); // infiinite deadline
+        uint tokenRemaining =  tokenReceived - tokenSold[0];
+        order.orderer.transfer(ethGuaranteed);
+        ERC20(token).transfer(msg.sender, tokenRemaining);
+        // } else { } // TO BE DONE FOR NON WETH POOLS
+      } else {
+        require(lastRatioB < order.ratio - MARGIN_RATIO, 'SLPOOL: RATIO_CONDITION');
+        
+        (uint tokenReceived, uint ethReceived) =
+            IUniswapV2Router02(uniRouter).removeLiquidityETH(tokenB, lpAmount, 0, 0, address(this), 262156100447); // infiinite deadline
+        uint tokenGuaranted = lpAmount.mul(order.ratio).div(RATIO_PRECISION);
+        address[] memory path;
+        path[1] = tokenB;
+        path[0] = WETH;
+        uint[] memory etherSold = 
+          IUniswapV2Router02(uniRouter).swapETHForExactTokens{value:ethReceived}(tokenGuaranted.sub(tokenReceived), path, address(this), 262156100447); // infiinite deadline
+        uint etherRemaining = ethReceived - etherSold[0];
+        ERC20(token).transfer(order.orderer, tokenGuaranted);
+        msg.sender.transfer(etherRemaining);
+      }
     }
 
     // force reserves to match balances

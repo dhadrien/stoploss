@@ -15,6 +15,7 @@ contract SLFactory {
     
     address public immutable uniFactory;
     address public immutable WETH;
+    address public immutable uniRouter;
     
     mapping(address => mapping(address => address)) public getPoolFromTokens; // helper, not really needed
     mapping(address => address) public getPoolFromPair;
@@ -22,9 +23,10 @@ contract SLFactory {
 
     event PoolCreated(address indexed token0, address indexed token1, address pair, address pool, address oracle, uint);
 
-    constructor(address _uniFactory, address wethtAddress) {
+    constructor(address _uniFactory, address wethtAddress, address _uniRouter) {
         uniFactory = _uniFactory;
         WETH = wethtAddress;
+        uniRouter = _uniRouter;
     }
 
     function allPoolsLength() external view returns (uint) {
@@ -44,7 +46,7 @@ contract SLFactory {
         assembly {
             pool := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
-        SLPool(pool).initialize(pair, tokenA, tokenB, oracle, WETH, uniFactory);
+        SLPool(pool).initialize(pair, tokenA, tokenB, oracle, WETH, uniFactory, uniRouter);
         getPoolFromTokens[tokenA][tokenB] = pool;
         getPoolFromTokens[tokenB][tokenA] = pool;
         getPoolFromPair[pair] = pool;

@@ -26,12 +26,19 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const deployerSigner = await ethers.getSigner(deployer);
   const {deploy} = bre.deployments;
   const useProxy = !bre.network.live;
+  console.log(`
+  😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈
+  😈STOP LOSS DEPLOYMENT
+  😈Deployer: ${deployer}
+  😈User: ${user}       
+  😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈
+  `);
   // Uniswap factory, DAI, WETH from mainnet fork
   const uniFactory = await ethers.getContractAt(
     "UniswapV2Factory",
     UNISWAPV2FACTORY_ADDRESS || DEFAULT_ENV_ADDRESS
   );
-  const ERC20DAI = await ethers.getContractAt(
+  let ERC20DAI = await ethers.getContractAt(
     "ERC20",
     DAI_ADDRESS || DEFAULT_ENV_ADDRESS,
     deployerSigner
@@ -46,11 +53,21 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     DAI_ADDRESS || DEFAULT_ENV_ADDRESS,
     WETH_ADDRESS || DEFAULT_ENV_ADDRESS
   );
-  const UniPairWethDai = await ethers.getContractAt(
+  let UniPairWethDai = await ethers.getContractAt(
     "UniswapV2Pair",
-    daiwethAddress,
-    deployerSigner
+    daiwethAddress
   );
+  await UniPairWethDai.on(
+    "Swap",
+    (sender, amount0In, amount1In, amount0Out, amount1out, to) => {
+      console.log(`
+    SWAP EVENT from ${sender} to ${to}
+    Token 1 in: ${weiAmountToString(amount0In)} out ${weiAmountToString(amount0Out)}
+    Token 2 in: ${weiAmountToString(amount1In)} out ${weiAmountToString(amount1out)}
+    `);
+    }
+  );
+
   const {_reserve0, _reserve1} = await UniPairWethDai.getReserves();
   const block = await ethers.provider.getBlockNumber();
   console.log("DEPLOYING FROM MAINNET FORK #Block: ", block);
@@ -59,16 +76,16 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   console.log("DAI Reserve: ", weiAmountToString(_reserve0));
 
   // Uni Router
-  const uniRouter = await ethers.getContractAt(
+  let uniRouter = await ethers.getContractAt(
     "UniswapV2Router02",
     UNISWAPV2ROUTERV2_ADDRESS || DEFAULT_ENV_ADDRESS,
     deployerSigner
   );
 
   // INIT
-  console.log(`------------ USER: ${deployer}`);
+  console.log(`------------ DEPLOYER: ${deployer}`);
   // Get Dai to user
-  console.log("------------ SWAPING 2000 ETH => DAI");
+  console.log("------------ [DEPLOYER] SWAPING 2000 ETH => DAI");
   await uniRouter.swapExactETHForTokens(
     "0",
     [WETH_ADDRESS, DAI_ADDRESS],
@@ -80,25 +97,30 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     }
   );
   // User add liquidity to WETH/DAI
-  console.log("------------ ADDING WETH/DAI LIQUIDITY");
+  console.log("------------ [DEPLOYER] ADDING WETH/DAI LIQUIDITY");
   await (
     await ERC20DAI.approve(uniRouter.address, parseEther("20000000000"))
   ).wait();
-  await uniRouter.addLiquidityETH(
-    DAI_ADDRESS,
-    parseEther("300000"),
-    parseEther("200000"),
-    parseEther("500"),
-    deployer,
-    162156100447,
-    {
-      value: parseEther("1000"),
-    }
-  );
+  await (
+    await uniRouter.addLiquidityETH(
+      DAI_ADDRESS,
+      parseEther("300000"), /// 300 000 DAI
+      parseEther("200000"),
+      parseEther("500"),
+      deployer,
+      162156100447,
+      {
+        value: parseEther("1000"),
+      }
+    )
+  ).wait();
+  console.log("------------ [DEPLOYER] SENDING 60 000 DAI TO USER");
+  await (await ERC20DAI.transfer(user, parseEther("60000"))).wait();
+
   const [DaiBalance, EthBalance, UniLPBalance] = [
-    await ERC20DAI.balanceOf(deployer),
-    await deployerSigner.getBalance(),
-    await UniPairWethDai.balanceOf(deployer),
+    await ERC20DAI.balanceOf(user),
+    await userSigner.getBalance(),
+    await UniPairWethDai.balanceOf(user),
   ].map(weiAmountToString);
   console.log(
     `User has now: ${DaiBalance} DAI and ${EthBalance} ETH and some LP tokens: ${UniLPBalance}`
@@ -107,7 +129,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   await deploy("SLFactory", {
     from: deployer,
     proxy: false,
-    args: [UNISWAPV2FACTORY_ADDRESS, WETH_ADDRESS],
+    args: [UNISWAPV2FACTORY_ADDRESS, WETH_ADDRESS, uniRouter.address],
     log: true,
   });
   const SLfactory = await ethers.getContract("SLFactory");
@@ -159,27 +181,61 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   );
   await txCreatePool.wait();
   const poolAddress = await SLfactory.getPoolFromPair(UniPairWethDai.address);
-  const SLPool = await ethers.getContractAt(
+  let SLPool = await ethers.getContractAt(
     "SLPool",
     poolAddress,
     deployerSigner
   );
-  await SLPool.on("StopLoss", (uniPair, orderer, lpamount, token, ratio) => {
+  await SLPool.on(
+    "StopLoss",
+    (uniPair, length, orderer, lpamount, token, ratio) => {
+      if (orderer === user)
     console.log(`
-    StopLoss Ordered UniPair: ${uniPair}
+    StopLoss Ordered #${length}, UniPair: ${uniPair}
     0rderer: ${orderer}
     LP Amount sent: ${lpamount / 10 ** 18}
     Token to guarantee: ${token}
     Amount to guarantee: ${lpamount / 10 ** 18}
-    Strike ratio: ${ratio / 10 ** 6}
+    LP/Amount to guarantee ratio: ${ratio}
     `);
-  });
-  console.log(`------------ USER ${deployer} ORDERING STOPLOSS`);
+    }
+  );
+  // User add liquidity to WETH/DAI
+  console.log("------------[USER] ADDING WETH/DAI LIQUIDITY");
+  uniRouter = await uniRouter.connect(userSigner);
+  ERC20DAI = ERC20DAI.connect(userSigner);
+  SLPool = await SLPool.connect(userSigner);
+  await (
+    await ERC20DAI.approve(uniRouter.address, parseEther("20000000000"))
+  ).wait();
+  await (
+    await uniRouter.addLiquidityETH(
+      DAI_ADDRESS,
+      parseEther("60000"), /// 300 000 DAI
+      parseEther("100"),
+      parseEther("100"),
+      user,
+      162156100447,
+      {
+        value: parseEther("300"),
+      }
+    )
+  ).wait();
+  const [DaiBalanceUser, EthBalanceUser, UniLPBalanceUser] = [
+    await ERC20DAI.balanceOf(user),
+    await userSigner.getBalance(),
+    await UniPairWethDai.balanceOf(user),
+  ];
+  console.log(
+    `User has now: ${DaiBalanceUser} DAI and ${EthBalanceUser} ETH and some LP tokens: ${UniLPBalanceUser}`
+  );
+  console.log(`------------[USER] ${user} ORDERING STOPLOSS`);
+  UniPairWethDai = await UniPairWethDai.connect(userSigner);
   await UniPairWethDai.approve(poolAddress, parseEther("3000000000"));
   const txAddOrder = await SLPool.stopLoss(
-    parseEther("1000"),
+    UniLPBalanceUser,
     DAI_ADDRESS,
-    parseEther("300")
+    parseEther("50000")
   );
   await txAddOrder.wait();
   await new Promise((res) => {
@@ -198,7 +254,8 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   console.log("current reserve B from SL Pool: ", weiAmountToString(reserveB));
   console.log("Last Ratio A from SL Pool: ", lastRatioA.toString());
   console.log("Last Ratio B from SL Pool: ", lastRatioB.toString());
-  console.log("------------CREATING NEW SWAP EVENT FOR ORACLE TO UPDATE");
+  console.log("------------DUMPING ETH PRICE VIA SWAP ");
+  uniRouter = uniRouter.connect(deployerSigner);
   await (
     await uniRouter.swapExactETHForTokens(
       "0",
@@ -207,7 +264,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
       162156100447,
       {
         gasLimit: 300000,
-        value: parseEther("2000"),
+        value: parseEther("100000"),
       }
     )
   ).wait();
@@ -216,7 +273,9 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
       return res();
     }, 11000);
   });
-  console.log(`------------ USER ${deployer} ORDERING BEW STOPLOSS`);
+  console.log(`------------ [DEPLOYER] ${deployer} UPDATING PRICE`);
+  UniPairWethDai = await UniPairWethDai.connect(deployerSigner);
+  SLPool = await SLPool.connect(deployerSigner);
   await UniPairWethDai.approve(poolAddress, parseEther("3000000000"));
   const txAddOrder2 = await SLPool.stopLoss(
     parseEther("100"),
@@ -239,6 +298,16 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
       return res();
     }, 2200);
   });
+  console.log(`------------ [DEPLOYER] TRYING TO LIQUIDATE USER STOPLOSS`);
+  // await (await SLPool.executeStopLoss(0, DAI_ADDRESS)).wait();
+  // const [DaiBalanceUserF, EthBalanceUserF, UniLPBalanceUserF] = [
+  //   await ERC20DAI.balanceOf(user),
+  //   await userSigner.getBalance(),
+  //   await UniPairWethDai.balanceOf(user),
+  // ];
+  // console.log(
+  //   `User has now: ${DaiBalanceUserF} DAI and ${EthBalanceUserF} ETH and some LP tokens: ${UniLPBalanceUserF}`
+  // );
 
   return !useProxy; // when live network, record the script as executed to prevent rexecution
 };
