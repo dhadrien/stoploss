@@ -15,7 +15,7 @@ import {
   INIT_ETH_PRICE,
   INIT_DAI_USERBALANCE,
   INIT_DAI_LIQUIDITY,
-  INFINITE_DEADLINE
+  INFINITE_DEADLINE,
 } from "../utils/envutils";
 
 describe("User Create A Stop Loss", async function () {
@@ -30,9 +30,7 @@ describe("User Create A Stop Loss", async function () {
     let daiBalance = await FDAI.balanceOf(user);
     expect(daiBalance).to.be.equal(INIT_DAI_USERBALANCE);
     const uniRouter = await ethers.getContract("UniswapV2Router02", userSigner);
-    console.log("1");
     await (await FDAI.approve(uniRouter.address, INIT_DAI_LIQUIDITY)).wait();
-    console.log("2");
     await (
       await uniRouter.addLiquidityETH(
         FDAI.address,

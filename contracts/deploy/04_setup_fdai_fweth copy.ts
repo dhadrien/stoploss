@@ -35,7 +35,6 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     deployerSigner
   );
   const SLfactory = await ethers.getContract("SLFactory", deployerSigner);
-  const SLOracle = await ethers.getContract("SLOracle");
 
   console.log(`
 ----------
@@ -88,6 +87,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     args: [uniFactory.address, FDAI.address, FWETH.address],
     log: true,
   });
+  const SLOracle = await ethers.getContract("SLOracle");
 
   logStep("DEPLOYER STOPLOSS POOL FOR FDA/WETH PAIR");
   let poolAddress = await SLfactory.getPoolFromTokens(
