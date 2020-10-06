@@ -12,7 +12,7 @@ services:
       - '${MNEMONIC-minimum symptom minute gloom tragic situate silver mechanic salad amused elite beef}'
       - --hostname
       - '0.0.0.0'
-      - --fork 
+      #- --fork 
       - https://mainnet.infura.io/v3/${INFURA_TOKEN}@11001803
       # - --blockTime
       - --networkId
@@ -20,4 +20,4 @@ services:
       - --defaultBalanceEther
       - '1000000'
       # - '2'
-      - --debug
+      #- --debug
