@@ -13,23 +13,27 @@ import "@nomiclabs/buidler/console.sol";
 contract SLFactory {
     using SafeMath for uint;
     
-    address public uniFactory;
+    address public immutable uniFactory;
+    address public immutable WETH;
+    address public immutable uniRouter;
     
     mapping(address => mapping(address => address)) public getPoolFromTokens; // helper, not really needed
     mapping(address => address) public getPoolFromPair;
     address[] public allPools;
 
-    event PoolCreated(address indexed token0, address indexed token1, address pair, address pool, uint);
+    event PoolCreated(address indexed token0, address indexed token1, address pair, address pool, address oracle, uint);
 
-    constructor(address _uniFactory) {
+    constructor(address _uniFactory, address wethtAddress, address _uniRouter) {
         uniFactory = _uniFactory;
+        WETH = wethtAddress;
+        uniRouter = _uniRouter;
     }
 
     function allPoolsLength() external view returns (uint) {
         return allPools.length;
     }
 
-    function createPool(address tokenA, address tokenB) external returns (address pool) {
+    function createPool(address tokenA, address tokenB, address oracle) external returns (address pool) {
         require(tokenA != tokenB, 'STOP LOSS: IDENTICAL_ADDRESSES');
         require(tokenA != address(0), 'STOP LOSS: TOKEN: ZERO_ADDRESS');
         require(tokenB != address(0), 'STOP LOSS: TOKEN: ZERO_ADDRESS');
@@ -42,11 +46,11 @@ contract SLFactory {
         assembly {
             pool := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
-        SLPool(pool).initialize(pair, tokenA, tokenB);
+        SLPool(pool).initialize(pair, tokenA, tokenB, oracle, WETH, uniFactory, uniRouter);
         getPoolFromTokens[tokenA][tokenB] = pool;
         getPoolFromTokens[tokenB][tokenA] = pool;
         getPoolFromPair[pair] = pool;
         allPools.push(pair);
-        emit PoolCreated(tokenA, tokenB, pair, pool, allPools.length);
+        emit PoolCreated(tokenA, tokenB, pair, pool, oracle, allPools.length);
     }
 }
