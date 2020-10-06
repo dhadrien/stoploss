@@ -1,15 +1,15 @@
-import 'dotenv';
-import {Wallet} from '@ethersproject/wallet';
-import {usePlugin, BuidlerConfig} from '@nomiclabs/buidler/config';
-import {getEnv} from './utils/envutils';
-import path from 'path';
-const env = getEnv(path.join(__dirname, './.env'));
-// usePlugin('@nomiclabs/buidler-waffle');
+import "dotenv";
+import {Wallet} from "@ethersproject/wallet";
+import {usePlugin, BuidlerConfig} from "@nomiclabs/buidler/config";
+import {getEnv} from "./utils/envutils";
+import path from "path";
+const env = getEnv(path.join(__dirname, "./.env"));
+// usePlugin("@nomiclabs/buidler-waffle");
 // usePlugin("@nomiclabs/buidler-web3");
-// usePlugin("@nomiclabs/buidler-truffle5");
-usePlugin('buidler-ethers-v5');
-usePlugin('buidler-deploy');
-usePlugin('solidity-coverage');
+// usePlugin("@nomiclabs/buidler-ethers");
+usePlugin("buidler-ethers-v5");
+usePlugin("buidler-deploy");
+usePlugin("solidity-coverage");
 
 const {MNEMONIC} = env;
 
@@ -25,7 +25,7 @@ if (mnemonic) {
     const wallet = Wallet.fromMnemonic(mnemonic, "m/44'/60'/0'/0/" + i);
     buidlerEvmAccounts.push({
       privateKey: wallet.privateKey,
-      balance: '1000000000000000000000',
+      balance: "1000000000000000000000",
     });
   }
 } else {
@@ -34,14 +34,14 @@ if (mnemonic) {
     const wallet = Wallet.createRandom();
     buidlerEvmAccounts.push({
       privateKey: wallet.privateKey,
-      balance: '1000000000000000000000',
+      balance: "1000000000000000000000",
     });
   }
 }
 
 const config: BuidlerConfig = {
   solc: {
-    version: '0.7.1',
+    version: "0.7.1",
     optimizer: {
       enabled: true,
       runs: 2000,
@@ -53,41 +53,41 @@ const config: BuidlerConfig = {
   },
   networks: {
     coverage: {
-      url: 'http://localhost:5458',
+      url: "http://localhost:5458",
     },
     buidlerevm: {
       accounts: buidlerEvmAccounts,
     },
     localhost: {
-      url: 'http://localhost:8545',
+      url: "http://localhost:8545",
       accounts,
     },
     staging: {
-      url: 'https://rinkeby.infura.io/v3/' + process.env.INFURA_TOKEN,
+      url: "https://rinkeby.infura.io/v3/" + process.env.INFURA_TOKEN,
       accounts,
     },
     rinkeby: {
-      url: 'https://rinkeby.infura.io/v3/' + process.env.INFURA_TOKEN,
+      url: "https://rinkeby.infura.io/v3/" + process.env.INFURA_TOKEN,
       accounts,
     },
     kovan: {
-      url: 'https://kovan.infura.io/v3/' + process.env.INFURA_TOKEN,
+      url: "https://kovan.infura.io/v3/" + process.env.INFURA_TOKEN,
       accounts,
     },
     goerli: {
-      url: 'https://goerli.infura.io/v3/' + process.env.INFURA_TOKEN,
+      url: "https://goerli.infura.io/v3/" + process.env.INFURA_TOKEN,
       accounts,
     },
     mainnet: {
-      url: 'https://mainnet.infura.io/v3/' + process.env.INFURA_TOKEN,
+      url: "https://mainnet.infura.io/v3/" + process.env.INFURA_TOKEN,
       accounts,
     },
   },
   paths: {
-    sources: 'src',
-    deploy: 'deploy',
-    deployments: 'deployments',
-    imports: 'imports',
+    sources: "src",
+    deploy: "deploy",
+    deployments: "deployments",
+    imports: "imports",
   },
 };
 

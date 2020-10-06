@@ -96,7 +96,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   );
   if (poolAddress === NULL_ADDRESS) {
     await (
-      await SLfactory.createPool(FDAI.address, FWETH.address, SLOracle.address)
+      await SLfactory.createPool(FWETH.address, FDAI.address, SLOracle.address)
     ).wait();
     poolAddress = await SLfactory.getPoolFromTokens(
       FDAI.address,

@@ -2,7 +2,7 @@ import {
   BuidlerRuntimeEnvironment,
   DeployFunction,
 } from "@nomiclabs/buidler/types";
-import {ethers as ethers2} from "ethers";
+import {ethers as ethers2, ethers} from "ethers";
 
 import {logStep} from "../utils/slutils";
 const {
@@ -13,6 +13,7 @@ import {INIT_TOKEN_SUPPLY} from "../utils/envutils";
 
 const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const {deployer, user} = await bre.getNamedAccounts();
+  const deployerUser = await bre.ethers.getSigner(deployer);
   const {deploy} = bre.deployments;
   const useProxy = !bre.network.live;
   console.log(`
@@ -37,12 +38,22 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   });
   logStep("DEPLOYING FAKE WETH");
   await deploy("FWETH", {
-    contract: "ERC20Log",
+    contract: "WETH",
     from: deployer,
     proxy: false,
-    args: [INIT_TOKEN_SUPPLY, "Fake Weth", "FWETH"],
+    args: [],
     log: true,
   });
+  logStep("TRANSFORMING ETH IN FWETH FOR DEPLOYER");
+  const FWETH = await bre.ethers.getContract("FWETH", deployerUser);
+  const FDAI = await bre.ethers.getContract("FDAI", deployerUser);
+  await FWETH.deposit({
+    value: INIT_TOKEN_SUPPLY,
+  });
+  const FWETHDeployerBalance = await FWETH.balanceOf(deployer);
+  const FDAIDeployerBalance = await FDAI.balanceOf(deployer);
+  console.log("Deployer FWETH BALANCE: ", FWETHDeployerBalance);
+  console.log("Deployer FWETH BALANCE: ", FDAIDeployerBalance);
 
   return !useProxy; // when live network, record the script as executed to prevent rexecution
 };
