@@ -106,7 +106,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   } else
     console.log("Pool already created in previous deployment: ", poolAddress);
   const SLPool = await ethers.getContractAt("SLPool", poolAddress);
-  save("UniPairFDAIFWETH", {abi: SLPool.abi, address: SLPool.address});
+  save("SLPoolFDAIFWETH", {abi: SLPool.abi, address: SLPool.address});
   return !useProxy; // when live network, record the script as executed to prevent rexecution
 };
 export default func;

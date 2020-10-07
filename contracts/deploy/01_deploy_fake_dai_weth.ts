@@ -10,6 +10,7 @@ const {
 } = ethers2;
 
 import {INIT_TOKEN_SUPPLY} from "../utils/envutils";
+import {weiAmountToString} from "../utils/ethutils";
 
 const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const {deployer, user} = await bre.getNamedAccounts();
@@ -52,9 +53,14 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   });
   const FWETHDeployerBalance = await FWETH.balanceOf(deployer);
   const FDAIDeployerBalance = await FDAI.balanceOf(deployer);
-  console.log("Deployer FWETH BALANCE: ", FWETHDeployerBalance);
-  console.log("Deployer FWETH BALANCE: ", FDAIDeployerBalance);
-
+  console.log(
+    "Deployer FWETH BALANCE: ",
+    weiAmountToString(FWETHDeployerBalance)
+  );
+  console.log(
+    "Deployer FDAI BALANCE: ",
+    weiAmountToString(FDAIDeployerBalance)
+  );
   return !useProxy; // when live network, record the script as executed to prevent rexecution
 };
 export default func;
