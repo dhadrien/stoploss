@@ -2,7 +2,7 @@
 
 ## Project Description
 
-😈 The stoploss Protocol is a decentralized protocol against impermanent losses.
+😈 The stoploss protocol is a decentralized protocol against impermanent losses.
 
 Is allows Liquidity Providers (LPs) to limit their impermanent losses on Automated Market Makers (AMMs, eg. Uniswap) in a safe, automated and non-custodial way.
 
