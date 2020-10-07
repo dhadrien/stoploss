@@ -25,12 +25,20 @@ describe("User Create A Stop Loss", async function () {
   beforeEach(async () => {
     await deployments.fixture();
   });
-  it("User should add liquidity", async function () {
+  it("User should add liquidity, get LP Tokens", async function () {
     const {deployer, user} = await getNamedAccounts();
     const userSigner = await ethers.getSigner(user);
     const deployerSigner = await ethers.getSigner(deployer);
     const FDAI = await ethers.getContract("FDAI", userSigner);
+    const {address: uniPairAddress} = await deployments.get("UniPairFDAIFWETH");
+    const uniPair = await ethers.getContractAt(
+      "UniswapV2Pair",
+      uniPairAddress,
+      userSigner
+    );
     let daiBalance = await FDAI.balanceOf(user);
+    let lpBalance = await uniPair.balanceOf(user);
+    expect(lpBalance).to.be.equal(BigNumber.from("0"));
     expect(daiBalance).to.be.equal(INIT_DAI_USERBALANCE);
     const uniRouter = await ethers.getContract("UniswapV2Router02", userSigner);
     await (await FDAI.approve(uniRouter.address, INIT_DAI_LIQUIDITY)).wait();
@@ -50,6 +58,8 @@ describe("User Create A Stop Loss", async function () {
     ).wait();
     daiBalance = await FDAI.balanceOf(user);
     expect(daiBalance).to.be.equal(BigNumber.from("0"));
+    lpBalance = await uniPair.balanceOf(user);
+    expect(lpBalance).not.to.be.equal(BigNumber.from("0"));
   });
 
   it("should add liqidity and make a stop loss offer", async function () {
