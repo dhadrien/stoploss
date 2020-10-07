@@ -34,7 +34,7 @@ OR For the most bullish of us
 
 - Provide 3 ETH in the ETH/DAI pool
 - Place a stop-loss order guaranteeing 2 ETH
-- If the liquidity of the LP gets close to 3ETH (3ETH+X%), tLP position will get liquidated, 3ETH DAI will be sent to the LP.*
+- If the liquidity of the LP gets close to 2ETH (2ETH+X%), LP position will get liquidated, 2ETH DAI will be sent to the LP.*
 
 **The agent in charge of liquidating the position will get the X%*
 
