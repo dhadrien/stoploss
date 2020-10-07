@@ -8,6 +8,7 @@ import {logStep} from "../utils/slutils";
 const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const {deployer, user} = await bre.getNamedAccounts();
   const {deploy} = bre.deployments;
+  const deployerSigner = await bre.ethers.getSigner(deployer);
   const useProxy = !bre.network.live;
   const FWETH = await ethers.getContract("FWETH");
 
@@ -21,7 +22,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const factory = await deploy("UniswapV2Factory", {
     from: deployer,
     proxy: false,
-    args: [FWETH.address],
+    args: [deployer],
     log: true,
   });
   logStep("DEPLOYING UNISWAP V2 ROUTER 02");

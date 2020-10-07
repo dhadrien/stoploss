@@ -33,7 +33,7 @@ contract SLFactory {
         return allPools.length;
     }
 
-    function createPool(address tokenA, address tokenB, address oracle) external returns (address pool) {
+    function createPool(address tokenA, address tokenB, address oracle) external returns (address payable pool) {
         require(tokenA != tokenB, 'STOP LOSS: IDENTICAL_ADDRESSES');
         require(tokenA != address(0), 'STOP LOSS: TOKEN: ZERO_ADDRESS');
         require(tokenB != address(0), 'STOP LOSS: TOKEN: ZERO_ADDRESS');
