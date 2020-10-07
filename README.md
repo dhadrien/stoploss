@@ -13,8 +13,6 @@ Impermanent losses for LPs is recognized in the industry as the biggest problem 
 *« :Imp:ermanent losses has become a problem about equal to having an elephant in the living room. It's so big you just can't ignore it. »* — :smiling-imp:
 **
 
-https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fe8e756d8-2e2b-46b0-8ffa-d027a9d867ca%2FUntitled.png?table=block&id=050c52dd-689b-45a2-980b-ef5404350a71&width=3840&userId=bc782b57-0c56-4ce5-a3b2-8609ce947e44&cache=v2  
-
 ### Stoploss.finance Alpha specs
 
 Most LPs supplying liquidity to AMMs such as Uniswap suffer from Impermanent losses. [StopLoss.finance](http://stoploss.Finance) will allow LPs to limit those losses via a decentralized StopLoss protocol that triggers automated liquidations based on users' maximum acceptable loss.
