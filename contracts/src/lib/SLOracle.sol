@@ -11,7 +11,7 @@ import './UniswapV2Library.sol';
 contract SLOracle {
     using FixedPoint for *;
 
-    uint public constant PERIOD = 10 seconds;
+    uint public constant PERIOD = 1 seconds;
 
     IUniswapV2Pair immutable pair;
     address public immutable token0;

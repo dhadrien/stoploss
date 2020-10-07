@@ -50,6 +50,7 @@ const config: BuidlerConfig = {
   namedAccounts: {
     deployer: 0,
     user: 1,
+    liquidator: 2,
   },
   networks: {
     coverage: {
