@@ -65,6 +65,8 @@ contract SLPool {
         oracle = _oracle;
         initPrice();
         IUniswapV2Pair(uniPair).approve(uniRouter, 10000000000000 ether);
+        IUniswapV2Pair(_token1).approve(uniRouter, 10000000000000 ether);
+        IUniswapV2Pair(_token2).approve(uniRouter, 10000000000000 ether);
     }
 
     function specialSortTokens(
@@ -162,11 +164,12 @@ contract SLPool {
 
     function _executeStopLoss() public {}     
 
+    // this function is currently public, should be internal, otherwise revert dont throw correct message
     function _executeStopLossTokenWeth(uint stopLossindex) public {
       require(lastRatioB < (getStopOrdersTokenB[stopLossindex].ratio.mul(uint(100).add(MARGIN_RATIO))).div(100), 'SLPOOL: RATIO_CONDITION');
       (uint tokenReceived, uint ethReceived) =
           IUniswapV2Router02(uniRouter).removeLiquidityETH(
-            tokenB, 
+            tokenB,
             getStopOrdersTokenB[stopLossindex].lpAmount,
             0,
             0,
@@ -188,32 +191,32 @@ contract SLPool {
       msg.sender.send(ethReceived - etherSold[0]);
     }
 
-    // function _executeStopLossEth(uint stopLossindex) {
-    //   (uint tokenReceived, uint ethReceived) =
-    //       IUniswapV2Router02(uniRouter).removeLiquidityETH(
-    //         tokenB, 
-    //         getStopOrdersTokenA[stopLossindex].lpAmount,
-    //         0,
-    //         0,
-    //         address(this),
-    //         262156100447
-    //       ); // infiinite deadline
-    //   uint etherGuaranteed = (getStopOrdersTokenA[stopLossindex].lpAmount
-    //                           .mul(getStopOrdersTokenA[stopLossindex].ratio))
-    //                           .div(RATIO_PRECISION);         
-    //   address[] memory path = new address[](2);
-    //   path[0] = tokenB;
-    //   path[1] = WETH;
-    //   uint[] memory tokenSold = new uint[](1);
-    //   tokenSold = 
-    //     IUniswapV2Router02(uniRouter).swapTokensForExactETH(
-    //       ethGuaranteed.sub(ethReceived), tokenReceived, path, address(this), 262156100447
-    //     );
-    //   getStopOrdersTokenA[stopLossindex].transfer(ethGuaranteed);
-    //   ERC20(token).transfer(msg.sender, tokenReceived - tokenSold[0]);
-    //   ERC20(tokenB).transfer(.orderer, tokenGuaranted);
-    //   msg.sender.send(ethReceived - etherSold[0]);
-    // }
+    // this function is currently public, should be internal, otherwise revert dont throw correct message
+    function _executeStopLossEth(uint stopLossindex) public {
+      require(lastRatioA < (getStopOrdersTokenA[stopLossindex].ratio.mul(uint(100).add(MARGIN_RATIO))).div(100), 'SLPOOL: RATIO_CONDITION');
+      (uint tokenReceived, uint ethReceived) =
+          IUniswapV2Router02(uniRouter).removeLiquidityETH(
+            tokenB, 
+            getStopOrdersTokenA[stopLossindex].lpAmount,
+            0,
+            0,
+            address(this),
+            262156100447
+          ); // infiinite deadline
+      uint etherGuaranteed = (getStopOrdersTokenA[stopLossindex].lpAmount
+                              .mul(getStopOrdersTokenA[stopLossindex].ratio))
+                              .div(RATIO_PRECISION);         
+      address[] memory path = new address[](2);
+      path[0] = tokenB;
+      path[1] = WETH;
+      uint[] memory tokenSold = new uint[](1);
+      tokenSold = 
+        IUniswapV2Router02(uniRouter).swapTokensForExactETH(
+          etherGuaranteed.sub(ethReceived), tokenReceived, path, address(this), 262156100447
+        );
+      getStopOrdersTokenA[stopLossindex].orderer.transfer(etherGuaranteed);
+      ERC20(tokenB).transfer(msg.sender, tokenReceived - tokenSold[0]);
+    }
 
     function executeStopLoss(uint stopLossindex, address token) public {
       if (token != tokenA) {
@@ -223,7 +226,7 @@ contract SLPool {
         if (token == tokenB) {
           _executeStopLossTokenWeth(stopLossindex);
         } else {
-          // _executeStopLossEth(stopLossindex);
+          _executeStopLossEth(stopLossindex);
         }
       } else {
         _executeStopLoss();
