@@ -2,29 +2,29 @@ import React, { createContext, useEffect, useState } from 'react'
 
 import { useWallet } from 'use-wallet'
 
-import { Yam } from 'yam-sdk/lib'
+import { Stoploss } from 'sl-sdk/lib'
 
-export interface YamContext {
-  yam?: any
+export interface SLContext {
+  sl?: any
 }
 
-export const Context = createContext<YamContext>({
-  yam: undefined,
+export const Context = createContext<SLContext>({
+  sl: undefined,
 })
 
 declare global {
   interface Window {
-    yamsauce: any
+    slsauce: any
   }
 }
 
-const YamProvider: React.FC = ({ children }) => {
+const SLProvider: React.FC = ({ children }) => {
   const { ethereum } = useWallet()
-  const [yam, setYam] = useState<any>()
+  const [sl, setSL] = useState<any>()
 
   useEffect(() => {
     if (ethereum) {
-      const yamLib = new Yam(
+      const SLLib = new Stoploss(
         ethereum,
         "1",
         false, {
@@ -39,16 +39,16 @@ const YamProvider: React.FC = ({ children }) => {
         }
       )
 
-      setYam(yamLib)
-      window.yamsauce = yamLib
+      setSL(SLLib)
+      window.slsauce = SLLib
     }
   }, [ethereum])
 
   return (
-    <Context.Provider value={{ yam }}>
+    <Context.Provider value={{ sl }}>
       {children}
     </Context.Provider>
   )
 }
 
-export default YamProvider
+export default SLProvider

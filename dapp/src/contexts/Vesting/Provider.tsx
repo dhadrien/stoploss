@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import BigNumber from 'bignumber.js'
 import { useWallet } from 'use-wallet'
 
-import useYam from 'hooks/useYam'
+import useLM from 'hooks/useSL'
 import { 
   claimVested,
   currUnclaimedMigratorVesting,
@@ -17,7 +17,7 @@ import Context from './Context'
 
 const Provider: React.FC = ({ children }) => {
   const { account } = useWallet()
-  const yam = useYam()
+  const yam = useLM()
 
   const [vestedBalance, setVestedBalance] = useState<BigNumber>()
   const [vestedDelegatorRewardBalance, setVestedDelegatorRewardBalance] = useState<BigNumber>()
