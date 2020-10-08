@@ -4,34 +4,30 @@ import { useWallet } from 'use-wallet'
 import { provider } from 'web3-core'
 
 import {
-  yamv2 as yamV2Address,
-  yamv3 as yamV3Address,
-  yycrvUniLp as yyrcvUniLpAddress,
+  dai,
+  daiwethpair,
 } from 'constants/tokenAddresses'
 import { getBalance } from 'utils'
 
 import Context from './Context'
 
 const Provider: React.FC = ({ children }) => {
-  const [yamV2Balance, setYamV2Balance] = useState<BigNumber>()
-  const [yamV3Balance, setYamV3Balance] = useState<BigNumber>()
-  const [yycrvUniLpBalance, setYycrvUniLpBalance] = useState<BigNumber>()
+  const [daiBalance, setDaiBalance] = useState<BigNumber>()
+  const [daiwethPairBalance, setDaiwethPairBalance] = useState<BigNumber>()
 
   const { account, ethereum }: { account: string | null, ethereum: provider } = useWallet()
 
   const fetchBalances = useCallback(async (userAddress: string, provider: provider) => {
     const balances = await Promise.all([
-      await getBalance(provider, yamV2Address, userAddress),
-      await getBalance(provider, yamV3Address, userAddress),
-      await getBalance(provider, yyrcvUniLpAddress, userAddress)
+      await getBalance(provider, dai, userAddress),
+      await getBalance(provider, daiwethpair, userAddress),
     ])
-    setYamV2Balance(new BigNumber(balances[0]).dividedBy(new BigNumber(10).pow(24)))
-    setYamV3Balance(new BigNumber(balances[1]).dividedBy(new BigNumber(10).pow(18)))
-    setYycrvUniLpBalance(new BigNumber(balances[2]).dividedBy(new BigNumber(10).pow(18)))
+    console.log('hahahah', balances);
+    setDaiBalance(new BigNumber(balances[0]).dividedBy(new BigNumber(10).pow(18)))
+    setDaiwethPairBalance(new BigNumber(balances[1]).dividedBy(new BigNumber(10).pow(18)))
   }, [
-    setYamV2Balance,
-    setYamV3Balance,
-    setYycrvUniLpBalance
+    setDaiBalance,
+    setDaiwethPairBalance
   ])
 
   useEffect(() => {
@@ -58,9 +54,8 @@ const Provider: React.FC = ({ children }) => {
 
   return (
     <Context.Provider value={{
-      yamV2Balance,
-      yamV3Balance,
-      yycrvUniLpBalance,
+      daiBalance,
+      daiwethPairBalance,
     }}>
       {children}
     </Context.Provider>

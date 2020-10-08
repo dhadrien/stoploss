@@ -10,7 +10,7 @@ import { UseWalletProvider } from 'use-wallet'
 import MobileMenu from 'components/MobileMenu'
 import TopBar from 'components/TopBar'
 import SLProvider from 'contexts/SLProvider'
-
+import {BalancesProvider} from 'contexts/Balances'
 import useLocalStorage from 'hooks/useLocalStorage'
 
 import Liquidity from 'views/Liquidity';
@@ -70,19 +70,9 @@ const Providers: React.FC = ({ children }) => {
         }}
       >
         <SLProvider>
-          {/* <PricesProvider>
-            <BalancesProvider>
-              <FarmingProvider>
-                <MigrationProvider>
-                  <VestingProvider>
-                    <GovernanceProvider> */}
+        <BalancesProvider>
                       {children}
-                    {/* </GovernanceProvider>
-                  </VestingProvider>
-                </MigrationProvider>
-              </FarmingProvider>
-            </BalancesProvider>
-          </PricesProvider> */}
+          </BalancesProvider>
         </SLProvider>
       </UseWalletProvider>
     </ThemeProvider>
