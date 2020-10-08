@@ -76,6 +76,39 @@
     },
     {
       "inputs": [],
+      "name": "_executeStopLoss",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "stopLossindex",
+          "type": "uint256"
+        }
+      ],
+      "name": "_executeStopLossEth",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "stopLossindex",
+          "type": "uint256"
+        }
+      ],
+      "name": "_executeStopLossTokenWeth",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "blockTimestampLast",
       "outputs": [
         {
@@ -102,7 +135,7 @@
       ],
       "name": "executeStopLoss",
       "outputs": [],
-      "stateMutability": "payable",
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -126,7 +159,7 @@
           "type": "uint256"
         }
       ],
-      "name": "getStopOrdersToken1",
+      "name": "getStopOrdersTokenA",
       "outputs": [
         {
           "internalType": "address payable",
@@ -155,7 +188,7 @@
           "type": "uint256"
         }
       ],
-      "name": "getStopOrdersToken2",
+      "name": "getStopOrdersTokenB",
       "outputs": [
         {
           "internalType": "address payable",
@@ -450,7 +483,11 @@
       ],
       "stateMutability": "view",
       "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
     }
   ],
-  "address": "0x04677b087F52547468C070e81690e087309f7Cf3"
+  "address": "0x6d6249A2d7770652a189987fa56F912c7A2Dee95"
 }

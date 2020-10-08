@@ -21,7 +21,7 @@ import FancyValue from 'components/FancyValue'
 import Split from 'components/Split'
 
 import useBalances from 'hooks/useBalances'
-import useVesting from 'hooks/useVesting'
+// import useVesting from 'hooks/useVesting'
 
 const WalletModal: React.FC<ModalProps> = ({
   isOpen,
@@ -34,10 +34,10 @@ const WalletModal: React.FC<ModalProps> = ({
     yamV3Balance
   } = useBalances()
 
-  const {
-    vestedDelegatorRewardBalance,
-    vestedMigratedBalance,
-  } = useVesting()
+  // const {
+  //   vestedDelegatorRewardBalance,
+  //   vestedMigratedBalance,
+  // } = useVesting()
 
   const getDisplayBalance = useCallback((value?: BigNumber) => {
     if (value) {
@@ -60,14 +60,14 @@ const WalletModal: React.FC<ModalProps> = ({
             <FancyValue
               icon="🍠"
               label="YAM balance"
-              value={getDisplayBalance(yamV3Balance)}
+              value={"getDisplayBalance(yamV3Balance)"}
             />
           </Box>
           <Box row>
             <FancyValue
               icon={<span role="img" style={{ opacity: 0.5 }} >🍠</span>}
               label="YAMV2 balance"
-              value={getDisplayBalance(yamV2Balance)}
+              value={"getDisplayBalance(yamV2Balance)"}
             />
           </Box>
         </Split>
@@ -79,14 +79,14 @@ const WalletModal: React.FC<ModalProps> = ({
             <FancyValue
               icon="🎁"
               label="Vested YAM (Delegator)"
-              value={getDisplayBalance(vestedDelegatorRewardBalance)}
+              value={"getDisplayBalance(vestedDelegatorRewardBalance)"}
             />
           </Box>
           <Box row>
             <FancyValue
               icon="🦋"
               label="Vested YAM (Migrated)"
-              value={getDisplayBalance(vestedMigratedBalance)}
+              value={"getDisplayBalance(vestedMigratedBalance)"}
             />
           </Box>
         </Split>

@@ -7,22 +7,14 @@ import {
 
 import Page from 'components/Page'
 import PageHeader from 'components/PageHeader'
-import Split from 'components/Split'
 
-import useBalances from 'hooks/useBalances'
-import useVesting from 'hooks/useVesting'
-
-import MigrationNotice from './components/MigrationNotice'
-import Rebase from './components/Rebase'
-import RegisterVoteNotice from './components/RegisterVoteNotice'
-import Stats from './components/Stats'
-import Treasury from './components/Treasury'
-import VestingNotice from './components/VestingNotice'
+// import useBalances from 'hooks/useBalances'
+// import useVesting from 'hooks/useVesting'
 
 const Home: React.FC = () => {
   const { darkMode } = useTheme()
-  const { yamV2Balance } = useBalances()
-  const { vestedBalance } = useVesting()
+  // const { yamV2Balance } = useBalances()
+  // const { vestedBalance } = useVesting()
   return (
     <Page>
       <PageHeader
