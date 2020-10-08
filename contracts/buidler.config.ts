@@ -25,7 +25,7 @@ if (mnemonic) {
     const wallet = Wallet.fromMnemonic(mnemonic, "m/44'/60'/0'/0/" + i);
     buidlerEvmAccounts.push({
       privateKey: wallet.privateKey,
-      balance: "1000000000000000000000",
+      balance: "1000000000000000000000000000000000",
     });
   }
 } else {
@@ -34,7 +34,7 @@ if (mnemonic) {
     const wallet = Wallet.createRandom();
     buidlerEvmAccounts.push({
       privateKey: wallet.privateKey,
-      balance: "1000000000000000000000",
+      balance: "1000000000000000000000000000000000",
     });
   }
 }
@@ -50,6 +50,7 @@ const config: BuidlerConfig = {
   namedAccounts: {
     deployer: 0,
     user: 1,
+    liquidator: 2,
   },
   networks: {
     coverage: {

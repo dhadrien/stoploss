@@ -22,7 +22,7 @@ import {
 const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const {deployer, user} = await bre.getNamedAccounts();
   const deployerSigner = await ethers.getSigner(deployer);
-  const {deploy, save} = bre.deployments;
+  const {deploy, save, getArtifact} = bre.deployments;
   const useProxy = !bre.network.live;
   const FWETH = await ethers.getContract("FWETH");
   const FDAI = await ethers.getContract("FDAI");
@@ -50,9 +50,9 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     console.log("Pair Created: ", pairAddress);
   } else
     console.log("Pair already created in previous deployment: ", pairAddress);
+  const uniPairArtifact = await getArtifact("UniswapV2Pair");
+  save("UniPairFDAIFWETH", {abi: uniPairArtifact.abi, address: pairAddress});
   const uniPair = await ethers.getContractAt("UniswapV2Pair", pairAddress);
-  save("UniPairFDAIFWETH", {abi: uniPair.abi, address: uniPair.address});
-
   logStep("ADDING INITIAL LIQUIDITY");
   const {_reserve0: res0, _reserve1: res1} = await uniPair.getReserves();
   const [reserveBefore1, reserveBefore2] = [res0, res1].map(weiAmountToString);
@@ -105,8 +105,8 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     console.log("Pool Created: ", poolAddress);
   } else
     console.log("Pool already created in previous deployment: ", poolAddress);
-  const SLPool = await ethers.getContractAt("SLPool", poolAddress);
-  save("SLPoolFDAIFWETH", {abi: SLPool.abi, address: SLPool.address});
+  const SLPool = await getArtifact("SLPool");
+  save("SLPoolFDAIFWETH", {abi: SLPool.abi, address: poolAddress});
   return !useProxy; // when live network, record the script as executed to prevent rexecution
 };
 export default func;
