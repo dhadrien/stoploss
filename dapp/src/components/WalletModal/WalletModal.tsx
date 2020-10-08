@@ -30,14 +30,9 @@ const WalletModal: React.FC<ModalProps> = ({
 
   const { reset } = useWallet()
   const {
-    yamV2Balance,
-    yamV3Balance
+    daiBalance,
+    daiwethPairBalance
   } = useBalances()
-
-  // const {
-  //   vestedDelegatorRewardBalance,
-  //   vestedMigratedBalance,
-  // } = useVesting()
 
   const getDisplayBalance = useCallback((value?: BigNumber) => {
     if (value) {
@@ -58,39 +53,19 @@ const WalletModal: React.FC<ModalProps> = ({
         <Split>
           <Box row>
             <FancyValue
-              icon="🍠"
-              label="YAM balance"
-              value={"getDisplayBalance(yamV3Balance)"}
+              icon="💰"
+              label="Dai balance"
+              value={getDisplayBalance(daiBalance)}
             />
           </Box>
           <Box row>
             <FancyValue
-              icon={<span role="img" style={{ opacity: 0.5 }} >🍠</span>}
-              label="YAMV2 balance"
-              value={"getDisplayBalance(yamV2Balance)"}
+              icon={<span role="img" style={{ opacity: 0.5 }} >🦄</span>}
+              label="DAI/ETH LP Tokens"
+              value={getDisplayBalance(daiwethPairBalance)}
             />
           </Box>
         </Split>
-        <Spacer />
-        <Separator />
-        <Spacer />
-        <Split>
-          <Box row>
-            <FancyValue
-              icon="🎁"
-              label="Vested YAM (Delegator)"
-              value={"getDisplayBalance(vestedDelegatorRewardBalance)"}
-            />
-          </Box>
-          <Box row>
-            <FancyValue
-              icon="🦋"
-              label="Vested YAM (Migrated)"
-              value={"getDisplayBalance(vestedMigratedBalance)"}
-            />
-          </Box>
-        </Split>
-        <Spacer />
       </ModalContent>
       <Separator />
       <ModalActions>
