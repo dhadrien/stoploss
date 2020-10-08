@@ -16,7 +16,7 @@ import { MigrationProvider } from 'contexts/Migration'
 import { PricesProvider } from 'contexts/Prices'
 import { VestingProvider } from 'contexts/Vesting'
 import { GovernanceProvider } from 'contexts/Governance'
-import YamProvider from 'contexts/YamProvider'
+import SLProvider from 'contexts/SLProvider'
 
 import useLocalStorage from 'hooks/useLocalStorage'
 
@@ -85,7 +85,7 @@ const Providers: React.FC = ({ children }) => {
           walletconnect: { rpcUrl: 'https://mainnet.eth.aragon.network/' },
         }}
       >
-        <YamProvider>
+        <SLProvider>
           <PricesProvider>
             <BalancesProvider>
               <FarmingProvider>
@@ -99,7 +99,7 @@ const Providers: React.FC = ({ children }) => {
               </FarmingProvider>
             </BalancesProvider>
           </PricesProvider>
-        </YamProvider>
+        </SLProvider>
       </UseWalletProvider>
     </ThemeProvider>
   )

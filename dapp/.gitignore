@@ -6,7 +6,7 @@
 .pnp.js
 .vscode
 .idea
-
+/tmp
 # testing
 /coverage
 

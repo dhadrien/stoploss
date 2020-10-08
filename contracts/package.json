@@ -47,11 +47,11 @@
   "scripts": {
     "test": "buidler compile && mocha --recursive test",
     "coverage": "buidler --network coverage coverage",
-    "send-artifacts": "cp -r ./artifacts/* ../web-ui/packages/contracts/src/artifacts/ && cp -r ./imports/*  ../web-ui/packages/contracts/src/artifacts/",
     "dev": "buidler node --reset --watch --export contractsInfo.json",
     "compile": "buidler compile",
     "local:dev": "buidler --network localhost deploy --watch",
     "local:deploy": "buidler --network localhost deploy",
+    "local:sendDeployments": "cp -r ./deployments/localhost/* ../dapp/src/sl-sdk/lib/deployments/",
     "local:run": "cross-env BUIDLER_NETWORK=localhost ts-node --files",
     "local:seed": "cross-env BUIDLER_NETWORK=localhost ts-node --files scripts/seed.ts",
     "local:export": "buidler --network localhost export",
