@@ -9,23 +9,13 @@ import { UseWalletProvider } from 'use-wallet'
 
 import MobileMenu from 'components/MobileMenu'
 import TopBar from 'components/TopBar'
-
-import { BalancesProvider } from 'contexts/Balances'
-import { FarmingProvider } from 'contexts/Farming'
-import { MigrationProvider } from 'contexts/Migration'
-import { PricesProvider } from 'contexts/Prices'
-import { VestingProvider } from 'contexts/Vesting'
-import { GovernanceProvider } from 'contexts/Governance'
 import SLProvider from 'contexts/SLProvider'
 
 import useLocalStorage from 'hooks/useLocalStorage'
 
 import Liquidity from 'views/Liquidity';
 import Stoploss from 'views/Stoploss';
-import FAQ from 'views/FAQ'
-import Home from 'views/Home'
-import Migrate from 'views/Migrate'
-import Governance from 'views/Governance'
+import Home from 'views/Home';
 
 const App: React.FC = () => {
   const [mobileMenu, setMobileMenu] = useState(false)
@@ -51,12 +41,6 @@ const App: React.FC = () => {
           </Route>
           <Route path="/stoploss">
             <Stoploss />
-          </Route>
-          <Route exact path="/migrate">
-            <Migrate />
-          </Route>
-          <Route exact path="/governance">
-            <Governance />
           </Route>
         </Switch>
       </Providers>
@@ -86,19 +70,19 @@ const Providers: React.FC = ({ children }) => {
         }}
       >
         <SLProvider>
-          <PricesProvider>
+          {/* <PricesProvider>
             <BalancesProvider>
               <FarmingProvider>
                 <MigrationProvider>
                   <VestingProvider>
-                    <GovernanceProvider>
+                    <GovernanceProvider> */}
                       {children}
-                    </GovernanceProvider>
+                    {/* </GovernanceProvider>
                   </VestingProvider>
                 </MigrationProvider>
               </FarmingProvider>
             </BalancesProvider>
-          </PricesProvider>
+          </PricesProvider> */}
         </SLProvider>
       </UseWalletProvider>
     </ThemeProvider>
