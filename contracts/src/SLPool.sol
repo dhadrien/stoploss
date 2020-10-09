@@ -64,9 +64,9 @@ contract SLPool {
         (tokenA, tokenB) = specialSortTokens(_token1, _token2);
         oracle = _oracle;
         initPrice();
-        IUniswapV2Pair(uniPair).approve(uniRouter, 10000000000000 ether);
-        IUniswapV2Pair(_token1).approve(uniRouter, 10000000000000 ether);
-        IUniswapV2Pair(_token2).approve(uniRouter, 10000000000000 ether);
+        ERC20(uniPair).approve(uniRouter, 10000000000000 ether);
+        ERC20(tokenA).approve(uniRouter, 10000000000000 ether);
+        ERC20(tokenB).approve(uniRouter, 10000000000000 ether);
     }
 
     function specialSortTokens(
@@ -134,6 +134,11 @@ contract SLPool {
     }
 
     function stopLoss(uint lpAmount, address tokenToGuarantee, uint amountToGuarantee) public {
+      _stopLoss(lpAmount, tokenToGuarantee, amountToGuarantee, false);
+    }
+
+    // have to make it public for tests, should be removed to interal
+    function _stopLoss(uint lpAmount, address tokenToGuarantee, uint amountToGuarantee, bool delegated) public {
       bool isTokenA = true; // WETH
       if (tokenToGuarantee != tokenA) {
         require(tokenToGuarantee== tokenB, 'SLPOOL: Wrong Token');
@@ -142,7 +147,9 @@ contract SLPool {
       console.log("NEW STOP LOSS ASKED. isTokenA? ", isTokenA);
       console.log("amountToGuarantee", amountToGuarantee);
       console.log("lpAmount", lpAmount);
-      IUniswapV2Pair(uniPair).transferFrom(msg.sender, address(this), lpAmount);
+      if (!delegated) {
+        IUniswapV2Pair(uniPair).transferFrom(msg.sender, address(this), lpAmount);
+      }
       // not yet sure what to do with it, but it normalizes
       
       // We multiply by two 
@@ -160,6 +167,55 @@ contract SLPool {
       console.log("Token A? ", isTokenA);
       console.log("LpAmount:", lpAmount, "ratio", ratio);
       update();
+    }
+
+    function stopLossFromEther(uint ethToGuarantee) public payable {
+      address[] memory path = new address[](2);
+      path[0] = WETH;
+      path[1] = tokenB;
+      uint[] memory amounts = new uint[](2);
+      amounts = 
+        IUniswapV2Router02(uniRouter).swapExactETHForTokens{value:msg.value.div(2)}(
+          0, path, address(this), 262156100447
+        );
+      console.log("Ether sold", amounts[0]);
+      console.log("Token bought", amounts[1]);
+      (, , uint liquidity) =
+        IUniswapV2Router02(uniRouter).addLiquidityETH{value:amounts[0]}(
+              tokenB,
+              amounts[1],
+              0,
+              0,
+              address(this),
+              262156100447
+          );
+      console.log("LP Tokens", liquidity);
+      _stopLoss(liquidity, tokenA, ethToGuarantee, true);
+    }
+    
+    function stopLossFromToken(uint tokenToSend, uint tokenToGuarantee) public {
+      address[] memory path = new address[](2);
+      path[0] = tokenB;
+      path[1] = WETH;
+      uint[] memory amounts = new uint[](2);
+      ERC20(tokenB).transferFrom(msg.sender, address(this), tokenToSend);
+      amounts = 
+        IUniswapV2Router02(uniRouter).swapExactTokensForETH(
+          tokenToSend.div(2), 0, path, address(this), 262156100447
+        );
+      console.log("Token sold", amounts[0]);
+      console.log("Ether bought", amounts[1]);
+      (, , uint liquidity) =
+        IUniswapV2Router02(uniRouter).addLiquidityETH{value:amounts[1]}(
+              tokenB,
+              amounts[0],
+              0,
+              0,
+              address(this),
+              262156100447
+          );
+      console.log("LP Tokens", liquidity);
+      _stopLoss(liquidity, tokenB, tokenToGuarantee, true);
     }
 
     function _executeStopLoss() public {}     
