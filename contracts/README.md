@@ -40,3 +40,6 @@ In a new terminal, launch the local ethereum node (forked from mainnet)
 Launch the deployments: 
 
 `$ npx buidler deploy --network localhost`
+
+Export the deployments to the front:
+`$ npm run local:sendDeployments`
