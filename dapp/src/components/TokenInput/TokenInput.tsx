@@ -8,7 +8,7 @@ import {
 } from 'react-neu'
 
 interface TokenInputProps extends InputProps {
-  max: number | string,
+  max?: number | string,
   symbol: string,
   onSelectMax?: () => void,
 }
@@ -22,7 +22,7 @@ const TokenInput: React.FC<TokenInputProps> = ({
 }) => {
   return (
     <StyledTokenInput>
-      <StyledMaxText>{max.toLocaleString()} {symbol} Available</StyledMaxText>
+      {max? <StyledMaxText>{max.toLocaleString()} {symbol} Available</StyledMaxText> : <p></p>}
       <Input
         endAdornment={(
           <StyledTokenAdornmentWrapper>

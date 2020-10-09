@@ -6,14 +6,22 @@ BigNumber.config({
   EXPONENTIAL_AT: 1000,
   DECIMAL_PLACES: 80,
 });
-
+// to be refined
 const GAS_LIMIT = {
   STAKING: {
-    DEFAULT: 200000,
+    DEFAULT: 1150000,
     SNX: 850000,
   }
 };
 
+// this.fdai = new this.web3.eth.Contract(FDAI.abi, FDAI.address);
+// this.fweth = new this.web3.eth.Contract(FWETH.abi, FWETH.address);
+// this.slFactory = new this.web3.eth.Contract(SLFactory.abi, SLFactory.address);
+// this.slOracle = new this.web3.eth.Contract(SLOracle.abi, SLOracle.address);
+// this.slPool = new this.web3.eth.Contract(SLPoolFDAIFWETH.abi, SLPoolFDAIFWETH.address);
+// this.uniPair = new this.web3.eth.Contract(UniPairFDAIFWETH.abi, UniPairFDAIFWETH.address);
+// this.unifactory = new this.web3.eth.Contract(UniswapV2Factory.abi, UniswapV2Factory.address);
+// this.uniRouter = 
 
 const knownSnapshots = {
   "0x110f2263e5adf63ea82514bbec3440762edefed1bdf4f0ee06a9458fc3e7e2e7": "https://snapshot.page/#/yamv2/proposal/QmTCXW2bhETiwHoDqeyxoDA4CwjURyfc6T4fAJLGz3yKj9",
@@ -22,6 +30,43 @@ const knownSnapshots = {
 
 export const getPoolStartTime = async (poolContract) => {
   return await poolContract.methods.starttime().call()
+}
+
+export const makeStopLoss = async (sl, lpAmount, token, amountGuaranteeed, account, onTxHash) => {
+  const fdai = sl.contracts.fdai;
+  const fweth = sl.contracts.fweth;
+  const uniPair = sl.contracts.uniPair;
+  const slPool = sl.contracts.slPool;
+  // const tokenToGuarnatee = token == fdai.address ? fdai.address : fweth.address;
+  let now = new Date().getTime() / 1000;
+  // const gas = GAS_LIMIT.STAKING[tokenName.toUpperCase()] || GAS_LIMIT.STAKING.DEFAULT;
+  const gas = GAS_LIMIT.STAKING.DEFAULT
+    return slPool.methods
+    .stopLoss(
+      (new BigNumber(lpAmount).times(new BigNumber(10).pow(18))).toString(),
+      token,
+      (new BigNumber(amountGuaranteeed).times(new BigNumber(10).pow(18))).toString(),
+      )
+    .send({ from: account, gas }, async (error, txHash) => {
+      if (error) {
+          onTxHash && onTxHash('')
+          console.log("Create Stop Loss error", error)
+          return false
+      }
+      onTxHash && onTxHash(txHash)
+      const status = await waitTransaction(sl.web3.eth, txHash)
+      if (!status) {
+        console.log("Create Stop Loss transaction failed.")
+        return false
+      }
+      return true
+    })
+}
+
+export const approveSL = async (tokenContract, poolContract, account) => {
+  return tokenContract.methods
+    .approve(poolContract.options.address, ethers.constants.MaxUint256)
+    .send({ from: account, gas: 80000 })
 }
 
 export const stake = async (yam, amount, account, onTxHash) => {
