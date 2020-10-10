@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
+import { ApolloClient, InMemoryCache, gql, ApolloProvider, useQuery } from '@apollo/client';
 import { createTheme, ThemeProvider } from 'react-neu'
 import {
   BrowserRouter as Router,
@@ -18,7 +19,10 @@ import Liquidity from 'views/Liquidity';
 import Stoploss from 'views/Stoploss';
 import Home from 'views/Home';
 
+
+
 const App: React.FC = () => {
+
   const [mobileMenu, setMobileMenu] = useState(false)
 
   const handleDismissMobileMenu = useCallback(() => {
@@ -50,6 +54,10 @@ const App: React.FC = () => {
 }
 
 const Providers: React.FC = ({ children }) => {
+  const client = new ApolloClient({
+    uri: process.env.REACT_APP_GRAPHQL_ENDPOINT || "http://localhost:8000/subgraphs/name/dhadrien/stoploss-subgraph",
+    cache: new InMemoryCache(),
+  })
   const [darkModeSetting] = useLocalStorage('darkMode', false)
   const { dark: darkTheme, light: lightTheme } = useMemo(() => {
     return createTheme({
@@ -73,7 +81,14 @@ const Providers: React.FC = ({ children }) => {
         <SLProvider>
           <BalancesProvider>
             <SLOrderProvider>
-              {children}
+              
+                <ApolloProvider client={client}>
+                {/* <ApolloNew client={client}>
+                <ApolloProviderHooks client={client}> */}
+                {children}
+                {/* </ApolloProviderHooks>
+                </ApolloNew> */}
+                </ApolloProvider>
             </SLOrderProvider>
           </BalancesProvider>
         </SLProvider>
