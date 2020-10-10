@@ -52,6 +52,7 @@
     "local:dev": "buidler --network localhost deploy --watch",
     "local:deploy": "buidler --network localhost deploy",
     "local:sendDeployments": "cp -r ./deployments/localhost/* ../dapp/src/sl-sdk/lib/deployments/",
+    "local:subgraph": "cp ./deployments/localhost/SLPoolFDAIFWETH.json ../stoploss-subgraph/build/contracts/",
     "local:run": "cross-env BUIDLER_NETWORK=localhost ts-node --files",
     "local:seed": "cross-env BUIDLER_NETWORK=localhost ts-node --files scripts/seed.ts",
     "local:export": "buidler --network localhost export",
