@@ -13,7 +13,7 @@ services:
       - --hostname
       - '0.0.0.0'
       #- --fork 
-      - https://mainnet.infura.io/v3/${INFURA_TOKEN}@11001803
+      #- https://mainnet.infura.io/v3/${INFURA_TOKEN}@11001803
       # - --blockTime
       - --networkId
       - '123'

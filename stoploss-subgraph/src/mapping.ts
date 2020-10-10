@@ -2,7 +2,7 @@ import { StopLossCreated, WithdrawStopLoss, StopLossExecuted, Update } from '../
 import { StopLoss, PoolStatus } from '../generated/schema'
 
 export function handleNewStopLoss(event: StopLossCreated): void {
-  let stoploss = new StopLoss(event.params.orderNumber.toString())
+  let stoploss = new StopLoss(event.params.tokenToGuarantee.toString() + event.params.orderNumber.toString())
   stoploss.uniPair = event.params.uniPair
   stoploss.orderer = event.params.orderer
   stoploss.delegated = event.params.delegated
@@ -14,13 +14,13 @@ export function handleNewStopLoss(event: StopLossCreated): void {
 }
 
 export function handleWithdrawStopLoss(event: WithdrawStopLoss): void {
-  let stoploss = StopLoss.load(event.params.orderNumber.toString());
+  let stoploss = StopLoss.load(event.params.tokenWithdrawn.toString() + event.params.orderNumber.toString());
   stoploss.status = "Withdrawn";
   stoploss.amountWithdrawn = event.params.amountWithdrawn;
   stoploss.save()
 }
 export function handleStopLossExecuted(event: StopLossExecuted): void {
-  let stoploss = StopLoss.load(event.params.orderNumber.toString());
+  let stoploss = StopLoss.load(event.params.tokenWithdrawn.toString() + event.params.orderNumber.toString());
   stoploss.status = "Executed";
   stoploss.amountWithdrawn = event.params.amountWithdrawn;
   stoploss.liquidator = event.params.liquidator;
