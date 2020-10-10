@@ -51,7 +51,7 @@ contract SLPool {
     
     event WithdrawStopLoss(
       address uniPair,
-      uint orderNumer,
+      uint orderNumber,
       address withdrawer,
       uint lpAmount,
       address tokenWithdrawn,
@@ -65,12 +65,13 @@ contract SLPool {
       address liquidator,
       uint lpAmount,
       address tokenWithdrawn,
-      uint amountWithdraw,
+      uint amountWithdrawn,
       address tokenToLiquidator,
       uint amountToLiquidator
     );
 
     event Update(
+      uint timeStamp,
       uint newPriceA,
       uint newRatioA,
       uint newRatioB
@@ -160,7 +161,7 @@ contract SLPool {
           uint totalReserveInA = totalReserveinB.div(priceA.div(1 ether));
           lastRatioA = (totalReserveInA.mul(RATIO_PRECISION)).div(totalLpSupply);
           lastRatioB = (totalReserveinB.mul(RATIO_PRECISION)).div(totalLpSupply);
-          emit Update(priceA, lastRatioA, lastRatioB);
+          emit Update(block.timestamp, priceA, lastRatioA, lastRatioB);
           console.log(">>>New update");
           console.log("newPriceA", priceA);
           console.log("newRatioA", lastRatioA);
