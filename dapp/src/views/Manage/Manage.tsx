@@ -67,7 +67,7 @@ interface StopLossVar{
 
 // import Unipair from './components/Unipair';
 
-const Liquidity: React.FC = () => {
+const Manage: React.FC = () => {
   const client = new ApolloClient({
     uri: process.env.REACT_APP_GRAPHQL_ENDPOINT || "http://localhost:8000/subgraphs/name/dhadrien/stoploss-subgraph",
     cache: new InMemoryCache(),
@@ -96,9 +96,9 @@ const Liquidity: React.FC = () => {
   return (
       <Page>
       <PageHeader
-        icon="💰"
-        subtitle="Add liquidity to the Uniswap Pool"
-        title="Liquidity"
+        icon="📊"
+        subtitle="Your Orders"
+        title="Manage Stop Loss"
       />  
       <Container>
       
@@ -143,4 +143,4 @@ const Liquidity: React.FC = () => {
   )
 }
 
-export default Liquidity
+export default Manage

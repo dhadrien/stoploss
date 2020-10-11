@@ -15,7 +15,7 @@ import {BalancesProvider} from 'contexts/Balances'
 import {SLOrderProvider} from 'contexts/SLOrder'
 import useLocalStorage from 'hooks/useLocalStorage'
 
-import Liquidity from 'views/Liquidity';
+import Manage from 'views/Manage';
 import Stoploss from 'views/Stoploss';
 import Home from 'views/Home';
 
@@ -41,8 +41,8 @@ const App: React.FC = () => {
           <Route exact path="/">
             <Home />
           </Route>
-          <Route exact path="/liquidity">
-            <Liquidity />
+          <Route exact path="/manage">
+            <Manage />
           </Route>
           <Route path="/stoploss">
             <Stoploss />
