@@ -63,6 +63,36 @@ export const makeStopLoss = async (sl, lpAmount, token, amountGuaranteeed, accou
     })
 }
 
+export const withdrawStopLoss = async (sl, orderIndex, token, account, onTxHash) => {
+  const fdai = sl.contracts.fdai;
+  const fweth = sl.contracts.fweth;
+  const uniPair = sl.contracts.uniPair;
+  const slPool = sl.contracts.slPool;
+  // const tokenToGuarnatee = token == fdai.address ? fdai.address : fweth.address;
+  let now = new Date().getTime() / 1000;
+  // const gas = GAS_LIMIT.STAKING[tokenName.toUpperCase()] || GAS_LIMIT.STAKING.DEFAULT;
+  const gas = GAS_LIMIT.STAKING.DEFAULT
+    return slPool.methods
+    .withdraw(
+      orderIndex,
+      token,
+    )
+    .send({ from: account, gas }, async (error, txHash) => {
+      if (error) {
+          onTxHash && onTxHash('')
+          console.log("Withdraw Stop Loss error", error)
+          return false
+      }
+      onTxHash && onTxHash(txHash)
+      const status = await waitTransaction(sl.web3.eth, txHash)
+      if (!status) {
+        console.log("Withdraw Stop Loss transaction failed.")
+        return false
+      }
+      return true
+    })
+}
+
 export const approveSL = async (tokenContract, poolContract, account) => {
   return tokenContract.methods
     .approve(poolContract.options.address, ethers.constants.MaxUint256)

@@ -8,6 +8,7 @@ enum StopLossStatus {
 type StopLoss @entity {
   "Stop Loss Order"
   id: ID!
+  orderNumber: BigInt!
   uniPair: Bytes!
   orderer: Bytes!
   delegated: Boolean!

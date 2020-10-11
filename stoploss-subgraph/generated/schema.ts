@@ -42,6 +42,15 @@ export class StopLoss extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get orderNumber(): BigInt {
+    let value = this.get("orderNumber");
+    return value.toBigInt();
+  }
+
+  set orderNumber(value: BigInt) {
+    this.set("orderNumber", Value.fromBigInt(value));
+  }
+
   get uniPair(): Bytes {
     let value = this.get("uniPair");
     return value.toBytes();

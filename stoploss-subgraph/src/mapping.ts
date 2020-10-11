@@ -3,6 +3,7 @@ import { StopLoss, PoolStatus } from '../generated/schema'
 
 export function handleNewStopLoss(event: StopLossCreated): void {
   let stoploss = new StopLoss(event.params.tokenToGuarantee.toString() + event.params.orderNumber.toString())
+  stoploss.orderNumber = event.params.orderNumber
   stoploss.uniPair = event.params.uniPair
   stoploss.orderer = event.params.orderer
   stoploss.delegated = event.params.delegated
