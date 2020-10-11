@@ -47,8 +47,12 @@ export class StopLossCreated__Params {
     return this._event.parameters[5].value.toAddress();
   }
 
-  get ratio(): BigInt {
+  get amountToGuarantee(): BigInt {
     return this._event.parameters[6].value.toBigInt();
+  }
+
+  get ratio(): BigInt {
+    return this._event.parameters[7].value.toBigInt();
   }
 }
 
@@ -174,11 +178,13 @@ export class SLPoolFDAIFWETH__getStopOrdersTokenAResult {
   value0: Address;
   value1: BigInt;
   value2: BigInt;
+  value3: BigInt;
 
-  constructor(value0: Address, value1: BigInt, value2: BigInt) {
+  constructor(value0: Address, value1: BigInt, value2: BigInt, value3: BigInt) {
     this.value0 = value0;
     this.value1 = value1;
     this.value2 = value2;
+    this.value3 = value3;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -186,6 +192,7 @@ export class SLPoolFDAIFWETH__getStopOrdersTokenAResult {
     map.set("value0", ethereum.Value.fromAddress(this.value0));
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
+    map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
     return map;
   }
 }
@@ -194,11 +201,13 @@ export class SLPoolFDAIFWETH__getStopOrdersTokenBResult {
   value0: Address;
   value1: BigInt;
   value2: BigInt;
+  value3: BigInt;
 
-  constructor(value0: Address, value1: BigInt, value2: BigInt) {
+  constructor(value0: Address, value1: BigInt, value2: BigInt, value3: BigInt) {
     this.value0 = value0;
     this.value1 = value1;
     this.value2 = value2;
+    this.value3 = value3;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -206,6 +215,7 @@ export class SLPoolFDAIFWETH__getStopOrdersTokenBResult {
     map.set("value0", ethereum.Value.fromAddress(this.value0));
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
+    map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
     return map;
   }
 }
@@ -288,14 +298,15 @@ export class SLPoolFDAIFWETH extends ethereum.SmartContract {
   ): SLPoolFDAIFWETH__getStopOrdersTokenAResult {
     let result = super.call(
       "getStopOrdersTokenA",
-      "getStopOrdersTokenA(uint256):(address,uint256,uint256)",
+      "getStopOrdersTokenA(uint256):(address,uint256,uint256,uint256)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
 
     return new SLPoolFDAIFWETH__getStopOrdersTokenAResult(
       result[0].toAddress(),
       result[1].toBigInt(),
-      result[2].toBigInt()
+      result[2].toBigInt(),
+      result[3].toBigInt()
     );
   }
 
@@ -304,7 +315,7 @@ export class SLPoolFDAIFWETH extends ethereum.SmartContract {
   ): ethereum.CallResult<SLPoolFDAIFWETH__getStopOrdersTokenAResult> {
     let result = super.tryCall(
       "getStopOrdersTokenA",
-      "getStopOrdersTokenA(uint256):(address,uint256,uint256)",
+      "getStopOrdersTokenA(uint256):(address,uint256,uint256,uint256)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
     if (result.reverted) {
@@ -315,7 +326,8 @@ export class SLPoolFDAIFWETH extends ethereum.SmartContract {
       new SLPoolFDAIFWETH__getStopOrdersTokenAResult(
         value[0].toAddress(),
         value[1].toBigInt(),
-        value[2].toBigInt()
+        value[2].toBigInt(),
+        value[3].toBigInt()
       )
     );
   }
@@ -325,14 +337,15 @@ export class SLPoolFDAIFWETH extends ethereum.SmartContract {
   ): SLPoolFDAIFWETH__getStopOrdersTokenBResult {
     let result = super.call(
       "getStopOrdersTokenB",
-      "getStopOrdersTokenB(uint256):(address,uint256,uint256)",
+      "getStopOrdersTokenB(uint256):(address,uint256,uint256,uint256)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
 
     return new SLPoolFDAIFWETH__getStopOrdersTokenBResult(
       result[0].toAddress(),
       result[1].toBigInt(),
-      result[2].toBigInt()
+      result[2].toBigInt(),
+      result[3].toBigInt()
     );
   }
 
@@ -341,7 +354,7 @@ export class SLPoolFDAIFWETH extends ethereum.SmartContract {
   ): ethereum.CallResult<SLPoolFDAIFWETH__getStopOrdersTokenBResult> {
     let result = super.tryCall(
       "getStopOrdersTokenB",
-      "getStopOrdersTokenB(uint256):(address,uint256,uint256)",
+      "getStopOrdersTokenB(uint256):(address,uint256,uint256,uint256)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
     if (result.reverted) {
@@ -352,7 +365,8 @@ export class SLPoolFDAIFWETH extends ethereum.SmartContract {
       new SLPoolFDAIFWETH__getStopOrdersTokenBResult(
         value[0].toAddress(),
         value[1].toBigInt(),
-        value[2].toBigInt()
+        value[2].toBigInt(),
+        value[3].toBigInt()
       )
     );
   }

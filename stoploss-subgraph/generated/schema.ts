@@ -87,6 +87,15 @@ export class StopLoss extends Entity {
     this.set("tokenToGuarantee", Value.fromBytes(value));
   }
 
+  get amountToGuarantee(): BigInt {
+    let value = this.get("amountToGuarantee");
+    return value.toBigInt();
+  }
+
+  set amountToGuarantee(value: BigInt) {
+    this.set("amountToGuarantee", Value.fromBigInt(value));
+  }
+
   get ratio(): BigInt {
     let value = this.get("ratio");
     return value.toBigInt();

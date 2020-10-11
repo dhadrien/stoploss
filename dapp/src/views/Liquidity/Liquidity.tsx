@@ -20,6 +20,7 @@ import {
 import { useWallet } from 'use-wallet'
 import {
   dai,
+  weth,
   daiwethpair,
 } from 'constants/tokenAddresses'
 import Page from 'components/Page'
@@ -45,6 +46,7 @@ interface StopLoss {
   delegated: Boolean;
   lpAmount: BigInt;
   tokenToGuarantee: string;
+  amountToGuarantee: string;
   ratio: BigInt;
   status: StopLossStatus;
   amountWithdrawn: BigInt;
@@ -79,6 +81,7 @@ const Liquidity: React.FC = () => {
         status
         orderer
         tokenToGuarantee
+        amountToGuarantee
         lpAmount
         amountToLiquidator
         amountWithdrawn
@@ -100,25 +103,31 @@ const Liquidity: React.FC = () => {
       <Container>
       
       <div>
-      <h3>Stop Losses</h3>
       {loading ? (
+        <>
+        <h3>Stop Losses</h3>
         <p>Loading ...</p>
+        </>
       ) : (
+        <>
+        <h3>Stop Losses: UniPair DAI/ETH {data?.stopLosses[0].uniPair}</h3>
         <table>
           <thead>
             <tr>
               <th>status</th>
-              <th>Token</th>
+              <th>Token Guaranteed</th>
+              <th>Amount Guaranteed</th>
               <th>Lp Amount</th>
               <th>Amount Withdrawn</th>
-              <th>Amount to Liq</th>
+              <th>Fees to Liquidator</th>
             </tr>
           </thead>
           <tbody>
             {data && data.stopLosses.map(a => (
               <tr>
                 <td>{a.status}</td>
-                <td>{a.tokenToGuarantee}</td>
+                <td>{a.tokenToGuarantee == dai.toLowerCase() ? "DAI" : "ETH"}</td>
+                <td>{a.amountToGuarantee}</td>
                 <td>{a.lpAmount}</td>
                 <td>{a.amountWithdrawn}</td>
                 <td>{a.amountToLiquidator}</td>
@@ -126,6 +135,7 @@ const Liquidity: React.FC = () => {
             ))}
           </tbody>
         </table>
+        </>
       )}
     </div>
       </Container>
