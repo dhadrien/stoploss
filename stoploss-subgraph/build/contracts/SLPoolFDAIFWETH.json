@@ -47,6 +47,12 @@
         {
           "indexed": false,
           "internalType": "uint256",
+          "name": "amountToGuarantee",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
           "name": "ratio",
           "type": "uint256"
         }
@@ -370,6 +376,11 @@
           "internalType": "uint256",
           "name": "ratio",
           "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amountToGuarantee",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -398,6 +409,11 @@
         {
           "internalType": "uint256",
           "name": "ratio",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amountToGuarantee",
           "type": "uint256"
         }
       ],
@@ -733,5 +749,5 @@
       "type": "receive"
     }
   ],
-  "address": "0x70fa449BCB0aaFe9E53996e5AD1a314c3DE13afA"
+  "address": "0xc6aaf55cfE60341D7Dba69E0eBD5913c63283215"
 }

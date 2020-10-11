@@ -46,6 +46,7 @@ contract SLPool {
       bool delegated,
       uint lpAmount,
       address tokenToGuarantee,
+      uint amountToGuarantee,
       uint ratio
     );
     
@@ -84,6 +85,7 @@ contract SLPool {
       address payable orderer;
       uint lpAmount;
       uint ratio;
+      uint amountToGuarantee;
     }
 
     constructor() {
@@ -193,19 +195,20 @@ contract SLPool {
       uint ratio = (amountToGuarantee.mul(RATIO_PRECISION)).div(lpAmount);
       uint length;
       if(isTokenA) {
-        getStopOrdersTokenA.push(StopOrder(msg.sender, lpAmount, ratio));
+        getStopOrdersTokenA.push(StopOrder(msg.sender, lpAmount, ratio, amountToGuarantee));
         length = getStopOrdersTokenA.length - 1;
       } else {
-        getStopOrdersTokenB.push(StopOrder(msg.sender, lpAmount, ratio));
+        getStopOrdersTokenB.push(StopOrder(msg.sender, lpAmount, ratio, amountToGuarantee));
         length = getStopOrdersTokenB.length - 1;
       }
-      emit StopLossCreated(uniPair, length, msg.sender, delegated, lpAmount, tokenToGuarantee, ratio);
+      emit StopLossCreated(uniPair, length, msg.sender, delegated, lpAmount, tokenToGuarantee, amountToGuarantee, ratio);
       console.log(">>>New StopLoss Registered from", msg.sender);
       console.log("uniPair", uniPair);
       console.log("orderNumber", length);
       console.log("orderer", msg.sender);
       console.log("lpAmount", lpAmount);
       console.log("tokenToGuarantee", tokenToGuarantee);
+      console.log("amountToGuarantee", amountToGuarantee);
       console.log("ratio", ratio);
       update();
     }
@@ -271,9 +274,7 @@ contract SLPool {
             address(this),
             262156100447
           ); // infiinite deadline
-      uint tokenGuaranted = (getStopOrdersTokenB[stopLossindex].lpAmount
-                              .mul(getStopOrdersTokenB[stopLossindex].ratio))
-                              .div(RATIO_PRECISION);         
+      uint tokenGuaranted = getStopOrdersTokenB[stopLossindex].amountToGuarantee;   
       address[] memory path = new address[](2);
       path[0] = WETH;
       path[1] = tokenB;
@@ -322,9 +323,7 @@ contract SLPool {
             address(this),
             262156100447
           ); // infiinite deadline
-      uint etherGuaranteed = (getStopOrdersTokenA[stopLossindex].lpAmount
-                              .mul(getStopOrdersTokenA[stopLossindex].ratio))
-                              .div(RATIO_PRECISION);         
+      uint etherGuaranteed = getStopOrdersTokenA[stopLossindex].amountToGuarantee;        
       address[] memory path = new address[](2);
       path[0] = tokenB;
       path[1] = WETH;
@@ -394,7 +393,7 @@ contract SLPool {
           tokenReceived, 0, path, address(this), 262156100447
         );
       msg.sender.transfer(amounts[1].add(ethReceived));
-      emit WithdrawStopLoss(uniPair, stopLossindex, msg.sender, getStopOrdersTokenA[stopLossindex].lpAmount, tokenA, amounts[1]);
+      emit WithdrawStopLoss(uniPair, stopLossindex, msg.sender, getStopOrdersTokenA[stopLossindex].lpAmount, tokenA, amounts[1].add(ethReceived));
       console.log(">>>New Withdraw");
       console.log("uniPair", uniPair);
       console.log("orderNumber", stopLossindex);
@@ -425,7 +424,7 @@ contract SLPool {
           0, path, address(this), 262156100447
         ); // infiinite deadline
       ERC20(tokenB).transfer(msg.sender, amounts[1].add(tokenReceived));
-      emit WithdrawStopLoss(uniPair, stopLossindex, msg.sender, getStopOrdersTokenB[stopLossindex].lpAmount, tokenB, amounts[1]);
+      emit WithdrawStopLoss(uniPair, stopLossindex, msg.sender, getStopOrdersTokenB[stopLossindex].lpAmount, tokenB, amounts[1].add(tokenReceived));
       console.log(">>>New Withdraw");
       console.log("uniPair", uniPair);
       console.log("orderNumber", stopLossindex);
