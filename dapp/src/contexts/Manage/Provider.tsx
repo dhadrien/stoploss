@@ -21,6 +21,7 @@ const STOPLOSSES_QUERY = gql`
         id
         uniPair
         orderNumber
+        ratio
         tokenIn
         status
         orderer
@@ -36,7 +37,7 @@ const STOPLOSSES_QUERY = gql`
 const Provider: React.FC = ({ children }) => {
   const [confirmTxModalIsOpen, setConfirmTxModalIsOpen] = useState(false)
   const [isWithdrawing, setIsWithdrawing] = useState(false)
-  const [orders, setOrders] = useState<StopLossData>({loading: true, stopLosses: [{id:1}]});
+  const [orders, setOrders] = useState<StopLossData>();
 
   const sl = useSL()
   const { account } = useWallet()
@@ -46,7 +47,29 @@ const Provider: React.FC = ({ children }) => {
       variables: {orderer: account || "", },
       pollInterval: 10000,
       notifyOnNetworkStatusChange: true,
-      onCompleted: () => {setOrders({loading, stopLosses: (data?.stopLosses || [{id:1}])})}},
+      onCompleted: () => {setOrders({loading, stopLosses: (data?.stopLosses.map(order => 
+        ({
+          ...order, 
+          lpAmountString: (new BigNumber(order.lpAmount).dividedBy(new BigNumber(10).pow(18))).decimalPlaces(3).toString(),
+          tokenInString: (new BigNumber(order.tokenIn).dividedBy(new BigNumber(10).pow(18))).decimalPlaces(3).toString(),
+          amountToGuaranteeString: (new BigNumber(order.amountToGuarantee).dividedBy(new BigNumber(10).pow(18))).decimalPlaces(3).toString(),
+          ratioString: (new BigNumber(order.ratio).dividedBy(new BigNumber(10).pow(18+6))).decimalPlaces(3).toString(),
+          amountWithdrawnString: (new BigNumber(order.amountWithdrawn || 1).dividedBy(new BigNumber(10).pow(18))).decimalPlaces(3).toString(),
+          amountToLiquidatorString: (new BigNumber(order.amountToLiquidator || 1).dividedBy(new BigNumber(10).pow(18))).decimalPlaces(3).toString(),
+        })
+      ) || [{
+        id: 0,
+        orderNumber: "1",
+        uniPair: "0x",
+        orderer: "string",
+        delegated: false,
+        lpAmount: new BigNumber(1),
+        tokenToGuarantee: "token",
+        tokenIn: new BigNumber(1),
+        amountToGuarantee: new BigNumber(1),
+        ratio: new BigNumber(1),
+        status: "status",
+      }])})}},
       
   );
   
@@ -103,7 +126,26 @@ const Provider: React.FC = ({ children }) => {
     <Context.Provider value={{
       onWithdraw: handleWithdraw,
       isWithdrawing,
-      orders,
+      orders: orders || ({loading: true, stopLosses: ([{
+        id: 0,
+        orderNumber: "1",
+        uniPair: "0x",
+        orderer: "string",
+        delegated: false,
+        lpAmount: new BigNumber(1),
+        tokenToGuarantee: "token",
+        tokenIn: new BigNumber(1),
+        amountToGuarantee: new BigNumber(1),
+        ratio: new BigNumber(1),
+        status: "status",
+        lpAmountString: "string",
+        tokenInString: "string",
+        amountToGuaranteeString: "string",
+        ratioString: "string",
+        amountWithdrawnString: "string",
+        amountToLiquidatorString: "string",
+      }])
+    }),
     }}>
       {children}
       <ConfirmTransactionModal isOpen={confirmTxModalIsOpen} />

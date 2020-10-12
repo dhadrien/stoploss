@@ -10,7 +10,7 @@ import {
   ModalTitle,
 } from 'react-neu'
 
-import {StopLoss} from 'contexts/Manage/types'
+import {StopLoss, StopLossDisplayed} from 'contexts/Manage/types'
 import TokenInput from 'components/TokenInput'
 import useBalances from 'hooks/useBalances'
 import { getFullDisplayBalance } from 'utils'
@@ -20,7 +20,7 @@ import {
 } from 'constants/tokenAddresses'
 
 interface CreateOrderProps extends ModalProps {
-  order: StopLoss;
+  order: StopLossDisplayed;
   isWithdrawing?: boolean,
   onWithdraw: (orderIndex: string, token: string) => void,
 }
@@ -37,9 +37,9 @@ const CancelledOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdr
       <>  <tr>
               <td>{order.status}</td>
               <td>{order.tokenToGuarantee == dai.toLowerCase() ? "DAI" : "ETH"}</td>
-              <td>{order.tokenIn}</td>
-              <td>{order.amountToGuarantee}</td>
-              <td>{order.amountWithdrawn} </td>
+              <td>{order.tokenInString}</td>
+              <td>{order.amountToGuaranteeString}</td>
+              <td>{order.amountWithdrawnString} </td>
             </tr>
           
       </>

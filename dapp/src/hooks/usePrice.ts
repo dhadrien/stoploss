@@ -3,30 +3,32 @@ import { useCallback, useEffect, useState } from 'react'
 import BigNumber from 'bignumber.js'
 import { useWallet } from 'use-wallet'
 import { provider } from 'web3-core'
-
-import { getAllowance } from 'utils'
+import useSL from 'hooks/useSL';
+// import { getAllowance } from 'utils'
 
 const usePrice = (tokenAddress?: string, spenderAddress?: string) => {
-  const [allowance, setAllowance] = useState<BigNumber>()
+  const [price, setPrice] = useState<BigNumber>()
+  const [ratioA, setRatioA] = useState<BigNumber>()
+  const [ratioB, setRatioB] = useState<BigNumber>()
   const { account, ethereum }: { account: string | null, ethereum?: provider} = useWallet()
-
-  const fetchAllowance = useCallback(async (userAddress: string, provider: provider) => {
-    if (!spenderAddress || !tokenAddress) {
-      return
+  const sl = useSL();
+  const fetchPrice = useCallback(async () => {
+    if (sl){
+      setPrice(new BigNumber(await sl.contracts.slPool.methods.priceA().call()));
+      setRatioA(new BigNumber(await sl.contracts.slPool.methods.lastRatioA().call()));
+      setRatioB(new BigNumber(await sl.contracts.slPool.methods.lastRatioB().call()));
     }
-    const allowance = await getAllowance(userAddress, spenderAddress, tokenAddress, provider)
-    setAllowance(new BigNumber(allowance))
-  }, [setAllowance, spenderAddress, tokenAddress])
+  }, [setPrice, sl])
 
   useEffect(() => {
-    if (account && ethereum && spenderAddress && tokenAddress) {
-      fetchAllowance(account, ethereum)
+    if (sl && account && ethereum && spenderAddress && tokenAddress) {
+      fetchPrice()
     }
-    let refreshInterval = setInterval(fetchAllowance, 10000)
+    let refreshInterval = setInterval(fetchPrice, 2000)
     return () => clearInterval(refreshInterval)
-  }, [account, ethereum, spenderAddress, tokenAddress])
+  }, [account, ethereum, sl, price, ratioA, ratioB])
 
-  return allowance
+  return ({price, ratioA, ratioB })
 }
 
 export default usePrice

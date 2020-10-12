@@ -92,6 +92,11 @@ export const withdrawStopLoss = async (sl, orderIndex, token, account, onTxHash)
       return true
     })
 }
+export const getPrice = async (sl) => {
+  const slPool = sl.contracts.slPool;
+  const price = await slPool.priceA.call();
+  return price;
+}
 
 export const approveSL = async (tokenContract, poolContract, account) => {
   return tokenContract.methods

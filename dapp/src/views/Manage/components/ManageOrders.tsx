@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
-
+import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
 import {
   Button,
@@ -22,7 +22,18 @@ import CancelledOrder from './CancelledOrder';
 
 interface CreateOrderProps extends ContextValues, ModalProps {
 }
-
+const StyledMain = styled.div`
+  align-items: center;
+  box-sizing: border-box;
+  text-align: center
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 144px);
+  text-align:center;
+  float:left;
+  position:relative;
+  padding: ${props => props.theme.spacing[6]}px 0;
+`
 const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdrawing}) => {
   console.log("hyyoyoyo", orders.stopLosses);
   const openOrders = orders.stopLosses.filter(order => order.status === "Created")
@@ -32,7 +43,7 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
   return (
     (
       
-      <>
+      <><StyledMain>
       {openOrders.length === 0 ? <p>no open Orders</p> : 
         <table>
         <thead>
@@ -92,6 +103,7 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
           })}
         </tbody>
       </table> */}
+      </StyledMain>
       </>
     )
   )
