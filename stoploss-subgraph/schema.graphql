@@ -13,6 +13,7 @@ type StopLoss @entity {
   orderer: Bytes!
   delegated: Boolean!
   lpAmount: BigInt!
+  tokenIn: BigInt!
   tokenToGuarantee: Bytes!
   amountToGuarantee: BigInt!
   ratio: BigInt!

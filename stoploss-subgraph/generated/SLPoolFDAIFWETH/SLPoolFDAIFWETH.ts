@@ -51,8 +51,12 @@ export class StopLossCreated__Params {
     return this._event.parameters[6].value.toBigInt();
   }
 
-  get ratio(): BigInt {
+  get tokenIn(): BigInt {
     return this._event.parameters[7].value.toBigInt();
+  }
+
+  get ratio(): BigInt {
+    return this._event.parameters[8].value.toBigInt();
   }
 }
 
@@ -746,8 +750,12 @@ export class _stopLossCall__Inputs {
     return this._call.inputValues[2].value.toBigInt();
   }
 
+  get tokenIn(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
   get delegated(): boolean {
-    return this._call.inputValues[3].value.toBoolean();
+    return this._call.inputValues[4].value.toBoolean();
   }
 }
 

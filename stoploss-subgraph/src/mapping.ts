@@ -8,6 +8,7 @@ export function handleNewStopLoss(event: StopLossCreated): void {
   stoploss.orderer = event.params.orderer
   stoploss.delegated = event.params.delegated
   stoploss.lpAmount = event.params.lpAmount
+  stoploss.tokenIn = event.params.tokenIn
   stoploss.tokenToGuarantee = event.params.tokenToGuarantee
   stoploss.amountToGuarantee = event.params.amountToGuarantee
   stoploss.ratio = event.params.ratio

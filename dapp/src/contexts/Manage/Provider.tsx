@@ -21,6 +21,7 @@ const STOPLOSSES_QUERY = gql`
         id
         uniPair
         orderNumber
+        tokenIn
         status
         orderer
         tokenToGuarantee

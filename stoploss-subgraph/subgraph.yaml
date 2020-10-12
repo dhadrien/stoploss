@@ -8,7 +8,7 @@ dataSources:
     name: SLPoolFDAIFWETH
     network: local
     source:
-      address: '0xc6aaf55cfE60341D7Dba69E0eBD5913c63283215'
+      address: '0x825a7270B9eB94cD4924667B7539035430054e63'
       abi: SLPoolFDAIFWETH
     mapping:
       kind: ethereum/events
@@ -20,7 +20,7 @@ dataSources:
         - name: SLPoolFDAIFWETH
           file: ./abis/SLPoolFDAIFWETH.json
       eventHandlers:
-        - event: StopLossCreated(address,uint256,address,bool,uint256,address,uint256,uint256)
+        - event: StopLossCreated(address,uint256,address,bool,uint256,address,uint256,uint256,uint256)
           handler: handleNewStopLoss
         - event: WithdrawStopLoss(address,uint256,address,uint256,address,uint256)
           handler: handleWithdrawStopLoss

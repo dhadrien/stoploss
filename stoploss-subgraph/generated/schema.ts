@@ -87,6 +87,15 @@ export class StopLoss extends Entity {
     this.set("lpAmount", Value.fromBigInt(value));
   }
 
+  get tokenIn(): BigInt {
+    let value = this.get("tokenIn");
+    return value.toBigInt();
+  }
+
+  set tokenIn(value: BigInt) {
+    this.set("tokenIn", Value.fromBigInt(value));
+  }
+
   get tokenToGuarantee(): Bytes {
     let value = this.get("tokenToGuarantee");
     return value.toBytes();

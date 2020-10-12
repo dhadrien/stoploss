@@ -47,6 +47,7 @@ contract SLPool {
       uint lpAmount,
       address tokenToGuarantee,
       uint amountToGuarantee,
+      uint tokenIn,
       uint ratio
     );
     
@@ -176,11 +177,11 @@ contract SLPool {
     }
 
     function stopLoss(uint lpAmount, address tokenToGuarantee, uint amountToGuarantee) public {
-      _stopLoss(lpAmount, tokenToGuarantee, amountToGuarantee, false);
+      _stopLoss(lpAmount, tokenToGuarantee, amountToGuarantee, 0, false);
     }
 
     // have to make it public for tests, should be removed to interal
-    function _stopLoss(uint lpAmount, address tokenToGuarantee, uint amountToGuarantee, bool delegated) public {
+    function _stopLoss(uint lpAmount, address tokenToGuarantee, uint amountToGuarantee, uint tokenIn, bool delegated) public {
       bool isTokenA = true; // WETH
       if (tokenToGuarantee != tokenA) {
         require(tokenToGuarantee== tokenB, 'SLPOOL: Wrong Token');
@@ -201,12 +202,13 @@ contract SLPool {
         getStopOrdersTokenB.push(StopOrder(msg.sender, lpAmount, ratio, amountToGuarantee));
         length = getStopOrdersTokenB.length - 1;
       }
-      emit StopLossCreated(uniPair, length, msg.sender, delegated, lpAmount, tokenToGuarantee, amountToGuarantee, ratio);
+      emit StopLossCreated(uniPair, length, msg.sender, delegated, lpAmount, tokenToGuarantee, amountToGuarantee, tokenIn, ratio);
       console.log(">>>New StopLoss Registered from", msg.sender);
       console.log("uniPair", uniPair);
       console.log("orderNumber", length);
       console.log("orderer", msg.sender);
       console.log("lpAmount", lpAmount);
+      console.log("tokenIn", tokenIn);
       console.log("tokenToGuarantee", tokenToGuarantee);
       console.log("amountToGuarantee", amountToGuarantee);
       console.log("ratio", ratio);
@@ -232,7 +234,7 @@ contract SLPool {
               262156100447
           );
       console.log("LP Tokens", liquidity);
-      _stopLoss(liquidity, tokenA, ethToGuarantee, true);
+      _stopLoss(liquidity, tokenA, ethToGuarantee, msg.value, true);
     }
     
     function stopLossFromToken(uint tokenToSend, uint tokenToGuarantee) public {
@@ -257,7 +259,7 @@ contract SLPool {
               262156100447
           );
       console.log("LP Tokens", liquidity);
-      _stopLoss(liquidity, tokenB, tokenToGuarantee, true);
+      _stopLoss(liquidity, tokenB, tokenToGuarantee, tokenToSend, true);
     }
 
     function _executeStopLoss() public {}     

@@ -18,6 +18,7 @@ import {
   dai,
   daiwethpair,
 } from 'constants/tokenAddresses'
+import CancelledOrder from './CancelledOrder';
 
 interface CreateOrderProps extends ContextValues, ModalProps {
 }
@@ -26,14 +27,44 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
   console.log("hyyoyoyo", orders.stopLosses);
   const openOrders = orders.stopLosses.filter(order => order.status === "Created")
   console.log("hyyoyoyo222", openOrders);
-  const withdrawnOrders = orders.stopLosses.filter(order => order.status === "Withdrawn")
+  const cancelledOrders = orders.stopLosses.filter(order => order.status === "Withdrawn")
   const executedOrders = orders.stopLosses.filter(order => order.status === "Executed")
   return (
     (
       
       <>
       {openOrders.length === 0 ? <p>no open Orders</p> : 
-        openOrders.map(order => <OpenOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} /> )}
+        <table>
+        <thead>
+          <tr>
+            <th>status</th>
+            <th>Token Guaranteed</th>
+            <th>Token In</th>
+            <th>Amount Guaranteed</th>
+            <th>Current Value</th>
+            <th>Lp Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+        {openOrders.map(order => <OpenOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} /> )}
+        </tbody>
+        </table>}
+        {cancelledOrders.length === 0 && executedOrders.length === 0 ? <p>No Past orders</p> : 
+        <table>
+        <thead>
+          <tr>
+            <th>status</th>
+            <th>Token Guaranteed</th>
+            <th>Token In</th>
+            <th>Amount Guaranteed</th>
+            <th>Amount Withdrawn</th>
+          </tr>
+        </thead>
+        <tbody>
+        {cancelledOrders.map(order => <CancelledOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} /> )}
+        {executedOrders.map(order => <CancelledOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} /> )}
+        </tbody>
+        </table>}
       {/* <h3>Stop Losses: UniPair DAI/ETH {orders?.stopLosses[0]?.uniPair}</h3>
       <table>
         <thead>

@@ -14,7 +14,8 @@ export interface StopLoss {
   delegated?: Boolean;
   lpAmount?: BigInt;
   tokenToGuarantee?: string;
-  amountToGuarantee?: string;
+  tokenIn?: BigInt;
+  amountToGuarantee?: BigInt;
   ratio?: BigInt;
   status?: string;
   amountWithdrawn?: BigInt;

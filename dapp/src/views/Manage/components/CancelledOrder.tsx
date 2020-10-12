@@ -25,7 +25,7 @@ interface CreateOrderProps extends ModalProps {
   onWithdraw: (orderIndex: string, token: string) => void,
 }
 
-const OpenOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdrawing}) => {
+const CancelledOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdrawing}) => {
 
 
   const handleCreateOrderClick = useCallback(() => {
@@ -39,13 +39,7 @@ const OpenOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdrawing
               <td>{order.tokenToGuarantee == dai.toLowerCase() ? "DAI" : "ETH"}</td>
               <td>{order.tokenIn}</td>
               <td>{order.amountToGuarantee}</td>
-              <td>{order.lpAmount}</td>
-              <Button
-          // disabled={!lpAmount || !Number(lpAmount)}
-          onClick={handleCreateOrderClick}
-          text="Cancel StopLoss"
-          // variant={!lpAmount || !Number(lpAmount) ? 'secondary' : 'default'}
-        />
+              <td>{order.amountWithdrawn} </td>
             </tr>
           
       </>
@@ -53,4 +47,4 @@ const OpenOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdrawing
   )
 }
 
-export default OpenOrder;
+export default CancelledOrder;
