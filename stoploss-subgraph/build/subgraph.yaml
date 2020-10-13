@@ -8,7 +8,7 @@ dataSources:
     name: SLPoolFDAIFWETH
     network: local
     source:
-      address: "0x825a7270B9eB94cD4924667B7539035430054e63"
+      address: "0x96601fBA3b57F68B4bBa70547eFB44F67cA2076a"
       abi: SLPoolFDAIFWETH
     mapping:
       kind: ethereum/events
@@ -19,6 +19,81 @@ dataSources:
       abis:
         - name: SLPoolFDAIFWETH
           file: SLPoolFDAIFWETH/abis/SLPoolFDAIFWETH.json
+      eventHandlers:
+        - event: StopLossCreated(address,uint256,address,bool,uint256,address,uint256,uint256,uint256)
+          handler: handleNewStopLoss
+        - event: WithdrawStopLoss(address,uint256,address,uint256,address,uint256)
+          handler: handleWithdrawStopLoss
+        - event: StopLossExecuted(address,uint256,address,address,uint256,address,uint256,address,uint256)
+          handler: handleStopLossExecuted
+        - event: Update(uint256,uint256,uint256,uint256)
+          handler: handleUpdate
+      file: SLPoolFDAIFWETH/SLPoolFDAIFWETH.wasm
+  - kind: ethereum/contract
+    name: SLPoolFUSDCFWETH
+    network: local
+    source:
+      address: "0x6943362637849e50ea847575aef86dBEa1bba55A"
+      abi: SLPoolFDAIFWETH
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - SLPoolFDAIFWETH
+      abis:
+        - name: SLPoolFDAIFWETH
+          file: SLPoolFUSDCFWETH/abis/SLPoolFDAIFWETH.json
+      eventHandlers:
+        - event: StopLossCreated(address,uint256,address,bool,uint256,address,uint256,uint256,uint256)
+          handler: handleNewStopLoss
+        - event: WithdrawStopLoss(address,uint256,address,uint256,address,uint256)
+          handler: handleWithdrawStopLoss
+        - event: StopLossExecuted(address,uint256,address,address,uint256,address,uint256,address,uint256)
+          handler: handleStopLossExecuted
+        - event: Update(uint256,uint256,uint256,uint256)
+          handler: handleUpdate
+      file: SLPoolFDAIFWETH/SLPoolFDAIFWETH.wasm
+  - kind: ethereum/contract
+    name: SLPoolFUSDTFWETH
+    network: local
+    source:
+      address: "0x1BA818D6Df939875d28c829aE75379bfFC8233dc"
+      abi: SLPoolFDAIFWETH
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - SLPoolFDAIFWETH
+      abis:
+        - name: SLPoolFDAIFWETH
+          file: SLPoolFUSDTFWETH/abis/SLPoolFDAIFWETH.json
+      eventHandlers:
+        - event: StopLossCreated(address,uint256,address,bool,uint256,address,uint256,uint256,uint256)
+          handler: handleNewStopLoss
+        - event: WithdrawStopLoss(address,uint256,address,uint256,address,uint256)
+          handler: handleWithdrawStopLoss
+        - event: StopLossExecuted(address,uint256,address,address,uint256,address,uint256,address,uint256)
+          handler: handleStopLossExecuted
+        - event: Update(uint256,uint256,uint256,uint256)
+          handler: handleUpdate
+      file: SLPoolFDAIFWETH/SLPoolFDAIFWETH.wasm
+  - kind: ethereum/contract
+    name: SLPoolFWBTCFWETH
+    network: local
+    source:
+      address: "0xefc7eFa51B4F62f46F727A82db3f83117246Afc2"
+      abi: SLPoolFDAIFWETH
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - SLPoolFDAIFWETH
+      abis:
+        - name: SLPoolFDAIFWETH
+          file: SLPoolFWBTCFWETH/abis/SLPoolFDAIFWETH.json
       eventHandlers:
         - event: StopLossCreated(address,uint256,address,bool,uint256,address,uint256,uint256,uint256)
           handler: handleNewStopLoss

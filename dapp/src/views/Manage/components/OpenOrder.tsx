@@ -18,7 +18,7 @@ import { getFullDisplayBalance } from 'utils'
 import {
   dai,
   weth,
-  daiwethpair,
+  addressMapping
 } from 'constants/tokenAddresses'
 
 
@@ -35,48 +35,28 @@ const OpenOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdrawing
   const handleCreateOrderClick = useCallback(() => {
     onWithdraw(order.orderNumber, order.tokenToGuarantee)
   }, [onWithdraw, dai])
-  return order.tokenToGuarantee == weth.toLowerCase() ?
-   (
-    (
-      
-      <>  <tr>
-              <td>{order.status}</td>
-              <td>ETH</td>
-              <td>{order.tokenInString}</td>
-              <td>{order.amountToGuaranteeString}</td>
-              <td>{price && ratioA ? ratioA.multipliedBy(order.lpAmount).dividedBy(new BigNumber(10).pow(18+6)).decimalPlaces(3).toString() : "loading"}</td>
-              <td>{order.lpAmountString}</td>
-              <Button
-          // disabled={!lpAmount || !Number(lpAmount)}
-          onClick={handleCreateOrderClick}
-          text="Cancel StopLoss"
-          // variant={!lpAmount || !Number(lpAmount) ? 'secondary' : 'default'}
-        />
-            </tr>
-          
-      </>
-    )
-  ) :
-  (
-    (
-      
-      <>  <tr>
-              <td>{order.status}</td>
-              <td>DAI</td>
-              <td>{order.tokenInString}</td>
-              <td>{order.amountToGuaranteeString}</td>
-              <td>{price && ratioB ? ratioB.multipliedBy(order.lpAmount).dividedBy(new BigNumber(10).pow(18+6)).decimalPlaces(3).toString() : "loading"}</td>
-              <td>{order.lpAmountString}</td>
-              <Button
-          // disabled={!lpAmount || !Number(lpAmount)}
-          onClick={handleCreateOrderClick}
-          text="Cancel StopLoss"
-          // variant={!lpAmount || !Number(lpAmount) ? 'secondary' : 'default'}
-        />
-            </tr>
-          
-      </>
-    )
+  return(
+    <>  <tr>
+            <td>{order.status}</td>
+            <td>{order.uniPair}</td>
+            <td>{addressMapping[order.tokenToGuarantee]}</td>
+            <td>{order.tokenInString}</td>
+            <td>{order.amountToGuaranteeString}</td>
+            <td>{price && ratioA && ratioB ? 
+                  order.tokenToGuarantee == weth.address? 
+                    ratioA.multipliedBy(order.lpAmount).dividedBy(new BigNumber(10).pow(18+6)).decimalPlaces(3).toString()
+                    : ratioB.multipliedBy(order.lpAmount).dividedBy(new BigNumber(10).pow(18+6)).decimalPlaces(3).toString()
+                  : "loading"}</td>
+            <td>{order.lpAmountString}</td>
+            <Button
+        // disabled={!lpAmount || !Number(lpAmount)}
+        onClick={handleCreateOrderClick}
+        text="Cancel StopLoss"
+        // variant={!lpAmount || !Number(lpAmount) ? 'secondary' : 'default'}
+      />
+          </tr>
+        
+    </>
   )
 }
 

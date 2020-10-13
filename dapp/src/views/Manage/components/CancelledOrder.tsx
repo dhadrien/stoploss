@@ -16,7 +16,7 @@ import useBalances from 'hooks/useBalances'
 import { getFullDisplayBalance } from 'utils'
 import {
   dai,
-  daiwethpair,
+  addressMapping,
 } from 'constants/tokenAddresses'
 
 interface CreateOrderProps extends ModalProps {
@@ -36,7 +36,7 @@ const CancelledOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdr
       
       <>  <tr>
               <td>{order.status}</td>
-              <td>{order.tokenToGuarantee == dai.toLowerCase() ? "DAI" : "ETH"}</td>
+              <td>{addressMapping[order.tokenToGuarantee.toLocaleLowerCase()]}</td>
               <td>{order.tokenInString}</td>
               <td>{order.amountToGuaranteeString}</td>
               <td>{order.amountWithdrawnString} </td>

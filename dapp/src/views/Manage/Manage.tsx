@@ -20,9 +20,7 @@ import {
 import { useWallet } from 'use-wallet'
 import useSL from 'hooks/useSL'
 import {
-  dai,
-  weth,
-  daiwethpair,
+  dai
 } from 'constants/tokenAddresses'
 import Page from 'components/Page'
 import PageHeader from 'components/PageHeader'

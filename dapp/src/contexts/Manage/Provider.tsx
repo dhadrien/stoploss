@@ -4,7 +4,6 @@ import BigNumber from 'bignumber.js'
 import { useWallet } from 'use-wallet'
 
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal'
-import { dai, weth, daiwethpair, daiwethpool } from 'constants/tokenAddresses'
 import { gql, useQuery } from '@apollo/client';
 import useSL from 'hooks/useSL';
 

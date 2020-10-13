@@ -15,26 +15,29 @@ import useBalances from 'hooks/useBalances'
 import { getFullDisplayBalance } from 'utils'
 import {
   dai,
-  daiwethpair,
 } from 'constants/tokenAddresses'
-
+import Split from 'components/Split'
 interface CreateOrderProps extends ModalProps {
-  onOrder: (lpAmount: string, token: string, amountGuaranteed: string) => void,
+  onOrder: (lpAmount: string, pool:string, token: string, amountGuaranteed: string) => void,
+  token: string,
+  pool: string,
 }
 
 const CreateOrder: React.FC<CreateOrderProps> = ({
   isOpen,
   onDismiss,
   onOrder,
+  token,
+  pool
 }) => {
 
   const [lpAmount, setLpAmount] = useState('')
-  const [token, setToken] = useState(dai)
+  // const [token, setToken] = useState(dai)
   const [amountGuaranteed, setAmountGuaranteed] = useState('')
   const { daiwethPairBalance } = useBalances()
 
   const fullBalance = useMemo(() => {
-    return getFullDisplayBalance(daiwethPairBalance || new BigNumber(0), 0)
+    return getFullDisplayBalance(new BigNumber(0), 0)
   }, [daiwethPairBalance])
 
   const handleChange = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -50,8 +53,8 @@ const CreateOrder: React.FC<CreateOrderProps> = ({
   }, [setAmountGuaranteed])
 
   const handleCreateOrderClick = useCallback(() => {
-    onOrder(lpAmount, dai, amountGuaranteed)
-  }, [onOrder, lpAmount.toString(), dai, amountGuaranteed.toString()])
+    onOrder(lpAmount, pool, token, amountGuaranteed)
+  }, [onOrder, lpAmount.toString(), token, amountGuaranteed.toString()])
 
   return (
     <Modal isOpen={isOpen}>

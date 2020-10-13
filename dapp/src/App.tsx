@@ -12,7 +12,6 @@ import MobileMenu from 'components/MobileMenu'
 import TopBar from 'components/TopBar'
 import SLProvider from 'contexts/SLProvider'
 import {BalancesProvider} from 'contexts/Balances'
-import {SLOrderProvider} from 'contexts/SLOrder'
 import {ManageProvider} from 'contexts/Manage'
 import useLocalStorage from 'hooks/useLocalStorage'
 
@@ -81,13 +80,11 @@ const Providers: React.FC = ({ children }) => {
       >
         <SLProvider>
           <BalancesProvider>
-            <SLOrderProvider>
               <ApolloProvider client={client}>
                 <ManageProvider>
                   {children}
                 </ManageProvider>
               </ApolloProvider>
-            </SLOrderProvider>
           </BalancesProvider>
         </SLProvider>
       </UseWalletProvider>

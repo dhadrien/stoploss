@@ -15,8 +15,6 @@ import TokenInput from 'components/TokenInput'
 import useBalances from 'hooks/useBalances'
 import { getFullDisplayBalance } from 'utils'
 import {
-  dai,
-  daiwethpair,
 } from 'constants/tokenAddresses'
 import CancelledOrder from './CancelledOrder';
 
@@ -49,6 +47,7 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
         <thead>
           <tr>
             <th>status</th>
+            <th>pair</th>
             <th>Token Guaranteed</th>
             <th>Token In</th>
             <th>Amount Guaranteed</th>

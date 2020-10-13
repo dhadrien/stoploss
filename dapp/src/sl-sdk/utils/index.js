@@ -32,11 +32,11 @@ export const getPoolStartTime = async (poolContract) => {
   return await poolContract.methods.starttime().call()
 }
 
-export const makeStopLoss = async (sl, lpAmount, token, amountGuaranteeed, account, onTxHash) => {
+export const makeStopLoss = async (sl, pool, lpAmount, token, amountGuaranteeed, account, onTxHash) => {
   const fdai = sl.contracts.fdai;
   const fweth = sl.contracts.fweth;
   const uniPair = sl.contracts.uniPair;
-  const slPool = sl.contracts.slPool;
+  const slPool = sl.contracts["SLPool" + pool];
   // const tokenToGuarnatee = token == fdai.address ? fdai.address : fweth.address;
   let now = new Date().getTime() / 1000;
   // const gas = GAS_LIMIT.STAKING[tokenName.toUpperCase()] || GAS_LIMIT.STAKING.DEFAULT;
@@ -67,7 +67,7 @@ export const withdrawStopLoss = async (sl, orderIndex, token, account, onTxHash)
   const fdai = sl.contracts.fdai;
   const fweth = sl.contracts.fweth;
   const uniPair = sl.contracts.uniPair;
-  const slPool = sl.contracts.slPool;
+  const slPool = sl.contracts.SLPoolFDAIFWETH;
   // const tokenToGuarnatee = token == fdai.address ? fdai.address : fweth.address;
   let now = new Date().getTime() / 1000;
   // const gas = GAS_LIMIT.STAKING[tokenName.toUpperCase()] || GAS_LIMIT.STAKING.DEFAULT;

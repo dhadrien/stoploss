@@ -4,11 +4,20 @@ import * as Types from "./types.js";
 import { SUBTRACT_GAS_LIMIT, addressMap } from './constants.js';
 
 import FDAI from '../deployments/FDAI.json';
+import FUSDC from '../deployments/FUSDC.json';
+import FUSDT from '../deployments/FUSDT.json';
+import FWBTC from '../deployments/FWBTC.json';
 import FWETH from '../deployments/FWETH.json';
 import SLFactory from '../deployments/SLFactory.json';
 import SLOracle from '../deployments/SLOracle.json';
-import SLPoolFDAIFWETH from '../deployments/SLPoolFDAIFWETH.json';
-import UniPairFDAIFWETH from '../deployments/UniPairFDAIFWETH.json';
+import SLPoolDAIWETH from '../deployments/SLPoolFDAIFWETH.json';
+import SLPoolUSDCWETH from '../deployments/SLPoolFUSDCFWETH.json';
+import SLPoolUSDTWETH from '../deployments/SLPoolFUSDTFWETH.json';
+import SLPoolWBTCWETH from '../deployments/SLPoolFWBTCFWETH.json';
+import UniPairDAIWETH from '../deployments/UniPairFDAIFWETH.json';
+import UniPairUSDCWETH from '../deployments/UniPairFUSDCFWETH.json';
+import UniPairUSDTWETH from '../deployments/UniPairFUSDTFWETH.json';
+import UniPairWBTCWETH from '../deployments/UniPairFWBTCFWETH.json';
 import UniswapV2Factory from '../deployments/UniswapV2Factory.json';
 import UniswapV2Router02 from '../deployments/UniswapV2Router02.json';
 
@@ -27,11 +36,22 @@ export class Contracts {
     this.defaultGasPrice = options.defaultGasPrice;
 
     this.fdai = new this.web3.eth.Contract(FDAI.abi, FDAI.address);
+    this.fusdc = new this.web3.eth.Contract(FUSDC.abi, FUSDC.address);
+    this.fusdt = new this.web3.eth.Contract(FUSDT.abi, FDAI.address);
+    this.fwbtc = new this.web3.eth.Contract(FWBTC.abi, FWBTC.address);
     this.fweth = new this.web3.eth.Contract(FWETH.abi, FWETH.address);
     this.slFactory = new this.web3.eth.Contract(SLFactory.abi, SLFactory.address);
     this.slOracle = new this.web3.eth.Contract(SLOracle.abi, SLOracle.address);
-    this.slPool = new this.web3.eth.Contract(SLPoolFDAIFWETH.abi, SLPoolFDAIFWETH.address);
-    this.uniPair = new this.web3.eth.Contract(UniPairFDAIFWETH.abi, UniPairFDAIFWETH.address);
+    // this.SLPoolDAIWETH = new this.web3.eth.Contract(SLPoolDAIWETH.abi, SLPoolDAIWETH.address); //legacy pool will be changed one day
+    // this.uniPair = new this.web3.eth.Contract(UniPairDAIWETH.abi, UniPairDAIWETH.address);
+    this.SLPoolDAIWETH = new this.web3.eth.Contract(SLPoolDAIWETH.abi, SLPoolDAIWETH.address);
+    this.SLPoolUSDCWETH = new this.web3.eth.Contract(SLPoolUSDCWETH.abi, SLPoolUSDCWETH.address);
+    this.SLPoolUSDTWETH = new this.web3.eth.Contract(SLPoolUSDTWETH.abi, SLPoolUSDTWETH.address);
+    this.SLPoolWBTCWETH = new this.web3.eth.Contract(SLPoolWBTCWETH.abi, SLPoolWBTCWETH.address);
+    this.UniPairDAIWETH = new this.web3.eth.Contract(UniPairDAIWETH.abi, UniPairDAIWETH.address);
+    this.UniPairUSDCWETH = new this.web3.eth.Contract(UniPairUSDCWETH.abi, UniPairUSDCWETH.address);
+    this.UniPairUSDTWETH = new this.web3.eth.Contract(UniPairUSDTWETH.abi, UniPairUSDTWETH.address);
+    this.UniPairWBTCWETH = new this.web3.eth.Contract(UniPairWBTCWETH.abi, UniPairWBTCWETH.address);
     this.unifactory = new this.web3.eth.Contract(UniswapV2Factory.abi, UniswapV2Factory.address);
     this.uniRouter = new this.web3.eth.Contract(UniswapV2Router02.abi, UniswapV2Router02.address);
 
@@ -45,20 +65,26 @@ export class Contracts {
     networkId
   ) {
     this.fdai.setProvider(provider);
+    this.fusdc.setProvider(provider);
+    this.fusdt.setProvider(provider);
+    this.fwbtc.setProvider(provider);
     this.fweth.setProvider(provider);
     this.slOracle.setProvider(provider);
     this.slFactory.setProvider(provider);
-    this.slPool.setProvider(provider);
-    this.uniPair.setProvider(provider);
+    this.SLPoolDAIWETH.setProvider(provider);
+    this.UniPairDAIWETH.setProvider(provider);
     this.unifactory.setProvider(provider);
     this.uniRouter.setProvider(provider);
     const contracts = [
       { contract: this.fdai, json: FDAI },
+      { contract: this.fusdt, json: FUSDT },
+      { contract: this.fusdc, json: FUSDC },
+      { contract: this.fwbtc, json: FWBTC },
       { contract: this.fweth, json: FWETH },
       { contract: this.slFactory, json: SLFactory },
       { contract: this.slOracle, json: SLOracle },
-      { contract: this.slPool, json: SLPoolFDAIFWETH },
-      { contract: this.uniPair, json: UniPairFDAIFWETH },
+      { contract: this.SLPoolDAIWETH, json: SLPoolDAIWETH },
+      { contract: this.UniPairDAIWETH, json: UniPairDAIWETH },
       { contract: this.unifactory, json: UniswapV2Factory },
       { contract: this.uniRouter, json: UniswapV2Router02 },
     ]
@@ -72,7 +98,10 @@ export class Contracts {
     );
 
     this.pools = [
-      {"pairAddress": this.uniPair.options.address, "poolAddr": this.slPool.options.address}
+      {"pairAddress": this.UniPairDAIWETH.options.address, "poolAddr": this.SLPoolDAIWETH.options.address},
+      {"pairAddress": this.UniPairUSDCWETH.options.address, "poolAddr": this.SLPoolUSDCWETH.options.address},
+      {"pairAddress": this.UniPairUSDTWETH.options.address, "poolAddr": this.SLPoolUSDTWETH.options.address},
+      {"pairAddress": this.UniPairWBTCWETH.options.address, "poolAddr": this.SLPoolWBTCWETH.options.address},
     ]
 
     this.names = {};
@@ -80,8 +109,14 @@ export class Contracts {
     this.names[this.fweth.options.address] = "FWETH";
     this.names[this.slOracle.options.address] = "SL: Oracle";
     this.names[this.slFactory.options.address] = "SL: Factory";
-    this.names[this.slPool.options.address] = "SL: Pool FDAI/FWETH";
-    this.names[this.uniPair.options.address] = "UNI: Pair FDAI/FWETH";
+    this.names[this.SLPoolUSDCWETH.options.address] = "SL: Pool FUSDC/FWETH";
+    this.names[this.SLPoolUSDTWETH.options.address] = "SL: Pool FDUSDTFWETH";
+    this.names[this.SLPoolWBTCWETH.options.address] = "SL: Pool FDAWBTCWETH";
+    this.names[this.SLPoolDAIWETH.options.address] = "SL: Pool FDAI/FWETH";
+    this.names[this.UniPairUSDTWETH.options.address] = "UNI: Pair FUSDT/FWETH";
+    this.names[this.UniPairUSDCWETH.options.address] = "UNI: Pair FDUSDCFWETH";
+    this.names[this.UniPairWBTCWETH.options.address] = "UNI: Pair FDAWBTCWETH";
+    this.names[this.UniPairDAIWETH.options.address] = "UNI: Pair FDAI/FWETH";
     this.names[this.unifactory.options.address] = "UNI: Factory";
     this.names[this.uniRouter.options.address] = "UNI: Router";
   }
@@ -91,10 +126,16 @@ export class Contracts {
   ) {
     this.fdai.options.from = account;
     this.fweth.options.from = account;
-    this.uniPair.options.from = account;
+    this.UniPairDAIWETH.options.from = account;
+    this.UniPairUSDCWETH.options.from = account;
+    this.UniPairUSDTWETH.options.from = account;
+    this.UniPairWBTCWETH.options.from = account;
     this.uniRouter.options.from = account;
     this.unifactory.options.from = account;
-    this.slPool.options.from = account;
+    this.SLPoolDAIWETH.options.from = account;
+    this.SLPoolUSDTWETH.options.from = account;
+    this.SLPoolUSDCWETH.options.from = account;
+    this.SLPoolWBTCWETH.options.from = account;
     this.slFactory.options.from = account;
     this.slOracle.options.from = account
   }

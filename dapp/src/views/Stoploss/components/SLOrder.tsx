@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState, useEffect } from 'react'
 
 import Countdown, { CountdownRenderProps} from 'react-countdown'
 import numeral from 'numeral'
@@ -8,22 +8,37 @@ import {
   Card,
   CardActions,
   CardContent,
+  ModalProps,
   CardIcon,
 } from 'react-neu'
 import { useWallet } from 'use-wallet'
-
+import {
+  tokenMapping,
+} from 'constants/tokenAddresses'
 import Label from 'components/Label'
 import Value from 'components/Value'
-
+import {SLOrderProvider} from 'contexts/SLOrder'
 import useSLOrder from 'hooks/useSLOrder';
 import useBalances from 'hooks/useBalances';
-import { bnToDec } from 'utils'
 import CreateOrder from './CreateOrder'
+import Split from 'components/Split'
+import BigNumber from 'bignumber.js'
+import {tokenNames} from 'constants/tokenAddresses';
 
-const SLOrder: React.FC = () => {
+interface SLOrderProps extends ModalProps {
+  token: string,
+  status: string,
+  pools?: string[],
+}
+
+const SLOrder: React.FC<SLOrderProps> = ({
+  token,
+  status,
+  pools
+  
+}) => {
   const [createOrderModalIsOpen, setcreateOrderModalIsOpen] = useState(false)
 
-  const { status } = useWallet()
   const {
     onMakeOffer,
     isApproved,
@@ -31,11 +46,16 @@ const SLOrder: React.FC = () => {
     isMakingOffer,
     onApprove,
   } = useSLOrder()
-
-  const {
-    daiBalance,
-    daiwethPairBalance,
-  } = useBalances();
+  // const [tokens, setTokens] = useState<{
+  //   name:string,
+  //   address: string,
+  //   pools: string[],
+  //   balance:(BigNumber | undefined)}[]>();
+  // useEffect(()=>{
+  //   setTokens(tokenNames.map(name => ({
+  //     ...tokenMapping[name], name, balance: balances[name]
+  //   })));
+  // }, [balances])
 
   const handleDismissCreateOrderModal = useCallback(() => {
     setcreateOrderModalIsOpen(false)
@@ -43,8 +63,8 @@ const SLOrder: React.FC = () => {
 
 
 
-  const handleOnOrder = useCallback((lpAmount: string, token: string, amountGuaranteeed: string) => {
-    onMakeOffer(lpAmount, token, amountGuaranteeed)
+  const handleOnOrder = useCallback((lpAmount: string, pool:string, token: string, amountGuaranteeed: string) => {
+    onMakeOffer(lpAmount, pool, token, amountGuaranteeed)
     handleDismissCreateOrderModal()
   }, [handleDismissCreateOrderModal, onMakeOffer])
 
@@ -60,7 +80,7 @@ const SLOrder: React.FC = () => {
         <Button
           disabled
           full
-          text="Create Stop Loss"
+          text="Provide Liquidity Safely"
           variant="secondary"
         />
       )
@@ -82,7 +102,7 @@ const SLOrder: React.FC = () => {
           full
           onClick={onApprove}
           text={!isApproving ? "Approve Stop Loss" : "Approving..."}
-          variant={isApproving || status !== 'connected' ? 'secondary' : 'default'}
+          variant={isApproving || status !== 'connected' ? 'secondary' : 'tertiary'}
         />
       )
     }
@@ -92,7 +112,7 @@ const SLOrder: React.FC = () => {
         <Button
           full
           onClick={handleCreateOrderClick}
-          text="Create Stop Loss"
+          text="Provide Liquidity Safely"
         />
       )
     }
@@ -105,33 +125,61 @@ const SLOrder: React.FC = () => {
 
   return (
     <>
-      <Card>
-        <CardIcon>🦄</CardIcon>
-        <CardContent>
-          <Box
-            alignItems="center"
-            column
-          >
-            <Value value={daiwethPairBalance?.toString() || "--"} />
-            <Label text="Available LP Tokens" />
-          </Box>
-        </CardContent>
-        <CardActions>
-          {CreateOrderButton}
-        </CardActions>
-        {/* {typeof countdown !== 'undefined' && countdown > 0 && (
-          <CardActions>
-            <Countdown date={farmingStartTime} renderer={renderer} />
-          </CardActions>
-        )} */}
-      </Card>
-      <CreateOrder
-        isOpen={createOrderModalIsOpen}
-        onDismiss={handleDismissCreateOrderModal}
-        onOrder={handleOnOrder}
-      />
+      <CardActions>
+        {CreateOrderButton}
+      </CardActions>
+      {tokenMapping[token].pools?.map(pool => (
+    <>
+    {/* <p>{pool}</p> */}
+    <CreateOrder
+      isOpen={createOrderModalIsOpen}
+      onDismiss={handleDismissCreateOrderModal}
+      onOrder={handleOnOrder}
+      token={token}
+      pool={pool}
+    />
+    </>
+    )
+    )}
+  </>
+  )
+}
+
+const SLOrders: React.FC = () => {
+  const tokenMappingWithBalance = useBalances();
+  const { status } = useWallet()
+  return (
+    <>
+      <Split>
+        {tokenNames.map(name =>{
+            if (tokenMappingWithBalance[name].balance?.toString() == "0") return;
+              else return (<>
+                <Card>
+                <CardIcon>💰</CardIcon>
+                <CardContent>
+                  <Box
+                    alignItems="center"
+                    column
+                  >
+                    <Value value={tokenMappingWithBalance[name].balance? tokenMappingWithBalance[name].balance?.decimalPlaces(2).toString() + " " + name : "--"} />
+                    {tokenMappingWithBalance[name].pools?.map(pool=> <Label text={pool} />)}
+                    
+                  </Box>
+                </CardContent>
+              <SLOrderProvider token={name} pool={(tokenMappingWithBalance[name].pools || [""])[0]}>
+                <SLOrder
+                  token={name}
+                  pools={tokenMappingWithBalance[name].pools}
+                  status={status}
+                />
+              </SLOrderProvider>
+              </Card>
+              </>
+              )
+          })}
+      </Split>
     </>
   )
 }
 
-export default SLOrder;
+export default SLOrders;

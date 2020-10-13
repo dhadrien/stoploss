@@ -14,9 +14,9 @@ const usePrice = (tokenAddress?: string, spenderAddress?: string) => {
   const sl = useSL();
   const fetchPrice = useCallback(async () => {
     if (sl){
-      setPrice(new BigNumber(await sl.contracts.slPool.methods.priceA().call()));
-      setRatioA(new BigNumber(await sl.contracts.slPool.methods.lastRatioA().call()));
-      setRatioB(new BigNumber(await sl.contracts.slPool.methods.lastRatioB().call()));
+      setPrice(new BigNumber(await sl.contracts.SLPoolFDAIFWETH.methods.priceA().call()));
+      setRatioA(new BigNumber(await sl.contracts.SLPoolFDAIFWETH.methods.lastRatioA().call()));
+      setRatioB(new BigNumber(await sl.contracts.SLPoolFDAIFWETH.methods.lastRatioB().call()));
     }
   }, [setPrice, sl])
 
