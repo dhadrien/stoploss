@@ -29,11 +29,13 @@ interface SLOrderProps extends ModalProps {
   token: string,
   status: string,
   pools?: string[],
+  balance?: BigNumber
 }
 
 const SLOrder: React.FC<SLOrderProps> = ({
   token,
   status,
+  balance,
   pools
   
 }) => {
@@ -137,6 +139,7 @@ const SLOrder: React.FC<SLOrderProps> = ({
       onOrder={handleOnOrder}
       token={token}
       pool={pool}
+      balance={balance}
     />
     </>
     )
@@ -171,6 +174,7 @@ const SLOrders: React.FC = () => {
                   token={name}
                   pools={tokenMappingWithBalance[name].pools}
                   status={status}
+                  balance={tokenMappingWithBalance[name].balance}
                 />
               </SLOrderProvider>
               </Card>

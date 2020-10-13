@@ -22,14 +22,14 @@ import {
 interface CreateOrderProps extends ModalProps {
   order: StopLossDisplayed;
   isWithdrawing?: boolean,
-  onWithdraw: (orderIndex: string, token: string) => void,
+  onWithdraw: (pool: string, orderIndex: string, token: string) => void,
 }
 
 const CancelledOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdrawing}) => {
 
 
   const handleCreateOrderClick = useCallback(() => {
-    onWithdraw(order.orderNumber || "0", order.tokenToGuarantee || "0x")
+    onWithdraw(addressMapping[order.uniPair], order.orderNumber || "0", order.tokenToGuarantee || "0x")
   }, [onWithdraw, dai])
   return (
     (

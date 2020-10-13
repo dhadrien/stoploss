@@ -95,10 +95,10 @@ const Provider: React.FC = ({ children }) => {
   // ])
    
 
-  const handleWithdraw = useCallback(async (orderIndex, token) => {
+  const handleWithdraw = useCallback(async (pool, orderIndex, token) => {
     if (!sl) return
     setConfirmTxModalIsOpen(true)
-    await withdrawStopLoss(sl, orderIndex, token, account, () => {
+    await withdrawStopLoss(sl, pool, orderIndex, token, account, () => {
       setConfirmTxModalIsOpen(false)
       setIsWithdrawing(true)
     })

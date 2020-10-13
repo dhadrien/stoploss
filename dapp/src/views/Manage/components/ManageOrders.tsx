@@ -13,8 +13,10 @@ import OpenOrder from './OpenOrder';
 import {ContextValues} from 'contexts/Manage/types'
 import TokenInput from 'components/TokenInput'
 import useBalances from 'hooks/useBalances'
+import usePrice from 'hooks/usePrice'
 import { getFullDisplayBalance } from 'utils'
 import {
+  tokenMapping
 } from 'constants/tokenAddresses'
 import CancelledOrder from './CancelledOrder';
 
@@ -33,11 +35,10 @@ const StyledMain = styled.div`
   padding: ${props => props.theme.spacing[6]}px 0;
 `
 const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdrawing}) => {
-  console.log("hyyoyoyo", orders.stopLosses);
   const openOrders = orders.stopLosses.filter(order => order.status === "Created")
-  console.log("hyyoyoyo222", openOrders);
   const cancelledOrders = orders.stopLosses.filter(order => order.status === "Withdrawn")
   const executedOrders = orders.stopLosses.filter(order => order.status === "Executed")
+  const prices = usePrice(tokenMapping["ETH"].pools || [""]);
   return (
     (
       
@@ -56,7 +57,7 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
           </tr>
         </thead>
         <tbody>
-        {openOrders.map(order => <OpenOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} /> )}
+        {openOrders.map(order => <OpenOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} prices={prices}/> )}
         </tbody>
         </table>}
         {cancelledOrders.length === 0 && executedOrders.length === 0 ? <p>No Past orders</p> : 

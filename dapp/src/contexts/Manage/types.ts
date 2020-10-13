@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 
 export interface ContextValues {
   isWithdrawing?: boolean,
-  onWithdraw: (orderIndex: string, token: string) => void,
+  onWithdraw: (pool: string, orderIndex: string, token: string) => void,
   orders: StopLossDataDisplayed
 }
 

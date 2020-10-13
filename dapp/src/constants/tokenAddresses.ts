@@ -3,6 +3,9 @@ import {address as usdcAddress} from '../sl-sdk/lib/deployments/FUSDC.json';
 import {address as usdtAddress} from '../sl-sdk/lib/deployments/FUSDT.json';
 import {address as wbtcAddress} from '../sl-sdk/lib/deployments/FWBTC.json';
 import {address as UniPairFDAIFWETHAddress} from '../sl-sdk/lib/deployments/UniPairFDAIFWETH.json';
+import {address as UniPairFUSDCFWETHAddress} from '../sl-sdk/lib/deployments/UniPairFUSDCFWETH.json';
+import {address as UniPairFUSDTFWETHAddress} from '../sl-sdk/lib/deployments/UniPairFUSDTFWETH.json';
+import {address as UniPairFWBTCFWETHAddress} from '../sl-sdk/lib/deployments/UniPairFWBTCFWETH.json';
 import {address as SLPoolFDAIFWETHAddress} from '../sl-sdk/lib/deployments/SLPoolFDAIFWETH.json';
 import {address as SLPoolFUSDCFWETHAddress} from '../sl-sdk/lib/deployments/SLPoolFUSDCFWETH.json';
 import {address as SLPoolFUSDTFWETHAddress} from '../sl-sdk/lib/deployments/SLPoolFUSDTFWETH.json';
@@ -21,6 +24,15 @@ addressMapping[usdcAddress.toLowerCase()] = "USDC";
 addressMapping[usdtAddress.toLowerCase()] = "USDT";
 addressMapping[wbtcAddress.toLowerCase()] = "WBTC";
 addressMapping[wethAddress.toLowerCase()] = "WETH";
+
+addressMapping[SLPoolFDAIFWETHAddress.toLowerCase()] = "DAIWETH";
+addressMapping[SLPoolFUSDCFWETHAddress.toLowerCase()] = "USDCWETH";
+addressMapping[SLPoolFUSDTFWETHAddress.toLowerCase()] = "USDTWETH";
+addressMapping[SLPoolFWBTCFWETHAddress.toLowerCase()] = "WBTCWETH";
+addressMapping[UniPairFDAIFWETHAddress.toLowerCase()] = "DAIWETH";
+addressMapping[UniPairFUSDCFWETHAddress.toLowerCase()] = "USDCWETH";
+addressMapping[UniPairFUSDTFWETHAddress.toLowerCase()] = "USDTWETH";
+addressMapping[UniPairFWBTCFWETHAddress.toLowerCase()] = "WBTCWETH";
 
 export interface TokenMapping extends Record<string, {address: string, pools?: string[], balance?:BigNumber}>{
   
