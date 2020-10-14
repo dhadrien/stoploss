@@ -52,14 +52,14 @@ async function populateOrders(tokenString: string) {
     }
   );
   pool = await ethers.getContract("SLPoolF" + tokenString + "FWETH", liqSigner);
-  await pool.executeStopLoss(0, Token.address);
-  await pool.executeStopLoss(0, FWETH.address);
+  // await pool.executeStopLoss(0, Token.address);
+  // await pool.executeStopLoss(0, FWETH.address);
   pool = await ethers.getContract(
     "SLPoolF" + tokenString + "FWETH",
     userSigner
   );
-  await pool.withdraw(2, Token.address);
-  await pool.withdraw(2, FWETH.address);
+  // await pool.withdraw(2, Token.address);
+  // await pool.withdraw(2, FWETH.address);
 }
 
 async function main() {

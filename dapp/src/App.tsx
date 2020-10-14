@@ -13,7 +13,7 @@ import TopBar from 'components/TopBar'
 import SLProvider from 'contexts/SLProvider'
 import {BalancesProvider} from 'contexts/Balances'
 import {ManageProvider} from 'contexts/Manage'
-import {LiquidateProvider} from 'contexts/Liquidate'
+import {LiquidateProvider} from 'contexts/Liquidated'
 import useLocalStorage from 'hooks/useLocalStorage'
 
 import Manage from 'views/Manage';

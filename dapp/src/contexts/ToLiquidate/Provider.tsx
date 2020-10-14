@@ -8,15 +8,15 @@ import { gql, useQuery } from '@apollo/client';
 import useSL from 'hooks/useSL';
 
 import {
-  withdrawStopLoss
+  liquidateStopLoss
 } from 'sl-sdk/utils'
 
 import Context from './Context'
 import { StopLossData, StopLossVar, StopLoss } from './types'
 
 const STOPLOSSES_QUERY = gql`
-    query GetStopLoss($orderer: String) {
-      stopLosses (where: { orderer: $orderer}) {
+    query GetStopLoss {
+      stopLosses (where: {status: "Created"}) {
         id
         uniPair
         orderNumber
@@ -25,6 +25,7 @@ const STOPLOSSES_QUERY = gql`
         status
         orderer
         tokenToGuarantee
+        tokenToLiquidator
         amountToGuarantee
         lpAmount
         amountToLiquidator
@@ -35,7 +36,7 @@ const STOPLOSSES_QUERY = gql`
 
 const Provider: React.FC = ({ children }) => {
   const [confirmTxModalIsOpen, setConfirmTxModalIsOpen] = useState(false)
-  const [isWithdrawing, setIsWithdrawing] = useState(false)
+  const [isLiquidating, setIsLiquidating] = useState(false)
   const [orders, setOrders] = useState<StopLossData>();
 
   const sl = useSL()
@@ -43,9 +44,9 @@ const Provider: React.FC = ({ children }) => {
   const { loading, data } = useQuery<StopLossData, StopLossVar>(
     STOPLOSSES_QUERY, 
     {
-      variables: {orderer: account || "", },
-      pollInterval: 10000,
-      notifyOnNetworkStatusChange: true,
+      // variables: {liquidator: account || "", },
+      // pollInterval: 10000,
+      // notifyOnNetworkStatusChange: true,
       onCompleted: () => {setOrders({loading, stopLosses: (data?.stopLosses.map(order => 
         ({
           ...order, 
@@ -96,18 +97,18 @@ const Provider: React.FC = ({ children }) => {
   // ])
    
 
-  const handleWithdraw = useCallback(async (pool, orderIndex, token) => {
+  const handleLiquidate = useCallback(async (pool, orderIndex, token) => {
     if (!sl) return
     setConfirmTxModalIsOpen(true)
-    await withdrawStopLoss(sl, pool, orderIndex, token, account, () => {
+    await liquidateStopLoss(sl, pool, orderIndex, token, account, () => {
       setConfirmTxModalIsOpen(false)
-      setIsWithdrawing(true)
+      setIsLiquidating(true)
     })
-    setIsWithdrawing(false)
+    setIsLiquidating(false)
   }, [
     account,
     setConfirmTxModalIsOpen,
-    setIsWithdrawing,
+    setIsLiquidating,
     sl
   ])
 
@@ -124,8 +125,8 @@ const Provider: React.FC = ({ children }) => {
 
   return (
     <Context.Provider value={{
-      onWithdraw: handleWithdraw,
-      isWithdrawing,
+      onLiquidate: handleLiquidate,
+      isLiquidating,
       orders: orders || ({loading: true, stopLosses: ([{
         id: 0,
         orderNumber: "1",

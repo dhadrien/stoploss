@@ -53,6 +53,7 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
             <th>Token In</th>
             <th>Amount Guaranteed</th>
             <th>Current Value</th>
+            <th>Health Ratio</th>
             <th>Lp Amount</th>
           </tr>
         </thead>

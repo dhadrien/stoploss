@@ -26,9 +26,12 @@ import Page from 'components/Page'
 import PageHeader from 'components/PageHeader'
 // import useLiquidate from 'hooks/useSLOrder'
 import ManageOrders from './components/ManageOrders'
+import ToLiquidate from './components/ToLiquidateOrders'
 // import LiquidateOrders from './components/LiquidateOrders'
+import {ToLiquidateProvider} from 'contexts/ToLiquidate'
 import useLiquidate from 'hooks/useLiquidate'
-import {LiquidateProvider} from 'contexts/Liquidate'
+import useToLiquidate from 'hooks/useToLiquidate'
+import {LiquidateProvider} from 'contexts/Liquidated'
 // import { gql } from 'apollo-boost';
 // import ApolloClient from 'apollo-boost';
 // import { ApolloProvider as ApolloNew } from '@apollo/react-common';
@@ -74,35 +77,52 @@ const Liquidate: React.FC = () => {
   const {orders, onWithdraw, isWithdrawing} = useLiquidate();
   const {account} = useWallet();
   const sl = useSL();
+  const [show, setShow]= useState(true);
+  const toggleShow = () => {
+    const oldShow:boolean = show;
+    setShow(!oldShow);
+  }
   // const liquidatedOrders = orders.stopLosses.filter(order => order.status === "Executed");
   // orders.stopLosses = liquidatedOrders;
   // return (<p>hi</p>)
   return (
+    <>
       <Page>
       <PageHeader
         icon="🤑"
         subtitle="Your Orders"
         title="Liquidate Stop Loss"
       />  
-      <Container>
+      
       {account && sl ? 
-      <div>
-      {orders.loading ? (
-        <>
-        <h3>Stop Losses</h3>
-        <p>Loading ...</p>
-        </>
-      ) : 
-      <ManageOrders
-      orders ={orders}
-      onWithdraw={onWithdraw}
-      isWithdrawing={isWithdrawing}
-      />}
-    </div> :
+      <><Button onClick={toggleShow} text={show ? "Check New Liquidation Opportunities" : "My past Liquidations"}/> {show? 
+        <Container>
+        {orders.loading ? (
+          <>
+          <h3>Stop Losses</h3>
+          <p>Loading ...</p>
+          </>
+        ) : 
+        <ManageOrders
+        orders ={orders}
+        onWithdraw={onWithdraw}
+        isWithdrawing={isWithdrawing}
+        />}
+        </Container> : 
+        <Container>
+        <ToLiquidateProvider>
+        <ToLiquidate/>
+      </ToLiquidateProvider>
+      </Container>
+      }
+         </>
+         :
     <h3> Unlock wallet!</h3>}
       
-      </Container>
+      
     </Page>
+    
+  </>
   )
 }
 

@@ -28,46 +28,6 @@ import useManage from 'hooks/useManage'
 import ManagerOrders from './components/ManageOrders'
 import ManageOrders from './components/ManageOrders'
 import {ManageProvider} from 'contexts/Manage'
-// import { gql } from 'apollo-boost';
-// import ApolloClient from 'apollo-boost';
-// import { ApolloProvider as ApolloNew } from '@apollo/react-common';
-// import { ApolloProvider, Query } from 'react-apollo';
-// import { ApolloProvider as ApolloProviderHooks } from 'react-apollo-hooks';
-// import { gql, useQuery } from '@apollo/client';
-// enum StopLossStatus {
-//   "Created",
-//   "Withdrawn",
-//   "Executed",
-//   "ShouldBeExecuted"
-// }
-
-// interface StopLoss {
-//   id: number;
-//   uniPair: string;
-//   orderer: string;
-//   delegated: Boolean;
-//   lpAmount: BigInt;
-//   tokenToGuarantee: string;
-//   amountToGuarantee: string;
-//   ratio: BigInt;
-//   status: StopLossStatus;
-//   amountWithdrawn: BigInt;
-//   liquidator?: string;
-//   tokenToLiquidator?: string;
-//   amountToLiquidator?: BigInt;
-// }
-// interface StopLossData {
-//   stopLosses: StopLoss[]
-// }
-
-// interface StopLossVar{
-//   uniPair: string;
-// }
-
-
-
-
-// import Unipair from './components/Unipair';
 
 const Manage: React.FC = () => {
   const {orders, onWithdraw, isWithdrawing} = useManage();

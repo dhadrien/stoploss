@@ -24,12 +24,12 @@ import {Price, Prices} from 'hooks/usePrice';
 
 interface CreateOrderProps extends ModalProps {
   order: StopLossDisplayed;
-  isWithdrawing?: boolean,
+  isLiquidating?: boolean,
   prices?: Prices
-  onWithdraw: (pool: string, orderIndex: string, token: string) => void,
+  onLiquidate: (pool: string, orderIndex: string, token: string) => void,
 }
 
-const OpenOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdrawing, prices}) => {
+const OpenOrder: React.FC<CreateOrderProps> = ({order, onLiquidate, isLiquidating, prices}) => {
   const pool = addressMapping[order.uniPair]
   const [price, setPrice] = useState<BigNumber>()
   const [ratioA, setRatioA] = useState<BigNumber>()
@@ -57,9 +57,10 @@ const OpenOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdrawing
   },[prices, setPrice, setRatioA, setRatioB])
  
   const handleCreateOrderClick = useCallback(() => {
-    onWithdraw(pool, order.orderNumber, order.tokenToGuarantee)
-  }, [onWithdraw, pool])
-  return(
+    onLiquidate(pool, order.orderNumber, order.tokenToGuarantee)
+  }, [onLiquidate, pool])
+  if (healthFactor?.toString().split(".")[0] != "0") return (null);
+  return (
     <>  <tr>
             <td>{order.status}</td>
             <td>{addressMapping[order.uniPair]}</td>
@@ -72,11 +73,11 @@ const OpenOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdrawing
             <td>{healthFactor ? 
                   healthFactor.toString()
                   : "loading"}</td>
-            <td>{order.lpAmountString}</td>
+            {/* <td>{order.lpAmountString}</td> */}
             <Button
         // disabled={!lpAmount || !Number(lpAmount)}
         onClick={handleCreateOrderClick}
-        text="Cancel StopLoss"
+        text="LIQUIDATE ORDER"
         // variant={!lpAmount || !Number(lpAmount) ? 'secondary' : 'default'}
       />
           </tr>

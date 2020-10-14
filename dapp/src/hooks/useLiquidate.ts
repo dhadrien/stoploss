@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import { LiquidateContext } from 'contexts/Liquidate'
+import { LiquidateContext } from 'contexts/Liquidated'
 
 const useLiquidate = () => {
   return { ...useContext(LiquidateContext) }
