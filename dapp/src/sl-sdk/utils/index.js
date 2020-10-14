@@ -22,45 +22,124 @@ const GAS_LIMIT = {
 // this.uniPair = new this.web3.eth.Contract(UniPairFDAIFWETH.abi, UniPairFDAIFWETH.address);
 // this.unifactory = new this.web3.eth.Contract(UniswapV2Factory.abi, UniswapV2Factory.address);
 // this.uniRouter = 
-
+// import {
+//   dai,
+// } from 'constants/tokenAddresses'
 const knownSnapshots = {
   "0x110f2263e5adf63ea82514bbec3440762edefed1bdf4f0ee06a9458fc3e7e2e7": "https://snapshot.page/#/yamv2/proposal/QmTCXW2bhETiwHoDqeyxoDA4CwjURyfc6T4fAJLGz3yKj9",
   "0xad13b6cc77c781ee81529b3bcac2c2e81f588eede376fc9b2c75879cd20ffdc7" : "https://snapshot.page/#/yam/proposal/QmVzvqJwnnEhnJGxDoKZNNkeRXvrmscrhwpLbZrQxw1mkf"
 }
 
+
 export const getPoolStartTime = async (poolContract) => {
   return await poolContract.methods.starttime().call()
 }
 
-export const makeStopLoss = async (sl, lpAmount, token, amountGuaranteeed, account, onTxHash) => {
+export const makeStopLoss = async (sl, amount, pool, token, amountGuaranteeed, account, onTxHash) => {
   const fdai = sl.contracts.fdai;
   const fweth = sl.contracts.fweth;
   const uniPair = sl.contracts.uniPair;
-  const slPool = sl.contracts.slPool;
+  const slPool = sl.contracts["SLPool" + pool];
+  // const tokenToGuarnatee = token == fdai.address ? fdai.address : fweth.address;
+  let now = new Date().getTime() / 1000;
+  // const gas = GAS_LIMIT.STAKING[tokenName.toUpperCase()] || GAS_LIMIT.STAKING.DEFAULT;
+  const gas = GAS_LIMIT.STAKING.DEFAULT
+    return token == "ETH" ? 
+    slPool.methods
+      .stopLossFromEther(
+        (new BigNumber(amountGuaranteeed).times(new BigNumber(10).pow(18))).toString(),
+        )
+      .send({ from: account, gas, value:(new BigNumber(amount).times(new BigNumber(10).pow(18))).toString()  }, async (error, txHash) => {
+        if (error) {
+            onTxHash && onTxHash('')
+            console.log("Create Stop Loss error", error)
+            return false
+        }
+        onTxHash && onTxHash(txHash)
+        const status = await waitTransaction(sl.web3.eth, txHash)
+        if (!status) {
+          console.log("Create Stop Loss transaction failed.")
+          return false
+        }
+        return true
+      }) : 
+      slPool.methods
+      .stopLossFromToken(
+        (new BigNumber(amount).times(new BigNumber(10).pow(18))).toString(),
+        (new BigNumber(amountGuaranteeed).times(new BigNumber(10).pow(18))).toString(),
+        )
+      .send({ from: account, gas }, async (error, txHash) => {
+        if (error) {
+            onTxHash && onTxHash('')
+            console.log("Create Stop Loss error", error)
+            return false
+        }
+        onTxHash && onTxHash(txHash)
+        const status = await waitTransaction(sl.web3.eth, txHash)
+        if (!status) {
+          console.log("Create Stop Loss transaction failed.")
+          return false
+        }
+        return true
+      }) 
+}
+
+export const withdrawStopLoss = async (sl, pool, orderIndex, token, account, onTxHash) => {
+  // const fdai = sl.contracts.fdai;
+  // const fweth = sl.contracts.fweth;
+  // const uniPair = sl.contracts.uniPair;
+  const slPool = sl.contracts["SLPool" + pool];
   // const tokenToGuarnatee = token == fdai.address ? fdai.address : fweth.address;
   let now = new Date().getTime() / 1000;
   // const gas = GAS_LIMIT.STAKING[tokenName.toUpperCase()] || GAS_LIMIT.STAKING.DEFAULT;
   const gas = GAS_LIMIT.STAKING.DEFAULT
     return slPool.methods
-    .stopLoss(
-      (new BigNumber(lpAmount).times(new BigNumber(10).pow(18))).toString(),
+    .withdraw(
+      orderIndex,
       token,
-      (new BigNumber(amountGuaranteeed).times(new BigNumber(10).pow(18))).toString(),
-      )
+    )
     .send({ from: account, gas }, async (error, txHash) => {
       if (error) {
           onTxHash && onTxHash('')
-          console.log("Create Stop Loss error", error)
+          console.log("Withdraw Stop Loss error", error)
           return false
       }
       onTxHash && onTxHash(txHash)
       const status = await waitTransaction(sl.web3.eth, txHash)
       if (!status) {
-        console.log("Create Stop Loss transaction failed.")
+        console.log("Withdraw Stop Loss transaction failed.")
         return false
       }
       return true
     })
+}
+export const liquidateStopLoss = async (sl, pool, orderIndex, token, account, onTxHash) => {
+  const slPool = sl.contracts["SLPool" + pool];
+  const gas = GAS_LIMIT.STAKING.DEFAULT
+    return slPool.methods
+    .executeStopLoss(
+      orderIndex,
+      token,
+    )
+    .send({ from: account, gas }, async (error, txHash) => {
+      if (error) {
+          onTxHash && onTxHash('')
+          console.log("Withdraw Stop Loss error", error)
+          return false
+      }
+      onTxHash && onTxHash(txHash)
+      const status = await waitTransaction(sl.web3.eth, txHash)
+      if (!status) {
+        console.log("Withdraw Stop Loss transaction failed.")
+        return false
+      }
+      return true
+    })
+}
+export const getPrice = async (sl) => {
+  const slPool = sl.contracts.slPool;
+  const price = await slPool.priceA.call();
+  return price;
 }
 
 export const approveSL = async (tokenContract, poolContract, account) => {

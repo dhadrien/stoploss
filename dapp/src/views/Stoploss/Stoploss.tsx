@@ -20,8 +20,8 @@ const Stoploss: React.FC = () => {
       <Page>
       <PageHeader
         icon="😈"
-        subtitle="Create a Stop Loss Order!"
-        title="Stoploss"
+        subtitle="Provide Liquidity With Stop Loss Safety!"
+        title="Provide Liquidty"
       />
       <SLOrder/>
     </Page>

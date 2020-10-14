@@ -3,7 +3,7 @@ import React, { useCallback } from 'react'
 import BigNumber from 'bignumber.js'
 import styled from 'styled-components'
 import { useWallet } from 'use-wallet'
-
+import {tokenNames} from 'constants/tokenAddresses';
 import numeral from 'numeral'
 import {
   Box,
@@ -29,10 +29,8 @@ const WalletModal: React.FC<ModalProps> = ({
 }) => {
 
   const { reset } = useWallet()
-  const {
-    daiBalance,
-    daiwethPairBalance
-  } = useBalances()
+  
+  const tokenMapping = useBalances()
 
   const getDisplayBalance = useCallback((value?: BigNumber) => {
     if (value) {
@@ -46,40 +44,36 @@ const WalletModal: React.FC<ModalProps> = ({
     reset()
   }, [reset])
 
-  return (
-    <Modal isOpen={isOpen}>
-      <ModalTitle text="My Wallet" />
-      <ModalContent>
-        <Split>
-          <Box row>
-            <FancyValue
-              icon="💰"
-              label="Dai balance"
-              value={getDisplayBalance(daiBalance)}
-            />
-          </Box>
-          <Box row>
-            <FancyValue
-              icon={<span role="img" style={{ opacity: 0.5 }} >🦄</span>}
-              label="DAI/ETH LP Tokens"
-              value={getDisplayBalance(daiwethPairBalance)}
-            />
-          </Box>
-        </Split>
-      </ModalContent>
-      <Separator />
-      <ModalActions>
-        <Button
-          onClick={onDismiss}
-          text="Cancel"
-          variant="secondary"
-        />
-        <Button
-          onClick={handleSignOut}
-          text="SignOut"
-        />
-      </ModalActions>
-    </Modal>
+  return (  <Modal isOpen={isOpen}>
+    <ModalTitle text="My Wallet" />
+    <ModalContent>
+      <Split>
+    {tokenNames.map(
+      name=> (
+        <Box row>
+          <FancyValue
+            icon="💰"
+            label={`${name} balance`}
+            value={getDisplayBalance(tokenMapping[name].balance)}
+          />
+        </Box>
+      )
+    )}
+    </Split>
+    </ModalContent>
+    <Separator />
+    <ModalActions>
+      <Button
+        onClick={onDismiss}
+        text="Cancel"
+        variant="secondary"
+      />
+      <Button
+        onClick={handleSignOut}
+        text="SignOut"
+      />
+    </ModalActions>
+  </Modal>
   )
 }
 

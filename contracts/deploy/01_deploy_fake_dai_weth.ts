@@ -25,7 +25,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈
 
 ----------
-01: DEPLOY FAKE DAI AND FAKE WETH
+01: DEPLOY TOKENS: DAI, USDC, USDT, WBTC, WETH
 ----------
   `);
   // Contract needed
@@ -37,6 +37,31 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     args: [INIT_TOKEN_SUPPLY, "Fake Dai", "STP"],
     log: true,
   });
+  logStep("DEPLOYING FAKE USDT");
+  await deploy("FUSDT", {
+    contract: "ERC20Log",
+    from: deployer,
+    proxy: false,
+    args: [INIT_TOKEN_SUPPLY, "Fake USDT", "STP"],
+    log: true,
+  });
+  logStep("DEPLOYING FAKE USDC");
+  await deploy("FUSDC", {
+    contract: "ERC20Log",
+    from: deployer,
+    proxy: false,
+    args: [INIT_TOKEN_SUPPLY, "Fake USDC", "STP"],
+    log: true,
+  });
+  logStep("DEPLOYING FAKE WBTC");
+  await deploy("FWBTC", {
+    contract: "ERC20Log",
+    from: deployer,
+    proxy: false,
+    args: [INIT_TOKEN_SUPPLY, "Fake WBTC", "STP"],
+    log: true,
+  });
+
   logStep("DEPLOYING FAKE WETH");
   await deploy("FWETH", {
     contract: "WETH",

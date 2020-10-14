@@ -1,5 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { createTheme, ThemeProvider } from 'react-neu'
+import { ApolloClient, InMemoryCache, gql, ApolloProvider, useQuery } from '@apollo/client';
+import { createTheme } from 'theme'
+import {ThemeProvider} from 'react-neu'
 import {
   BrowserRouter as Router,
   Route,
@@ -11,14 +13,18 @@ import MobileMenu from 'components/MobileMenu'
 import TopBar from 'components/TopBar'
 import SLProvider from 'contexts/SLProvider'
 import {BalancesProvider} from 'contexts/Balances'
-import {SLOrderProvider} from 'contexts/SLOrder'
+import {ManageProvider} from 'contexts/Manage'
+import {LiquidateProvider} from 'contexts/Liquidated'
 import useLocalStorage from 'hooks/useLocalStorage'
 
-import Liquidity from 'views/Liquidity';
+import Manage from 'views/Manage';
 import Stoploss from 'views/Stoploss';
 import Home from 'views/Home';
+import Liquidate from 'views/Liquidate';
+
 
 const App: React.FC = () => {
+
   const [mobileMenu, setMobileMenu] = useState(false)
 
   const handleDismissMobileMenu = useCallback(() => {
@@ -37,8 +43,16 @@ const App: React.FC = () => {
           <Route exact path="/">
             <Home />
           </Route>
-          <Route exact path="/liquidity">
-            <Liquidity />
+          <Route exact path="/manage">
+            <ManageProvider>
+              <Manage />
+            </ManageProvider>
+          </Route>
+          
+          <Route exact path="/liquidate">
+            <LiquidateProvider>
+              <Liquidate />
+            </LiquidateProvider>
           </Route>
           <Route path="/stoploss">
             <Stoploss />
@@ -50,11 +64,17 @@ const App: React.FC = () => {
 }
 
 const Providers: React.FC = ({ children }) => {
+  const client = new ApolloClient({
+    uri: process.env.REACT_APP_GRAPHQL_ENDPOINT || "http://localhost:8000/subgraphs/name/dhadrien/stoploss-subgraph",
+    cache: new InMemoryCache(),
+  })
   const [darkModeSetting] = useLocalStorage('darkMode', false)
   const { dark: darkTheme, light: lightTheme } = useMemo(() => {
     return createTheme({
-      baseColor: { h: 338, s: 100, l: 41 },
-      baseColorDark: { h: 339, s: 89, l: 49 },
+      baseColor: { h: 43, s: 59, l: 58 },
+      baseColorDark: { h: 43, s: 59, l: 58 },
+      baseGreyColor: { h: 300, s: 58, l: 32 },
+      baseGreyColorDark: { h: 300, s: 58, l: 32 },
       borderRadius: 28,
     })
   }, [])
@@ -72,9 +92,9 @@ const Providers: React.FC = ({ children }) => {
       >
         <SLProvider>
           <BalancesProvider>
-            <SLOrderProvider>
-              {children}
-            </SLOrderProvider>
+              <ApolloProvider client={client}>
+                  {children}
+              </ApolloProvider>
           </BalancesProvider>
         </SLProvider>
       </UseWalletProvider>

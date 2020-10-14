@@ -1,0 +1,34 @@
+enum StopLossStatus {
+  Created
+  Withdrawn
+  Executed
+  ShouldBeExecuted
+}
+
+type StopLoss @entity {
+  "Stop Loss Order"
+  id: ID!
+  orderNumber: BigInt!
+  uniPair: Bytes!
+  orderer: Bytes!
+  delegated: Boolean!
+  lpAmount: BigInt!
+  tokenIn: BigInt!
+  tokenToGuarantee: Bytes!
+  amountToGuarantee: BigInt!
+  ratio: BigInt!
+  status: StopLossStatus!
+  amountWithdrawn: BigInt
+  liquidator: Bytes
+  tokenToLiquidator: Bytes
+  amountToLiquidator: BigInt
+}
+
+type PoolStatus @entity {
+  "Stop Loss Pool Status: price, ratios"
+  id: ID!
+  timeStamp: BigInt!
+  priceA: BigInt!
+  ratioA: BigInt!
+  ratioB: BigInt!
+}

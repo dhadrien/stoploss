@@ -15,61 +15,65 @@ import useBalances from 'hooks/useBalances'
 import { getFullDisplayBalance } from 'utils'
 import {
   dai,
-  daiwethpair,
 } from 'constants/tokenAddresses'
-
+import Split from 'components/Split'
 interface CreateOrderProps extends ModalProps {
-  onOrder: (lpAmount: string, token: string, amountGuaranteed: string) => void,
+  onOrder: (amount: string, pool:string, token: string, amountGuaranteed: string) => void,
+  token: string,
+  pool: string,
+  balance?: BigNumber
 }
 
 const CreateOrder: React.FC<CreateOrderProps> = ({
   isOpen,
   onDismiss,
   onOrder,
+  token,
+  pool,
+  balance
 }) => {
 
-  const [lpAmount, setLpAmount] = useState('')
-  const [token, setToken] = useState(dai)
+  const [amount, setAmount] = useState('')
+  // const [token, setToken] = useState(dai)
   const [amountGuaranteed, setAmountGuaranteed] = useState('')
-  const { daiwethPairBalance } = useBalances()
 
   const fullBalance = useMemo(() => {
-    return getFullDisplayBalance(daiwethPairBalance || new BigNumber(0), 0)
-  }, [daiwethPairBalance])
+    return getFullDisplayBalance(balance ? balance : new BigNumber(0), 0)
+  }, [balance])
 
   const handleChange = useCallback((e: React.FormEvent<HTMLInputElement>) => {
-    setLpAmount(e.currentTarget.value)
-  }, [setLpAmount])
+    setAmount(e.currentTarget.value)
+  }, [setAmount])
 
   const handleSelectMax = useCallback(() => {
-    setLpAmount(fullBalance)
-  }, [fullBalance, setLpAmount])
+    setAmount(fullBalance)
+  }, [fullBalance, setAmount])
 
   const handleChangeGuaranteed = useCallback((e: React.FormEvent<HTMLInputElement>) => {
     setAmountGuaranteed(e.currentTarget.value)
   }, [setAmountGuaranteed])
 
   const handleCreateOrderClick = useCallback(() => {
-    onOrder(lpAmount, dai, amountGuaranteed)
-  }, [onOrder, lpAmount.toString(), dai, amountGuaranteed.toString()])
+    onOrder(amount, pool, token, amountGuaranteed)
+  }, [onOrder, amount.toString(), token, amountGuaranteed.toString()])
 
   return (
     <Modal isOpen={isOpen}>
       <ModalTitle text="Create stop loss offer" />
       <ModalContent>
         <TokenInput
-          value={lpAmount}
+          value={amount}
           onSelectMax={handleSelectMax}
           onChange={handleChange}
           max={fullBalance}
-          symbol="DAI/WETH LP"
+          symbol={token}
         />
         <TokenInput
           value={amountGuaranteed}
           // onSelectMax={handleSelectMaxGuaranteed}
           onChange={handleChangeGuaranteed}
           // max={fullBalance}
-          symbol="DAI TO GUARANTEE"
+          symbol={token + " GUARANTEED"}
         />
         
       </ModalContent>
@@ -80,10 +84,10 @@ const CreateOrder: React.FC<CreateOrderProps> = ({
           variant="secondary"
         />
         <Button
-          disabled={!lpAmount || !Number(lpAmount)}
+          disabled={!amount || !Number(amount)}
           onClick={handleCreateOrderClick}
           text="Create Stop Loss"
-          variant={!lpAmount || !Number(lpAmount) ? 'secondary' : 'default'}
+          variant={!amount || !Number(amount) ? 'secondary' : 'default'}
         />
       </ModalActions>
     </Modal>
