@@ -10,6 +10,7 @@ import {
   CardContent,
   ModalProps,
   CardIcon,
+  Container
 } from 'react-neu'
 import { useWallet } from 'use-wallet'
 import {
@@ -143,7 +144,7 @@ const SLOrders: React.FC = () => {
   }).map(name =>{
       tokenMappingWithBalance[name].pools?.map(pool =>{
         toRend.push( <Card>
-          <CardIcon>DAI</CardIcon>
+          <CardIcon><img style={{blockSize: 100}} src={require('../../../assets/' + name+'.svg')} /></CardIcon>
           <CardContent>
             <Box
               alignItems="center"
@@ -166,16 +167,18 @@ const SLOrders: React.FC = () => {
       })
     })
   return (
-    <>
+    <><Container>
     {toRend.map((render, k) => {
       if(k%3 === 0)
-      return (<Split>
+      return (
+      <Split>
         {toRend[k]}
         {toRend[k+1]}
         {toRend[k+2]}
+        {/* {toRend[k+3]} */}
       </Split>)
     })}
-  </>)
+  </Container></>)
 }
 
 export default SLOrders;
