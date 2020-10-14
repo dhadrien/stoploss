@@ -24,11 +24,12 @@ import CreateOrder from './CreateOrder'
 import Split from 'components/Split'
 import BigNumber from 'bignumber.js'
 import {tokenNames} from 'constants/tokenAddresses';
+import { ReactComponent } from '*.svg'
 
 interface SLOrderProps extends ModalProps {
   token: string,
   status: string,
-  pools?: string[],
+  pool?: string,
   balance?: BigNumber
 }
 
@@ -36,7 +37,7 @@ const SLOrder: React.FC<SLOrderProps> = ({
   token,
   status,
   balance,
-  pools
+  pool
   
 }) => {
   const [createOrderModalIsOpen, setcreateOrderModalIsOpen] = useState(false)
@@ -48,16 +49,6 @@ const SLOrder: React.FC<SLOrderProps> = ({
     isMakingOffer,
     onApprove,
   } = useSLOrder()
-  // const [tokens, setTokens] = useState<{
-  //   name:string,
-  //   address: string,
-  //   pools: string[],
-  //   balance:(BigNumber | undefined)}[]>();
-  // useEffect(()=>{
-  //   setTokens(tokenNames.map(name => ({
-  //     ...tokenMapping[name], name, balance: balances[name]
-  //   })));
-  // }, [balances])
 
   const handleDismissCreateOrderModal = useCallback(() => {
     setcreateOrderModalIsOpen(false)
@@ -97,7 +88,7 @@ const SLOrder: React.FC<SLOrderProps> = ({
         />
       )
     }
-    if (!isApproved) {
+    if (!isApproved && token!=="ETH") {
       return (
         <Button
           disabled={isApproving}
@@ -109,7 +100,7 @@ const SLOrder: React.FC<SLOrderProps> = ({
       )
     }
 
-    if (isApproved) {
+    if (isApproved || token == "ETH") {
       return (
         <Button
           full
@@ -130,20 +121,14 @@ const SLOrder: React.FC<SLOrderProps> = ({
       <CardActions>
         {CreateOrderButton}
       </CardActions>
-      {tokenMapping[token].pools?.map(pool => (
-    <>
-    {/* <p>{pool}</p> */}
-    <CreateOrder
-      isOpen={createOrderModalIsOpen}
-      onDismiss={handleDismissCreateOrderModal}
-      onOrder={handleOnOrder}
-      token={token}
-      pool={pool}
-      balance={balance}
-    />
-    </>
-    )
-    )}
+      <CreateOrder
+        isOpen={createOrderModalIsOpen}
+        onDismiss={handleDismissCreateOrderModal}
+        onOrder={handleOnOrder}
+        token={token}
+        pool={pool || ""}
+        balance={balance}
+      />
   </>
   )
 }
@@ -151,39 +136,46 @@ const SLOrder: React.FC<SLOrderProps> = ({
 const SLOrders: React.FC = () => {
   const tokenMappingWithBalance = useBalances();
   const { status } = useWallet()
+  const toRend: React.ReactNode[] = [];
+  tokenNames.filter(name => {
+    const pools = tokenMappingWithBalance[name].pools
+    return tokenMappingWithBalance[name].balance?.toString() != "0"
+  }).map(name =>{
+      tokenMappingWithBalance[name].pools?.map(pool =>{
+        toRend.push( <Card>
+          <CardIcon>DAI</CardIcon>
+          <CardContent>
+            <Box
+              alignItems="center"
+              column
+            >
+              <Value value={tokenMappingWithBalance[name].balance? tokenMappingWithBalance[name].balance?.decimalPlaces(2).toString() + " " + name : "--"} />
+              <Label text={pool} />
+              
+            </Box>
+          </CardContent>
+          <SLOrderProvider token={name} pool={pool}>
+            <SLOrder
+              token={name}
+              pool={pool}
+              status={status}
+              balance={tokenMappingWithBalance[name].balance}
+            />
+          </SLOrderProvider>
+        </Card>)
+      })
+    })
   return (
     <>
-      <Split>
-        {tokenNames.map(name =>{
-            if (tokenMappingWithBalance[name].balance?.toString() == "0") return;
-              else return (<>
-                <Card>
-                <CardIcon>💰</CardIcon>
-                <CardContent>
-                  <Box
-                    alignItems="center"
-                    column
-                  >
-                    <Value value={tokenMappingWithBalance[name].balance? tokenMappingWithBalance[name].balance?.decimalPlaces(2).toString() + " " + name : "--"} />
-                    {tokenMappingWithBalance[name].pools?.map(pool=> <Label text={pool} />)}
-                    
-                  </Box>
-                </CardContent>
-              <SLOrderProvider token={name} pool={(tokenMappingWithBalance[name].pools || [""])[0]}>
-                <SLOrder
-                  token={name}
-                  pools={tokenMappingWithBalance[name].pools}
-                  status={status}
-                  balance={tokenMappingWithBalance[name].balance}
-                />
-              </SLOrderProvider>
-              </Card>
-              </>
-              )
-          })}
-      </Split>
-    </>
-  )
+    {toRend.map((render, k) => {
+      if(k%3 === 0)
+      return (<Split>
+        {toRend[k]}
+        {toRend[k+1]}
+        {toRend[k+2]}
+      </Split>)
+    })}
+  </>)
 }
 
 export default SLOrders;
