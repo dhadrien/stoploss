@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { useTheme } from 'react-neu'
+import useTheme from 'theme/useTheme'
 
 interface CloseProps {
   color?: string,

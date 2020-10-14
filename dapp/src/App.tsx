@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { ApolloClient, InMemoryCache, gql, ApolloProvider, useQuery } from '@apollo/client';
-import { createTheme, ThemeProvider } from 'react-neu'
+import { createTheme } from 'theme'
+import {ThemeProvider} from 'react-neu'
 import {
   BrowserRouter as Router,
   Route,
@@ -70,8 +71,10 @@ const Providers: React.FC = ({ children }) => {
   const [darkModeSetting] = useLocalStorage('darkMode', false)
   const { dark: darkTheme, light: lightTheme } = useMemo(() => {
     return createTheme({
-      baseColor: { h: 338, s: 100, l: 41 },
-      baseColorDark: { h: 339, s: 89, l: 49 },
+      baseColor: { h: 43, s: 59, l: 58 },
+      baseColorDark: { h: 43, s: 59, l: 58 },
+      baseGreyColor: { h: 300, s: 58, l: 32 },
+      baseGreyColorDark: { h: 300, s: 58, l: 32 },
       borderRadius: 28,
     })
   }, [])
