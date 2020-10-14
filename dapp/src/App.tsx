@@ -13,12 +13,13 @@ import TopBar from 'components/TopBar'
 import SLProvider from 'contexts/SLProvider'
 import {BalancesProvider} from 'contexts/Balances'
 import {ManageProvider} from 'contexts/Manage'
+import {LiquidateProvider} from 'contexts/Liquidate'
 import useLocalStorage from 'hooks/useLocalStorage'
 
 import Manage from 'views/Manage';
 import Stoploss from 'views/Stoploss';
 import Home from 'views/Home';
-
+import Liquidate from 'views/Liquidate';
 
 
 const App: React.FC = () => {
@@ -42,7 +43,15 @@ const App: React.FC = () => {
             <Home />
           </Route>
           <Route exact path="/manage">
-            <Manage />
+            <ManageProvider>
+              <Manage />
+            </ManageProvider>
+          </Route>
+          
+          <Route exact path="/liquidate">
+            <LiquidateProvider>
+              <Liquidate />
+            </LiquidateProvider>
           </Route>
           <Route path="/stoploss">
             <Stoploss />
@@ -81,9 +90,7 @@ const Providers: React.FC = ({ children }) => {
         <SLProvider>
           <BalancesProvider>
               <ApolloProvider client={client}>
-                <ManageProvider>
                   {children}
-                </ManageProvider>
               </ApolloProvider>
           </BalancesProvider>
         </SLProvider>

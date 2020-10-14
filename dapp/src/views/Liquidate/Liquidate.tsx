@@ -24,10 +24,11 @@ import {
 } from 'constants/tokenAddresses'
 import Page from 'components/Page'
 import PageHeader from 'components/PageHeader'
-import useManage from 'hooks/useManage'
-import ManagerOrders from './components/ManageOrders'
+// import useLiquidate from 'hooks/useSLOrder'
 import ManageOrders from './components/ManageOrders'
-import {ManageProvider} from 'contexts/Manage'
+// import LiquidateOrders from './components/LiquidateOrders'
+import useLiquidate from 'hooks/useLiquidate'
+import {LiquidateProvider} from 'contexts/Liquidate'
 // import { gql } from 'apollo-boost';
 // import ApolloClient from 'apollo-boost';
 // import { ApolloProvider as ApolloNew } from '@apollo/react-common';
@@ -69,40 +70,40 @@ import {ManageProvider} from 'contexts/Manage'
 
 // import Unipair from './components/Unipair';
 
-const Manage: React.FC = () => {
-  const {orders, onWithdraw, isWithdrawing} = useManage();
+const Liquidate: React.FC = () => {
+  const {orders, onWithdraw, isWithdrawing} = useLiquidate();
   const {account} = useWallet();
   const sl = useSL();
+  // const liquidatedOrders = orders.stopLosses.filter(order => order.status === "Executed");
+  // orders.stopLosses = liquidatedOrders;
   // return (<p>hi</p>)
   return (
-    <ManageProvider>
-        <Page>
-        <PageHeader
-          icon="📊"
-          subtitle="Your Orders"
-          title="Manage Stop Loss"
-        />  
-        <Container>
-        {account && sl ? 
-        <div>
-        {orders.loading ? (
-          <>
-          <h3>Stop Losses</h3>
-          <p>Loading ...</p>
-          </>
-        ) : 
-        <ManageOrders
-        orders ={orders}
-        onWithdraw={onWithdraw}
-        isWithdrawing={isWithdrawing}
-        />}
-      </div> :
-      <h3> Unlock wallet!</h3>}
-        
-        </Container>
-      </Page>
-    </ManageProvider>
+      <Page>
+      <PageHeader
+        icon="🤑"
+        subtitle="Your Orders"
+        title="Liquidate Stop Loss"
+      />  
+      <Container>
+      {account && sl ? 
+      <div>
+      {orders.loading ? (
+        <>
+        <h3>Stop Losses</h3>
+        <p>Loading ...</p>
+        </>
+      ) : 
+      <ManageOrders
+      orders ={orders}
+      onWithdraw={onWithdraw}
+      isWithdrawing={isWithdrawing}
+      />}
+    </div> :
+    <h3> Unlock wallet!</h3>}
+      
+      </Container>
+    </Page>
   )
 }
 
-export default Manage
+export default Liquidate

@@ -23,7 +23,7 @@ addressMapping[daiAddress.toLowerCase()] = "DAI";
 addressMapping[usdcAddress.toLowerCase()] = "USDC";
 addressMapping[usdtAddress.toLowerCase()] = "USDT";
 addressMapping[wbtcAddress.toLowerCase()] = "WBTC";
-addressMapping[wethAddress.toLowerCase()] = "WETH";
+addressMapping[wethAddress.toLowerCase()] = "ETH";
 
 addressMapping[SLPoolFDAIFWETHAddress.toLowerCase()] = "DAIWETH";
 addressMapping[SLPoolFUSDCFWETHAddress.toLowerCase()] = "USDCWETH";
