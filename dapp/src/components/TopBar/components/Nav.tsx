@@ -5,10 +5,10 @@ import { NavLink } from 'react-router-dom'
 const Nav: React.FC = () => {
   return (
     <StyledNav>
-      <StyledLink exact activeClassName="active" to="/">Home</StyledLink>
-      <StyledLink exact activeClassName="active" to="/stoploss">Make a Stop Loss</StyledLink>
-      <StyledLink exact activeClassName="active" to="/manage">Manage Stop Loss</StyledLink>
-      <StyledLink exact activeClassName="active" to="/liquidate">Liquidators</StyledLink>
+      {/* <StyledLink exact activeClassName="active" to="/"> </StyledLink> */}
+      <StyledLink exact activeClassName="active" to="/stoploss"> STOPLOSS </StyledLink>
+      <StyledLink exact activeClassName="active" to="/manage"> MANAGE </StyledLink>
+      <StyledLink exact activeClassName="active" to="/liquidate"> LIQUIDATE </StyledLink>
     </StyledNav>
   )
 }
@@ -19,7 +19,7 @@ const StyledNav = styled.nav`
 `
 
 const StyledLink = styled(NavLink)`
-  color: ${props => props.theme.colors.grey[500]};
+  color: ${props => props.theme.colors.grey[600]};
   font-weight: 700;
   padding-left: ${props => props.theme.spacing[3]}px;
   padding-right: ${props => props.theme.spacing[3]}px;
@@ -28,7 +28,8 @@ const StyledLink = styled(NavLink)`
     color: ${props => props.theme.colors.grey[600]};
   }
   &.active {
-    color: ${props => props.theme.colors.primary.main};
+    color: ${props => props.theme.colors.grey[500]};
+    text-decoration: overline;
   }
 `
 

@@ -19,8 +19,8 @@ const Home: React.FC = () => {
     <Page>
       <PageHeader
         icon={darkMode ? "🌚" : "🌞"}
-        subtitle={darkMode ? "Dark mode Stop Loss: stronger than ever!" : "Don't be greedy, don't loss it all on Impermanent Losses!"}
-        title="stoploss.finance."
+        subtitle={darkMode ? "" : ""}
+        title=""
       />
       {/* <Container>
         <RegisterVoteNotice />

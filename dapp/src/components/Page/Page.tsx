@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import Footer from '../Footer'
 
-import BKG from '../../assets/IMP.svg'
+import BKG from '../../assets/impPurple.svg'
 
 const Page: React.FC = ({ children }) => (
   <StyledPage>

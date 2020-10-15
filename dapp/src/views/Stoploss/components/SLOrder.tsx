@@ -96,7 +96,7 @@ const SLOrder: React.FC<SLOrderProps> = ({
           full
           onClick={onApprove}
           text={!isApproving ? "Approve Stop Loss" : "Approving..."}
-          variant={isApproving || status !== 'connected' ? 'secondary' : 'tertiary'}
+          variant={isApproving || status !== 'connected' ? 'default' : 'tertiary'}
         />
       )
     }

@@ -39,8 +39,8 @@ const Manage: React.FC = () => {
         <Page>
         <PageHeader
           icon="📊"
-          subtitle="Your Orders"
-          title="Manage Stop Loss"
+          subtitle="Your stop-losses"
+          title="MANAGE"
         />  
         <Container>
         {account && sl ? 
@@ -57,7 +57,7 @@ const Manage: React.FC = () => {
         isWithdrawing={isWithdrawing}
         />}
       </div> :
-      <h3> Unlock wallet!</h3>}
+      <h3> Unlock your wallet!</h3>}
         
         </Container>
       </Page>

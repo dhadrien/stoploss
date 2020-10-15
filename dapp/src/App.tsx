@@ -41,14 +41,13 @@ const App: React.FC = () => {
         <MobileMenu onDismiss={handleDismissMobileMenu} visible={mobileMenu} />
         <Switch>
           <Route exact path="/">
-            <Home />
+            <Stoploss />
           </Route>
           <Route exact path="/manage">
             <ManageProvider>
               <Manage />
             </ManageProvider>
           </Route>
-          
           <Route exact path="/liquidate">
             <LiquidateProvider>
               <Liquidate />
@@ -71,14 +70,22 @@ const Providers: React.FC = ({ children }) => {
   const [darkModeSetting] = useLocalStorage('darkMode', false)
   const { dark: darkTheme, light: lightTheme } = useMemo(() => {
     return createTheme({
-      baseColor: { h: 43, s: 59, l: 58 },
-      // button color
-      baseColorDark: { h: 43, s: 59, l: 58 },
-      baseGreyColor: { h: 300, s: 58, l: 32 },
-      baseGreyColorDark: { h: 300, s: 58, l: 32 },
-      borderRadius: 4,
+      baseColor: { h: 45, s: 63, l: 59 },
+      baseColorDark: { h: 242, s: 62, l: 39 },
+      baseGreyColor: { h: 259, s: 56, l: 35 },
+      baseGreyColorDark: { h: 242, s: 62, l: 39 },
+      borderRadius: 8,
     })
   }, [])
+
+// YELLOW1 { h: 45, s: 63, l: 59 },
+// BLUE1 { h: 242, s: 62, l: 39 },
+// BLUE2 { h: 227, s: 63, l: 37 },
+// PINK1 { h: 292, s: 63, l: 37 }
+// PURPLE1: { h: 259, s: 56, l: 35 },
+// PURPLE2: { h: 260, s: 77, l: 8 },
+
+
   return (
     <ThemeProvider
       darkModeEnabled={darkModeSetting}

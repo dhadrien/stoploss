@@ -34,9 +34,9 @@ const createTheme = (config?: ThemeConfig): {
 
 
   const buttonSizes = {
-    lg: 48,
-    md: 36,
-    sm: 24,
+    lg: 72,
+    md: 60,
+    sm: 48,
   }
 
   // const buttonSizes = {
@@ -143,11 +143,11 @@ const hslToCssString = (hsla: HSLA) => {
 
 const generateGreys = (h: number) => {
   return {
-    100: hslToCssString({ h, s: 40, l: 96 }),
+    100: hslToCssString({ h, s: 0, l: 100 }),
     200: hslToCssString({ h, s: 40, l: 94 }),
     300: hslToCssString({ h, s: 40, l: 90 }),
     400: hslToCssString({ h, s: 40, l: 70 }),
-    500: hslToCssString({ h, s: 70, l: 52 }),
+    500: hslToCssString({ h, s: 70, l: 100 }),
     600: hslToCssString({ h, s: 10, l: 37 }),
     700: hslToCssString({ h, s: 17, l: 15 }),
     800: hslToCssString({ h, s: 40, l: 10 }),
