@@ -12,10 +12,14 @@ const {
 import {INIT_TOKEN_SUPPLY} from "../utils/envutils";
 import {weiAmountToString} from "../utils/ethutils";
 
+console.log("$------------------", process.env);
+
 const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const {deployer, user} = await bre.getNamedAccounts();
+  const chain = await bre.getChainId();
+  console.log("kovaaaaaan", chain);
   const deployerUser = await bre.ethers.getSigner(deployer);
-  const {deploy} = bre.deployments;
+  const {deploy, save, getArtifact} = bre.deployments;
   const useProxy = !bre.network.live;
   console.log(`
   😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈😈
@@ -34,7 +38,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     contract: "ERC20Log",
     from: deployer,
     proxy: false,
-    args: [INIT_TOKEN_SUPPLY, "Fake Dai", "STP"],
+    args: [INIT_TOKEN_SUPPLY, "Fake Dai", "DAI"],
     log: true,
   });
   logStep("DEPLOYING FAKE USDT");
@@ -42,7 +46,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     contract: "ERC20Log",
     from: deployer,
     proxy: false,
-    args: [INIT_TOKEN_SUPPLY, "Fake USDT", "STP"],
+    args: [INIT_TOKEN_SUPPLY, "Fake USDT", "USDT"],
     log: true,
   });
   logStep("DEPLOYING FAKE USDC");
@@ -50,7 +54,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     contract: "ERC20Log",
     from: deployer,
     proxy: false,
-    args: [INIT_TOKEN_SUPPLY, "Fake USDC", "STP"],
+    args: [INIT_TOKEN_SUPPLY, "Fake USDC", "USDC"],
     log: true,
   });
   logStep("DEPLOYING FAKE WBTC");
@@ -58,34 +62,47 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
     contract: "ERC20Log",
     from: deployer,
     proxy: false,
-    args: [INIT_TOKEN_SUPPLY, "Fake WBTC", "STP"],
+    args: [INIT_TOKEN_SUPPLY, "Fake WBTC", "WBTC"],
     log: true,
   });
-
-  logStep("DEPLOYING FAKE WETH");
-  await deploy("FWETH", {
-    contract: "WETH",
+  logStep("DEPLOYING FAKE ETH as ERC20"); // to mimiq eth liquidity
+  await deploy("FETH", {
+    contract: "ERC20Log",
     from: deployer,
     proxy: false,
-    args: [],
+    args: [INIT_TOKEN_SUPPLY, "Fake ETH", "FETH"],
     log: true,
   });
-  logStep("TRANSFORMING ETH IN FWETH FOR DEPLOYER");
-  const FWETH = await bre.ethers.getContract("FWETH", deployerUser);
-  const FDAI = await bre.ethers.getContract("FDAI", deployerUser);
-  await FWETH.deposit({
-    value: INIT_TOKEN_SUPPLY,
-  });
-  const FWETHDeployerBalance = await FWETH.balanceOf(deployer);
-  const FDAIDeployerBalance = await FDAI.balanceOf(deployer);
-  console.log(
-    "Deployer FWETH BALANCE: ",
-    weiAmountToString(FWETHDeployerBalance)
-  );
-  console.log(
-    "Deployer FDAI BALANCE: ",
-    weiAmountToString(FDAIDeployerBalance)
-  );
+  if (chain == "1337" || chain == "31337") {
+    logStep("DEPLOYING FAKE WETH");
+    await deploy("WETH", {
+      contract: "WETH",
+      from: deployer,
+      proxy: false,
+      args: [],
+      log: true,
+    });
+    logStep("TRANSFORMING ETH IN FWETH FOR DEPLOYER");
+    const FWETH = await bre.ethers.getContract("WETH", deployerUser);
+    const FDAI = await bre.ethers.getContract("FDAI", deployerUser);
+    await FWETH.deposit({
+      value: INIT_TOKEN_SUPPLY,
+    });
+    const FWETHDeployerBalance = await FWETH.balanceOf(deployer);
+    const FDAIDeployerBalance = await FDAI.balanceOf(deployer);
+    console.log(
+      "Deployer FWETH BALANCE: ",
+      weiAmountToString(FWETHDeployerBalance)
+    );
+    console.log(
+      "Deployer FDAI BALANCE: ",
+      weiAmountToString(FDAIDeployerBalance)
+    );
+  } else {
+    const WETH = await getArtifact("ERC20");
+    save("WETH", {abi: WETH.abi, address: process.env["WETH_" + chain] || ""});
+  }
+  // throw new Error("");
   return !useProxy; // when live network, record the script as executed to prevent rexecution
 };
 export default func;
