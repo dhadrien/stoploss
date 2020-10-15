@@ -21,16 +21,11 @@ const Provider: React.FC = ({ children }) => {
       tokenMapping[name].balance = new BigNumber(await getBalance(provider, tokenMapping[name].address, userAddress)).dividedBy(new BigNumber(10).pow(18))
     ))
     setTokenBalances(tokenMapping);
-    // console.log('hahahah', balances);
-    // );
-    // setDaiBalance(new BigNumber(balances[0]).dividedBy(new BigNumber(10).pow(18)))
-    // setUsdcBalance(new BigNumber(balances[1]).dividedBy(new BigNumber(10).pow(18)))
-    // setUsdtBalance(new BigNumber(balances[2]).dividedBy(new BigNumber(10).pow(18)))
-    // setWbtcBalance(new BigNumber(balances[3]).dividedBy(new BigNumber(10).pow(18)))
-    // setWethBalance(new BigNumber(balances[4]).dividedBy(new BigNumber(10).pow(18)))
   }, [
     setTokenBalances,
-    balance
+    balance,
+    account,
+    ethereum
     // setWethBalance,
   ])
 
@@ -54,8 +49,10 @@ const Provider: React.FC = ({ children }) => {
   }, [
     account,
     ethereum,
+    balance,
     fetchBalances,
     tokenBalances,
+    setTokenBalances
   ])
 
   return (

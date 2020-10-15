@@ -1,6 +1,6 @@
 import { HSLA, Theme, ThemeConfig } from './types'
 
-const DEFAULT_COLOR: HSLA = { h: 200, s: 100, l: 50 }
+const DEFAULT_COLOR: HSLA = { h: 260, s: 77, l: 8 }
 
 const createTheme = (config?: ThemeConfig): {
   dark: Theme,
@@ -11,7 +11,7 @@ const createTheme = (config?: ThemeConfig): {
     baseColorDark,
     baseGreyColor,
     baseGreyColorDark,
-    borderRadius = 24,
+    borderRadius = 0,
     siteWidth = 1200
   } = config || {}
 
@@ -20,8 +20,8 @@ const createTheme = (config?: ThemeConfig): {
   const { h: baseGreyH } = baseGreyColor || baseColor
   const { h: baseGreyDarkH } = baseGreyColorDark || baseColorDark || baseGreyColor || baseColor
 
-  const blackHSLA: HSLA = { h: baseGreyH, s: 95, l: 4 }
-  const whiteHSLA: HSLA = { h: baseGreyH, s: 100, l: 100 }
+  const blackHSLA: HSLA = { h: baseGreyH, s: 10, l: 10 }
+  const whiteHSLA: HSLA = { h: baseGreyH, s: 50, l: 50 }
   const black = hslToCssString(blackHSLA)
   const white = hslToCssString(whiteHSLA)
   const grey = generateGreys(baseGreyH)
@@ -35,9 +35,15 @@ const createTheme = (config?: ThemeConfig): {
 
   const buttonSizes = {
     lg: 72,
-    md: 48,
-    sm: 36,
+    md: 60,
+    sm: 48,
   }
+
+  // const buttonSizes = {
+  //   lg: 48,
+  //   md: 36,
+  //   sm: 24,
+  // }
 
   const colors = {
     black,
@@ -63,15 +69,25 @@ const createTheme = (config?: ThemeConfig): {
 
   const spacing = {
     0: 0,
-    1: 4,
-    2: 8,
-    3: 16,
-    4: 24,
-    5: 32,
-    6: 48,
-    7: 72,
-    8: 96
+    1: 2,
+    2: 4,
+    3: 8,
+    4: 12,
+    5: 16,
+    6: 24,
+    7: 36,
+    8: 48
   }
+
+  // 0: 0,
+  // 1: 4,
+  // 2: 8,
+  // 3: 16,
+  // 4: 24,
+  // 5: 32,
+  // 6: 48,
+  // 7: 72,
+  // 8: 96
 
   const lightTheme: Theme = {
     baseBg: `radial-gradient(circle at top, ${grey[100]}, ${grey[200]})`,
@@ -127,17 +143,18 @@ const hslToCssString = (hsla: HSLA) => {
 
 const generateGreys = (h: number) => {
   return {
-    100: hslToCssString({ h, s: 20, l: 96 }),
-    200: hslToCssString({ h, s: 20, l: 94 }),
-    300: hslToCssString({ h, s: 20, l: 90 }),
-    400: hslToCssString({ h, s: 20, l: 70 }),
-    500: hslToCssString({ h, s: 7, l: 52 }),
+    100: hslToCssString({ h, s: 0, l: 100 }),
+    200: hslToCssString({ h, s: 40, l: 94 }),
+    300: hslToCssString({ h, s: 40, l: 90 }),
+    400: hslToCssString({ h, s: 40, l: 70 }),
+    500: hslToCssString({ h, s: 70, l: 100 }),
     600: hslToCssString({ h, s: 10, l: 37 }),
     700: hslToCssString({ h, s: 17, l: 15 }),
-    800: hslToCssString({ h, s: 20, l: 10 }),
-    900: hslToCssString({ h, s: 20, l: 5 }),
+    800: hslToCssString({ h, s: 40, l: 10 }),
+    900: hslToCssString({ h, s: 40, l: 5 }),
   }
 }
+
 
 const generateSurfaces = (
   base: {

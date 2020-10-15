@@ -20,24 +20,7 @@ const DarkModeSwitch: React.FC = () => {
     setDarkModeSetting
   ])
 
-  return (
-    <Switch>
-      <SwitchButton
-        active={!darkMode}
-        onClick={onToggleDarkMode}
-        round
-      >
-        <Emoji emoji="🌞" />
-      </SwitchButton>
-      <SwitchButton
-        active={darkMode}
-        onClick={onToggleDarkMode}
-        round
-      >
-        <Emoji emoji="🌚" />
-      </SwitchButton>
-    </Switch>
-  )
+  return (null)
 }
 
 export default DarkModeSwitch

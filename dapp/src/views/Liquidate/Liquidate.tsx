@@ -90,12 +90,16 @@ const Liquidate: React.FC = () => {
       <Page>
       <PageHeader
         icon="🤑"
-        subtitle="Your Orders"
-        title="Liquidate Stop Loss"
+        subtitle="Available stop-losses"
+        title="LIQUIDATE"
       />  
       
       {account && sl ? 
-      <><Button onClick={toggleShow} text={show ? "Check New Liquidation Opportunities" : "My past Liquidations"}/> {show? 
+      <><Button 
+          onClick={toggleShow} 
+          text={show ? "Check New Liquidation Opportunities" : "My past Liquidations"}
+          variant="default"
+        /> {show? 
         <Container>
         {orders.loading ? (
           <>

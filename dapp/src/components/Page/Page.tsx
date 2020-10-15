@@ -3,6 +3,8 @@ import styled from 'styled-components'
 
 import Footer from '../Footer'
 
+import BKG from '../../assets/impPurple.svg'
+
 const Page: React.FC = ({ children }) => (
   <StyledPage>
     <StyledMain>
@@ -14,7 +16,9 @@ const Page: React.FC = ({ children }) => (
 
 const StyledPage = styled.div``
 
-const StyledMain = styled.div`
+const StyledMain = styled.div.attrs({
+  role: 'img'
+})`
   align-items: center;
   box-sizing: border-box;
   display: flex;
