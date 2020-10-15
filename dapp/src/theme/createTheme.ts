@@ -12,7 +12,7 @@ const createTheme = (config?: ThemeConfig): {
     baseGreyColor,
     baseGreyColorDark,
     borderRadius = 0,
-    siteWidth = 1920
+    siteWidth = 1200
   } = config || {}
 
   const { h, s } = baseColor

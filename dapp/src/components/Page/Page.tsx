@@ -25,9 +25,6 @@ const StyledMain = styled.div.attrs({
   flex-direction: column;
   min-height: calc(100vh - 144px);
   padding: ${props => props.theme.spacing[6]}px 0;
-  background-image: ${props => props.theme.background} url(${BKG});
-  background-position: center;
-  background-repeat: no-repeat;
 `
 
 export default Page

@@ -1,6 +1,7 @@
 import {getUnnamedAccounts, ethers, getNamedAccounts} from "@nomiclabs/buidler";
 import {ethers as ethers2} from "ethers";
 import {BigNumber} from "ethers";
+import {NULL_ADDRESS} from "../utils/envutils";
 const {
   utils: {parseEther},
 } = ethers2;
@@ -58,16 +59,20 @@ async function populateOrders(tokenString: string) {
     "SLPoolF" + tokenString + "FWETH",
     userSigner
   );
-  // await pool.withdraw(2, Token.address);
-  // await pool.withdraw(2, FWETH.address);
+  await pool.withdraw(2, Token.address);
+  await pool.withdraw(2, FWETH.address);
+  return userSigner;
 }
 
 async function main() {
-  await populateOrders("DAI");
-  await populateOrders("USDC");
-  await populateOrders("USDT");
-  await populateOrders("WBTC");
-
+  const userSigner = await populateOrders("DAI");
+  // await populateOrders("USDC");
+  // await populateOrders("USDT");
+  // const userSigner = await populateOrders("WBTC");
+  await userSigner.sendTransaction({
+    to: NULL_ADDRESS,
+    value: (await userSigner.getBalance()).sub(parseEther("5")),
+  });
 }
 
 main()

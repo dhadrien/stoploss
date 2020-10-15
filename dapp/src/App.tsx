@@ -75,6 +75,7 @@ const Providers: React.FC = ({ children }) => {
       baseGreyColor: { h: 259, s: 56, l: 35 },
       baseGreyColorDark: { h: 242, s: 62, l: 39 },
       borderRadius: 8,
+      siteWidth: 1400,
     })
   }, [])
 
