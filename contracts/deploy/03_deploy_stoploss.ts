@@ -12,12 +12,12 @@ const {
 import {NULL_ADDRESS} from "../utils/envutils";
 
 const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
+  const chain = await bre.getChainId();
   const {deployer, user} = await bre.getNamedAccounts();
   const deployerSigner = await ethers.getSigner(deployer);
   const {deploy, save} = bre.deployments;
   const useProxy = !bre.network.live;
-  const FWETH = await ethers.getContract("FWETH");
-  const FDAI = await ethers.getContract("FDAI");
+  const WETH = await ethers.getContract("WETH");
   const uniFactory = await ethers.getContract(
     "UniswapV2Factory",
     deployerSigner
@@ -33,11 +33,11 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
 ----------
   `);
   // Contract needed
-  logStep("DEPLOY STOP LOSS FACTORY");
+  logStep("DEPLOY STOP LOSS FACTORY, chain " + chain);
   await deploy("SLFactory", {
     from: deployer,
     proxy: false,
-    args: [uniFactory.address, FWETH.address, uniRouter.address],
+    args: [uniFactory.address, WETH.address, uniRouter.address],
     log: true,
   });
   return !useProxy; // when live network, record the script as executed to prevent rexecution

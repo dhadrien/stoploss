@@ -1,9 +1,10 @@
 pragma solidity 0.7.1;
 
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import './interfaces/IUniswapV2Pair.sol';
+import './interfaces/IERC20.sol';
 import './interfaces/IUniswapV2Router02.sol';
+import './interfaces/IWETH9.sol';
 import '@nomiclabs/buidler/console.sol';
 import './lib/SLOracle.sol';
 
@@ -36,8 +37,6 @@ contract SLPool {
 
     // Router for trading/ Liquidity removal
     address public uniRouter;
-    
-
 
     event StopLossCreated(
       address uniPair,
@@ -103,9 +102,9 @@ contract SLPool {
         (tokenA, tokenB) = specialSortTokens(_token1, _token2);
         oracle = _oracle;
         initPrice();
-        ERC20(uniPair).approve(uniRouter, 10000000000000 ether);
-        ERC20(tokenA).approve(uniRouter, 10000000000000 ether);
-        ERC20(tokenB).approve(uniRouter, 10000000000000 ether);
+        IERC20(uniPair).approve(uniRouter, 10000000000000 ether);
+        IERC20(tokenA).approve(uniRouter, 10000000000000 ether);
+        IERC20(tokenB).approve(uniRouter, 10000000000000 ether);
     }
 
     function specialSortTokens(
@@ -160,15 +159,11 @@ contract SLPool {
           (uint reserve0, uint reserve1,) = IUniswapV2Pair(uniPair).getReserves();
           (reserveA, reserveB) = inverted ? (reserve1, reserve0) : (reserve0, reserve1);
           totalLpSupply = IUniswapV2Pair(uniPair).totalSupply(); // in storage for now, could be memory
-          uint totalReserveinB = reserveB.add((reserveA.mul(priceA.div(1 ether))));
-          uint totalReserveInA = totalReserveinB.div(priceA.div(1 ether));
+          uint totalReserveinB = reserveB.add((reserveA.mul(priceA).div(1 ether)));
+          uint totalReserveInA = totalReserveinB.div(priceA).mul(1 ether);
           lastRatioA = (totalReserveInA.mul(RATIO_PRECISION)).div(totalLpSupply);
           lastRatioB = (totalReserveinB.mul(RATIO_PRECISION)).div(totalLpSupply);
           emit Update(block.timestamp, priceA, lastRatioA, lastRatioB);
-          console.log(">>>New update");
-          console.log("newPriceA", priceA);
-          console.log("newRatioA", lastRatioA);
-          console.log("newRatioB", lastRatioB);
         }
     }
 
@@ -176,8 +171,73 @@ contract SLPool {
       return IUniswapV2Pair(uniPair).balanceOf(address(this));
     }
 
+    function _getOrderer(uint orderIndex, address token) private view returns (address){
+      return token == tokenA ? 
+        getStopOrdersTokenA[orderIndex].orderer :
+        getStopOrdersTokenB[orderIndex].orderer;
+    }
+    function _getLpAmount(uint orderIndex, address token) private view returns (uint){
+      return token == tokenA ? 
+        getStopOrdersTokenA[orderIndex].lpAmount :
+        getStopOrdersTokenB[orderIndex].lpAmount;
+    }
+    function _getAmountToGuarantee(uint orderIndex, address token) private view returns (uint){
+      return token == tokenA ? 
+        getStopOrdersTokenA[orderIndex].amountToGuarantee :
+        getStopOrdersTokenB[orderIndex].amountToGuarantee;
+    }
+    function _getRatio(uint orderIndex, address token) private view returns (uint){
+      return token == tokenA ? 
+        getStopOrdersTokenA[orderIndex].ratio :
+        getStopOrdersTokenB[orderIndex].ratio;
+    }
+    function _deleteOrder(uint orderIndex, address token) private {
+      token == tokenA ? 
+        delete getStopOrdersTokenA[orderIndex] :
+        delete getStopOrdersTokenB[orderIndex];
+    }
+    
+
     function stopLoss(uint lpAmount, address tokenToGuarantee, uint amountToGuarantee) public {
       _stopLoss(lpAmount, tokenToGuarantee, amountToGuarantee, 0, false);
+    }
+
+    function stopLossFromToken(address tokenIn, uint  amountToSend, uint amountToGuarantee) public {
+      _stopLossFromToken(tokenIn, amountToSend, amountToGuarantee, false);
+    }
+
+    function _stopLossFromToken(address tokenIn, uint  amountToSend, uint amountToGuarantee, bool fromEther) public {
+      require(amountToSend > amountToGuarantee, "SLPOOL: TOO_LARGE_GUARANTEE");
+      address[] memory path = new address[](2);
+      path[0] = tokenIn;
+      path[1] = tokenIn == tokenB ? tokenA : tokenB;
+      uint[] memory amounts = new uint[](2);
+      if(!fromEther) {IERC20(tokenIn).transferFrom(msg.sender, address(this),  amountToSend);}
+      if(fromEther) {
+      }
+      amounts = 
+        IUniswapV2Router02(uniRouter).swapExactTokensForTokens(
+            amountToSend.div(2), 0, path, address(this), 262156100447
+        );
+      (, , uint liquidity) =
+        IUniswapV2Router02(uniRouter).addLiquidity(
+              path[1],
+              path[0],
+              amounts[1],
+              amounts[0],
+              0,
+              0,
+              address(this),
+              262156100447
+          );
+      _stopLoss(liquidity, tokenIn, amountToGuarantee, amountToSend, true);
+    }
+
+    function stopLossFromEther(uint ethToGuarantee) public payable {
+      require(isWETH, "SLPOOL: NOT_WETH_POOL");
+      require(msg.value > ethToGuarantee, "SLPOOL: TOO_LARGE_ETH_GUARANTEE");
+      IWETH9(tokenA).deposit{value: msg.value}();
+      _stopLossFromToken(tokenA, msg.value, ethToGuarantee, true);
     }
 
     // have to make it public for tests, should be removed to interal
@@ -203,66 +263,46 @@ contract SLPool {
         length = getStopOrdersTokenB.length - 1;
       }
       emit StopLossCreated(uniPair, length, msg.sender, delegated, lpAmount, tokenToGuarantee, amountToGuarantee, tokenIn, ratio);
-      console.log(">>>New StopLoss Registered from", msg.sender);
-      console.log("uniPair", uniPair);
-      console.log("orderNumber", length);
-      console.log("orderer", msg.sender);
-      console.log("lpAmount", lpAmount);
-      console.log("tokenIn", tokenIn);
-      console.log("tokenToGuarantee", tokenToGuarantee);
-      console.log("amountToGuarantee", amountToGuarantee);
-      console.log("ratio", ratio);
       update();
     }
 
-    function stopLossFromEther(uint ethToGuarantee) public payable {
+    function _executeStopLossToken(uint stopLossindex, address token) public {
+      bool isA = token == tokenA;
+      require((isA ? lastRatioA : lastRatioB) < (_getRatio(stopLossindex, token).mul(uint(100).add(MARGIN_RATIO))).div(100), 'SLPOOL: RATIO_CONDITION');
+      (uint tokenReceived, uint otherTokenReceived) =
+          IUniswapV2Router02(uniRouter).removeLiquidity(
+            token,
+            isA ? tokenB : tokenA,
+            _getLpAmount(stopLossindex, token),
+            0,
+            0,
+            address(this),
+            262156100447
+          ); // infiinite deadline
+      uint tokenGuaranted = _getAmountToGuarantee(stopLossindex, token);
       address[] memory path = new address[](2);
-      path[0] = WETH;
-      path[1] = tokenB;
-      uint[] memory amounts = new uint[](2);
-      amounts = 
-        IUniswapV2Router02(uniRouter).swapExactETHForTokens{value:msg.value.div(2)}(
-          0, path, address(this), 262156100447
-        );
-      (, , uint liquidity) =
-        IUniswapV2Router02(uniRouter).addLiquidityETH{value:amounts[0]}(
-              tokenB,
-              amounts[1],
-              0,
-              0,
-              address(this),
-              262156100447
-          );
-      console.log("LP Tokens", liquidity);
-      _stopLoss(liquidity, tokenA, ethToGuarantee, msg.value, true);
-    }
-    
-    function stopLossFromToken(uint tokenToSend, uint tokenToGuarantee) public {
-      address[] memory path = new address[](2);
-      path[0] = tokenB;
-      path[1] = WETH;
-      uint[] memory amounts = new uint[](2);
-      ERC20(tokenB).transferFrom(msg.sender, address(this), tokenToSend);
-      amounts = 
-        IUniswapV2Router02(uniRouter).swapExactTokensForETH(
-          tokenToSend.div(2), 0, path, address(this), 262156100447
-        );
-      // console.log("Token sold", amounts[0]);
-      // console.log("Ether bought", amounts[1]);
-      (, , uint liquidity) =
-        IUniswapV2Router02(uniRouter).addLiquidityETH{value:amounts[1]}(
-              tokenB,
-              amounts[0],
-              0,
-              0,
-              address(this),
-              262156100447
-          );
-      console.log("LP Tokens", liquidity);
-      _stopLoss(liquidity, tokenB, tokenToGuarantee, tokenToSend, true);
-    }
-
-    function _executeStopLoss() public {}     
+      path[0] = isA ? tokenB : tokenA;
+      path[1] = token;
+      uint[] memory otherTokenSold = new uint[](1);
+      otherTokenSold = 
+        IUniswapV2Router02(uniRouter).swapTokensForExactTokens(
+          tokenGuaranted.sub(tokenReceived), otherTokenReceived, path, address(this), 262156100447
+        ); // infiinite deadline
+      IERC20(token).transfer(_getOrderer(stopLossindex, token), tokenGuaranted);
+      IERC20(isA ? tokenB : tokenA).transfer(msg.sender, otherTokenReceived - otherTokenSold[0]);
+      emit StopLossExecuted(
+        uniPair,
+        stopLossindex,
+        _getOrderer(stopLossindex, token),
+        msg.sender,
+        _getLpAmount(stopLossindex, token),
+        token,
+        tokenGuaranted,
+        isA ? tokenB : tokenA,
+        otherTokenReceived - otherTokenSold[0]
+      );
+      _deleteOrder(stopLossindex, token);
+    }     
 
     // this function is currently public, should be internal, otherwise revert dont throw correct message
     function _executeStopLossTokenWeth(uint stopLossindex) public {
@@ -285,7 +325,7 @@ contract SLPool {
         IUniswapV2Router02(uniRouter).swapETHForExactTokens{value:ethReceived}(
           tokenGuaranted.sub(tokenReceived), path, address(this), 262156100447
         ); // infiinite deadline
-      ERC20(tokenB).transfer(getStopOrdersTokenB[stopLossindex].orderer, tokenGuaranted);
+      IERC20(tokenB).transfer(getStopOrdersTokenB[stopLossindex].orderer, tokenGuaranted);
       msg.sender.transfer(ethReceived - etherSold[0]);
       emit StopLossExecuted(
         uniPair,
@@ -298,23 +338,11 @@ contract SLPool {
         tokenA,
         ethReceived - etherSold[0]
       );
-      console.log(">>>New StopLoss Execution");
-      console.log("uniPair", uniPair);
-      console.log("orderNumber", stopLossindex);
-      console.log("orderer", getStopOrdersTokenB[stopLossindex].orderer);
-      console.log("liquidator", msg.sender);
-      console.log("lpAmount", getStopOrdersTokenB[stopLossindex].lpAmount);
-      console.log("tokenToGuarantee", tokenB);
-      console.log("token Withdrawn amount", tokenGuaranted);
-      console.log("tokenToLiquidator", tokenA);
-      console.log("ether to Liq", ethReceived - etherSold[0]);
       delete getStopOrdersTokenB[stopLossindex];
     }
 
     // this function is currently public, should be internal, otherwise revert dont throw correct message
     function _executeStopLossEth(uint stopLossindex) public {
-      console.log("--_executeStopLossEth ratioA", lastRatioA);
-      console.log("--_executeStopLossEth ratio calc", (getStopOrdersTokenA[stopLossindex].ratio.mul(uint(100).add(MARGIN_RATIO))).div(100));
       require(lastRatioA < (getStopOrdersTokenA[stopLossindex].ratio.mul(uint(100).add(MARGIN_RATIO))).div(100), 'SLPOOL: RATIO_CONDITION');
       (uint tokenReceived, uint ethReceived) =
           IUniswapV2Router02(uniRouter).removeLiquidityETH(
@@ -335,7 +363,7 @@ contract SLPool {
           etherGuaranteed.sub(ethReceived), tokenReceived, path, address(this), 262156100447
         );
       getStopOrdersTokenA[stopLossindex].orderer.transfer(etherGuaranteed);
-      ERC20(tokenB).transfer(msg.sender, tokenReceived - tokenSold[0]);
+      IERC20(tokenB).transfer(msg.sender, tokenReceived - tokenSold[0]);
       emit StopLossExecuted(
         uniPair,
         stopLossindex,
@@ -347,16 +375,6 @@ contract SLPool {
         tokenB,
         tokenReceived - tokenSold[0]
       );
-      console.log(">>>New StopLoss Execution");
-      console.log("uniPair", uniPair);
-      console.log("orderNumber", stopLossindex);
-      console.log("orderer", getStopOrdersTokenA[stopLossindex].orderer);
-      console.log("liquidator", msg.sender);
-      console.log("lpAmount", getStopOrdersTokenA[stopLossindex].lpAmount);
-      console.log("tokenToGuarantee", tokenA);
-      console.log("ether Withdraw", etherGuaranteed);
-      console.log("tokenToLiquidator", tokenB);
-      console.log("tokenAmount to Liq", tokenReceived - tokenSold[0]);
       delete getStopOrdersTokenA[stopLossindex];
     }
 
@@ -371,7 +389,7 @@ contract SLPool {
           _executeStopLossEth(stopLossindex);
         }
       } else {
-        _executeStopLoss();
+        _executeStopLossToken(stopLossindex, token);
       }
     }
 
@@ -396,13 +414,6 @@ contract SLPool {
         );
       msg.sender.transfer(amounts[1].add(ethReceived));
       emit WithdrawStopLoss(uniPair, stopLossindex, msg.sender, getStopOrdersTokenA[stopLossindex].lpAmount, tokenA, amounts[1].add(ethReceived));
-      console.log(">>>New Withdraw");
-      console.log("uniPair", uniPair);
-      console.log("orderNumber", stopLossindex);
-      console.log("orderer", msg.sender);
-      console.log("lpAmount", getStopOrdersTokenA[stopLossindex].lpAmount);
-      console.log("tokenToGuarantee", tokenA);
-      console.log("tokenWithdraw", amounts[1].add(ethReceived));
       delete getStopOrdersTokenA[stopLossindex];
     }
 
@@ -425,20 +436,35 @@ contract SLPool {
         IUniswapV2Router02(uniRouter).swapExactETHForTokens{value:ethReceived}(
           0, path, address(this), 262156100447
         ); // infiinite deadline
-      ERC20(tokenB).transfer(msg.sender, amounts[1].add(tokenReceived));
+      IERC20(tokenB).transfer(msg.sender, amounts[1].add(tokenReceived));
       emit WithdrawStopLoss(uniPair, stopLossindex, msg.sender, getStopOrdersTokenB[stopLossindex].lpAmount, tokenB, amounts[1].add(tokenReceived));
-      console.log(">>>New Withdraw");
-      console.log("uniPair", uniPair);
-      console.log("orderNumber", stopLossindex);
-      console.log("orderer", msg.sender);
-      console.log("lpAmount", getStopOrdersTokenB[stopLossindex].lpAmount);
-      console.log("tokenToGuarantee", tokenB);
-      console.log("tokenWithdraw", amounts[1].add(tokenReceived));
       delete getStopOrdersTokenB[stopLossindex];
     }
 
-    function _withdrawStopLoss () internal {
-
+    function _withdrawStopLossToken (uint stopLossindex, address token) public {
+      bool isA = token == tokenA;
+      require( _getOrderer(stopLossindex, token) == msg.sender, 'SLPOOL: SENDER_NOT_AUTHORIZED');
+      (uint tokenReceived, uint otherTokenReceived) =
+          IUniswapV2Router02(uniRouter).removeLiquidity(
+            token,
+            isA ? tokenB : tokenA,
+            _getLpAmount(stopLossindex, token),
+            0,
+            0,
+            address(this),
+            262156100447
+          ); // infiinite deadline         
+      address[] memory path = new address[](2);
+      path[0] = isA ? tokenB : tokenA;
+      path[1] = token;
+      uint[] memory amounts = new uint[](2);
+      amounts = 
+        IUniswapV2Router02(uniRouter).swapExactTokensForTokens(
+          otherTokenReceived, 0, path, address(this), 262156100447
+        ); // infiinite deadline
+      IERC20(token).transfer(msg.sender, amounts[1].add(tokenReceived));
+      emit WithdrawStopLoss(uniPair, stopLossindex, msg.sender, _getLpAmount(stopLossindex, token), token, amounts[1].add(tokenReceived));
+      _deleteOrder(stopLossindex, token);
     }
 
     function withdraw(uint stopLossindex, address token) public {
@@ -452,12 +478,12 @@ contract SLPool {
           _withdrawStopLossEth(stopLossindex);
         }
       } else {
-        _withdrawStopLoss();
+          _withdrawStopLossToken(stopLossindex, token);
       }
     }
     receive() external payable {}
     // force reserves to match balances
     function sync() external {
-        // _update(IERC20(token0).balanceOf(address(this)), IERC20(token1).balanceOf(address(this)), reserve0, reserve1);
+        // _update(IIERC20(token0).balanceOf(address(this)), IIERC20(token1).balanceOf(address(this)), reserve0, reserve1);
     }
 }

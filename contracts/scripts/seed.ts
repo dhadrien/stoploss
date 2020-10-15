@@ -23,14 +23,17 @@ async function populateOrders(tokenString: string) {
   );
   await (await Token.approve(pool.address, parseEther("5000000000"))).wait();
   await pool.stopLossFromToken(
+    Token.address,
     parseEther("100").div(BigNumber.from("96")).mul(BigNumber.from("100")),
     parseEther("100")
   );
   await pool.stopLossFromToken(
+    Token.address,
     parseEther("100").div(BigNumber.from("56")).mul(BigNumber.from("100")),
     parseEther("100")
   );
   await pool.stopLossFromToken(
+    Token.address,
     parseEther("100").div(BigNumber.from("56")).mul(BigNumber.from("100")),
     parseEther("100")
   );
@@ -53,8 +56,8 @@ async function populateOrders(tokenString: string) {
     }
   );
   pool = await ethers.getContract("SLPoolF" + tokenString + "FWETH", liqSigner);
-  // await pool.executeStopLoss(0, Token.address);
-  // await pool.executeStopLoss(0, FWETH.address);
+  await pool.executeStopLoss(0, Token.address);
+  await pool.executeStopLoss(0, FWETH.address);
   pool = await ethers.getContract(
     "SLPoolF" + tokenString + "FWETH",
     userSigner

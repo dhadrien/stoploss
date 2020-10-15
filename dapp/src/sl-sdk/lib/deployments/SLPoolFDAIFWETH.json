@@ -296,6 +296,34 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amountToSend",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amountToGuarantee",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "fromEther",
+          "type": "bool"
+        }
+      ],
+      "name": "_stopLossFromToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256",
           "name": "stopLossindex",
           "type": "uint256"
@@ -637,13 +665,18 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
           "internalType": "uint256",
-          "name": "tokenToSend",
+          "name": "amountToSend",
           "type": "uint256"
         },
         {
           "internalType": "uint256",
-          "name": "tokenToGuarantee",
+          "name": "amountToGuarantee",
           "type": "uint256"
         }
       ],
@@ -760,5 +793,5 @@
       "type": "receive"
     }
   ],
-  "address": "0x96601fBA3b57F68B4bBa70547eFB44F67cA2076a"
+  "address": "0x2728077f0753e32b7d8082a1294A26F985cc1934"
 }
