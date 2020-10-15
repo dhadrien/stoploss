@@ -19,6 +19,16 @@ import {
   tokenMapping
 } from 'constants/tokenAddresses'
 import CancelledOrder from './CancelledOrder';
+import { makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+
+
 
 interface CreateOrderProps extends ContextValues, ModalProps {
 }
@@ -45,7 +55,7 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
       <><StyledMain>
       {openOrders.length === 0 ? <p>no open Orders</p> : 
         <table>
-        <thead>
+        <TableHead>
           <tr>
             <th>status</th>
             <th>pair</th>
@@ -56,14 +66,14 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
             <th>Health Ratio</th>
             <th>Lp Amount</th>
           </tr>
-        </thead>
+        </TableHead>
         <tbody>
         {openOrders.map(order => <OpenOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} prices={prices}/> )}
         </tbody>
         </table>}
         {cancelledOrders.length === 0 && executedOrders.length === 0 ? <p>No Past orders</p> : 
         <table>
-        <thead>
+        <TableHead>
           <tr>
             <th>status</th>
             <th>Token Guaranteed</th>
@@ -71,7 +81,7 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
             <th>Amount Guaranteed</th>
             <th>Amount Withdrawn</th>
           </tr>
-        </thead>
+        </TableHead>
         <tbody>
         {cancelledOrders.map(order => <CancelledOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} /> )}
         {executedOrders.map(order => <CancelledOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} /> )}
