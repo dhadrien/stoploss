@@ -2,7 +2,6 @@
 pragma solidity 0.7.1;
 
 import '@nomiclabs/buidler/console.sol';
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/math/SafeMath.sol';
 import 'buidler-deploy/solc_0.7/proxy/Proxied.sol';
 import './interfaces/IUniswapV2Factory.sol';

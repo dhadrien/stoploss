@@ -22,6 +22,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const FUSDC = await ethers.getContract("FUSDC", deployerSigner);
   const FUSDT = await ethers.getContract("FUSDT", deployerSigner);
   const FWBTC = await ethers.getContract("FWBTC", deployerSigner);
+  const FETH = await ethers.getContract("FETH", deployerSigner);
   console.log(`
 ----------
 08 SETUP USER WITH FDAI
@@ -33,16 +34,19 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   await (await FUSDC.transfer(user, INIT_DAI_USERBALANCE)).wait();
   await (await FUSDT.transfer(user, INIT_DAI_USERBALANCE)).wait();
   await (await FWBTC.transfer(user, INIT_DAI_USERBALANCE)).wait();
+  await (await FETH.transfer(user, INIT_DAI_USERBALANCE)).wait();
   const userFDAIBalance = await FDAI.balanceOf(user);
   const userFUSDCBalance = await FUSDC.balanceOf(user);
   const userFUSDTBalance = await FUSDT.balanceOf(user);
   const userFWBTCBalance = await FWBTC.balanceOf(user);
+  const userFETHCBalance = await FETH.balanceOf(user);
   const userEthBalance = await userSigner.getBalance();
   console.log("User ETH Balance: ", weiAmountToString(userEthBalance));
   console.log("User FDAI Balance: ", weiAmountToString(userFDAIBalance));
   console.log("User FUSDC Balance: ", weiAmountToString(userFUSDCBalance));
   console.log("User FUSDT Balance: ", weiAmountToString(userFUSDTBalance));
   console.log("User FWBTC Balance: ", weiAmountToString(userFWBTCBalance));
+  console.log("User FETH Balance: ", weiAmountToString(userFETHCBalance));
   return !useProxy; // when live network, record the script as executed to prevent rexecution
 };
 export default func;

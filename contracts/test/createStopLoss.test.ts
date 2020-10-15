@@ -223,7 +223,7 @@ describe("User adds liquidity, then Create A Stop Loss with LP: ETH/Token", asyn
   });
 });
 
-describe("User add liquidity from one token, make a stop loss on this token", async function () {
+describe("[ETH/TOKEN PAIR] User add liquidity from one token, make a stop loss on this token", async function () {
   // const {deployer, user} = await getNamedAccounts();
   // const userSigner = await ethers.getSigner(user);
   // const deployerSigner = await ethers.getSigner(deployer);
@@ -401,7 +401,8 @@ describe("User add liquidity from one token, make a stop loss on this token", as
     let pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
     await (await FDAI.approve(pool.address, parseEther("5000000000"))).wait();
     await expect(
-      pool.stopLossFromToken(FDAI.address, 
+      pool.stopLossFromToken(
+        FDAI.address,
         parseEther("200").div(BigNumber.from("96")).mul(BigNumber.from("100")),
         parseEther("200")
       )
@@ -422,19 +423,22 @@ describe("User add liquidity from one token, make a stop loss on this token", as
     let pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
     await (await FDAI.approve(pool.address, parseEther("5000000000"))).wait();
     await expect(
-      pool.stopLossFromToken(FDAI.address, 
+      pool.stopLossFromToken(
+        FDAI.address,
         parseEther("100").div(BigNumber.from("96")).mul(BigNumber.from("100")),
         parseEther("100")
       )
     ).to.emit(pool, "StopLossCreated");
     await expect(
-      pool.stopLossFromToken(FDAI.address, 
+      pool.stopLossFromToken(
+        FDAI.address,
         parseEther("100").div(BigNumber.from("56")).mul(BigNumber.from("100")),
         parseEther("100")
       )
     ).to.emit(pool, "StopLossCreated");
     await expect(
-      pool.stopLossFromToken(FDAI.address, 
+      pool.stopLossFromToken(
+        FDAI.address,
         parseEther("100").div(BigNumber.from("56")).mul(BigNumber.from("100")),
         parseEther("100")
       )
@@ -484,6 +488,282 @@ describe("User add liquidity from one token, make a stop loss on this token", as
       "WithdrawStopLoss"
     );
     await expect(pool.withdraw(2, WETH.address)).to.emit(
+      pool,
+      "WithdrawStopLoss"
+    );
+  });
+});
+
+describe("[TOKEN/TOKEN PAIR] User add liquidity from one token, make a stop loss on this token", async function () {
+  // const {deployer, user} = await getNamedAccounts();
+  // const userSigner = await ethers.getSigner(user);
+  // const deployerSigner = await ethers.getSigner(deployer);
+  beforeEach(async () => {
+    await deployments.fixture();
+  });
+  it("should create a stoploss with FETH (ERC20) only", async function () {
+    const {deployer, user} = await getNamedAccounts();
+    const userSigner = await ethers.getSigner(user);
+    const deployerSigner = await ethers.getSigner(deployer);
+    const FDAI = await ethers.getContract("FDAI", userSigner);
+    const FETH = await ethers.getContract("FETH", userSigner);
+    const {address: uniPairAddress} = await deployments.get("UniPairFDAIFETH");
+    const {address: poolAddress} = await deployments.get("SLPoolFDAIFETH");
+    const uniPair = await ethers.getContractAt(
+      "UniswapV2Pair",
+      uniPairAddress,
+      userSigner
+    );
+    const pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
+    await (await FETH.approve(pool.address, parseEther("5000000000"))).wait();
+    const daiBalance = await FDAI.balanceOf(user);
+    const lpBalance = await uniPair.balanceOf(user);
+    const uniRouter = await ethers.getContract("UniswapV2Router02", userSigner);
+    await expect(
+      pool.stopLossFromToken(FETH.address, parseEther("2"), parseEther("1"))
+    ).to.emit(pool, "StopLossCreated");
+  });
+
+  it("should create a stoploss with Token only", async function () {
+    const {user} = await getNamedAccounts();
+    const userSigner = await ethers.getSigner(user);
+    const FDAI = await ethers.getContract("FDAI", userSigner);
+    const FETH = await ethers.getContract("FETH", userSigner);
+    const {address: poolAddress} = await deployments.get("SLPoolFDAIFETH");
+    const pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
+    await (await FDAI.approve(pool.address, parseEther("5000000000"))).wait();
+    await expect(
+      pool.stopLossFromToken(FDAI.address, parseEther("200"), parseEther("150"))
+    ).to.emit(pool, "StopLossCreated");
+  });
+  it("should create a stoploss with Token only and one with ether only", async function () {
+    const {user} = await getNamedAccounts();
+    const userSigner = await ethers.getSigner(user);
+    const FDAI = await ethers.getContract("FDAI", userSigner);
+    const FETH = await ethers.getContract("FETH", userSigner);
+    const {address: poolAddress} = await deployments.get("SLPoolFDAIFETH");
+    const pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
+    await (await FDAI.approve(pool.address, parseEther("5000000000"))).wait();
+    await (await FETH.approve(pool.address, parseEther("5000000000"))).wait();
+    await expect(
+      pool.stopLossFromToken(FDAI.address, parseEther("200"), parseEther("150"))
+    ).to.emit(pool, "StopLossCreated");
+    await expect(
+      pool.stopLossFromToken(FETH.address,parseEther("2"), parseEther("1"))
+    ).to.emit(pool, "StopLossCreated");
+  });
+  it("should create a stoploss with FETH only and withdraw", async function () {
+    const {deployer, user} = await getNamedAccounts();
+    const userSigner = await ethers.getSigner(user);
+    const deployerSigner = await ethers.getSigner(deployer);
+    const FDAI = await ethers.getContract("FDAI", userSigner);
+    const FETH = await ethers.getContract("FETH", userSigner);
+    const {address: uniPairAddress} = await deployments.get("UniPairFDAIFETH");
+    const {address: poolAddress} = await deployments.get("SLPoolFDAIFETH");
+    const uniPair = await ethers.getContractAt(
+      "UniswapV2Pair",
+      uniPairAddress,
+      userSigner
+    );
+    const pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
+    await (await FETH.approve(pool.address, parseEther("5000000000"))).wait();
+    const daiBalance = await FDAI.balanceOf(user);
+    const lpBalance = await uniPair.balanceOf(user);
+    const uniRouter = await ethers.getContract("UniswapV2Router02", userSigner);
+    await expect(
+      pool.stopLossFromToken(FETH.address, parseEther("2"), parseEther("1"))
+    ).to.emit(pool, "StopLossCreated");
+    await pool.withdraw(0, FETH.address);
+  });
+  it("should create a stoploss with Token only and withdraw", async function () {
+    const {user} = await getNamedAccounts();
+    const userSigner = await ethers.getSigner(user);
+    const FDAI = await ethers.getContract("FDAI", userSigner);
+    const FETH = await ethers.getContract("FETH", userSigner);
+    const {address: poolAddress} = await deployments.get("SLPoolFDAIFETH");
+    const pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
+    await (await FDAI.approve(pool.address, parseEther("5000000000"))).wait();
+    await expect(
+      pool.stopLossFromToken(FDAI.address, parseEther("200"), parseEther("150"))
+    ).to.emit(pool, "StopLossCreated");
+    await expect(pool.withdraw(0, FETH.address)).to.be.reverted;
+    await pool.withdraw(0, FDAI.address);
+  });
+  it("should create a stoploss with FETH only and not be liquidated when should not", async function () {
+    const {deployer, user, liquidator} = await getNamedAccounts();
+    const liqSigner = await ethers.getSigner(liquidator);
+    const userSigner = await ethers.getSigner(user);
+    const deployerSigner = await ethers.getSigner(deployer);
+    const FDAI = await ethers.getContract("FDAI", userSigner);
+    const FETH = await ethers.getContract("FETH", userSigner);
+    const {address: uniPairAddress} = await deployments.get("UniPairFDAIFETH");
+    const {address: poolAddress} = await deployments.get("SLPoolFDAIFETH");
+    const uniPair = await ethers.getContractAt(
+      "UniswapV2Pair",
+      uniPairAddress,
+      userSigner
+    );
+    let pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
+    await (await FETH.approve(pool.address, parseEther("5000000000"))).wait();
+    const daiBalance = await FDAI.balanceOf(user);
+    const lpBalance = await uniPair.balanceOf(user);
+    const uniRouter = await ethers.getContract("UniswapV2Router02", userSigner);
+    await expect(
+      pool.stopLossFromToken(FETH.address, parseEther("2"), parseEther("1"))
+    ).to.emit(pool, "StopLossCreated");
+    pool = await ethers.getContractAt("SLPool", poolAddress, liqSigner);
+    await expect(pool.executeStopLoss(0, NULL_ADDRESS)).to.be.revertedWith(
+      "revert SLPOOL: Wrong Token"
+    );
+    await expect(pool.executeStopLoss(0, FETH.address)).to.be.revertedWith(
+      "revert SLPOOL: RATIO_CONDITION"
+    );
+  });
+  it("should create a stoploss with FETH only and be liquidated when should", async function () {
+    const {deployer, user, liquidator} = await getNamedAccounts();
+    const liqSigner = await ethers.getSigner(liquidator);
+    const userSigner = await ethers.getSigner(user);
+    const deployerSigner = await ethers.getSigner(deployer);
+    const FDAI = await ethers.getContract("FDAI", userSigner);
+    const FETH = await ethers.getContract("FETH", userSigner);
+    const {address: uniPairAddress} = await deployments.get("UniPairFDAIFETH");
+    const {address: poolAddress} = await deployments.get("SLPoolFDAIFETH");
+    const uniPair = await ethers.getContractAt(
+      "UniswapV2Pair",
+      uniPairAddress,
+      userSigner
+    );
+    let pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
+    await (await FETH.approve(pool.address, parseEther("5000000000"))).wait();
+    const daiBalance = await FDAI.balanceOf(user);
+    const lpBalance = await uniPair.balanceOf(user);
+    const uniRouter = await ethers.getContract("UniswapV2Router02", userSigner);
+    await expect(
+      pool.stopLossFromToken(
+        FETH.address,
+        parseEther("2"),
+        parseEther("2").mul(BigNumber.from("96")).div(BigNumber.from("100"))
+      )
+    ).to.emit(pool, "StopLossCreated");
+    pool = await ethers.getContractAt("SLPool", poolAddress, liqSigner);
+    await expect(pool.executeStopLoss(0, NULL_ADDRESS)).to.be.revertedWith(
+      "revert SLPOOL: Wrong Token"
+    );
+    await pool.executeStopLoss(0, FETH.address);
+  });
+  it("should create a stoploss with Token only and not be liquidated when should not", async function () {
+    const {deployer, user, liquidator} = await getNamedAccounts();
+    const liqSigner = await ethers.getSigner(liquidator);
+    const userSigner = await ethers.getSigner(user);
+    const FDAI = await ethers.getContract("FDAI", userSigner);
+    const {address: poolAddress} = await deployments.get("SLPoolFDAIFETH");
+    let pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
+    await (await FDAI.approve(pool.address, parseEther("5000000000"))).wait();
+    await expect(
+      pool.stopLossFromToken(FDAI.address, parseEther("200"), parseEther("150"))
+    ).to.emit(pool, "StopLossCreated");
+    pool = await ethers.getContractAt("SLPool", poolAddress, liqSigner);
+    await expect(pool.executeStopLoss(0, NULL_ADDRESS)).to.be.revertedWith(
+      "revert SLPOOL: Wrong Token"
+    );
+    await expect(pool.executeStopLoss(0, FDAI.address)).to.be.revertedWith(
+      "revert SLPOOL: RATIO_CONDITION"
+    );
+  });
+  it("should create a stoploss with Token only and be liquidated when should", async function () {
+    const {deployer, user, liquidator} = await getNamedAccounts();
+    const liqSigner = await ethers.getSigner(liquidator);
+    const userSigner = await ethers.getSigner(user);
+    const FDAI = await ethers.getContract("FDAI", userSigner);
+    const {address: poolAddress} = await deployments.get("SLPoolFDAIFETH");
+    let pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
+    await (await FDAI.approve(pool.address, parseEther("5000000000"))).wait();
+    await expect(
+      pool.stopLossFromToken(
+        FDAI.address,
+        parseEther("200").div(BigNumber.from("96")).mul(BigNumber.from("100")),
+        parseEther("200")
+      )
+    ).to.emit(pool, "StopLossCreated");
+    pool = await ethers.getContractAt("SLPool", poolAddress, liqSigner);
+    await expect(pool.executeStopLoss(0, NULL_ADDRESS)).to.be.revertedWith(
+      "revert SLPOOL: Wrong Token"
+    );
+    await pool.executeStopLoss(0, FDAI.address);
+  });
+  it("should create 3 stoplosss with Token only, 3 with Ether, 1 of each liq, withdrawn, not liq", async function () {
+    const {deployer, user, liquidator} = await getNamedAccounts();
+    const liqSigner = await ethers.getSigner(liquidator);
+    const userSigner = await ethers.getSigner(user);
+    const FDAI = await ethers.getContract("FDAI", userSigner);
+    const FETH = await ethers.getContract("FETH", userSigner);
+    const {address: poolAddress} = await deployments.get("SLPoolFDAIFETH");
+    let pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
+    await (await FDAI.approve(pool.address, parseEther("5000000000"))).wait();
+    await (await FETH.approve(pool.address, parseEther("5000000000"))).wait();
+    await expect(
+      pool.stopLossFromToken(
+        FDAI.address,
+        parseEther("100").div(BigNumber.from("96")).mul(BigNumber.from("100")),
+        parseEther("100")
+      )
+    ).to.emit(pool, "StopLossCreated");
+    await expect(
+      pool.stopLossFromToken(
+        FDAI.address,
+        parseEther("100").div(BigNumber.from("56")).mul(BigNumber.from("100")),
+        parseEther("100")
+      )
+    ).to.emit(pool, "StopLossCreated");
+    await expect(
+      pool.stopLossFromToken(
+        FDAI.address,
+        parseEther("100").div(BigNumber.from("56")).mul(BigNumber.from("100")),
+        parseEther("100")
+      )
+    ).to.emit(pool, "StopLossCreated");
+    await expect(
+      pool.stopLossFromToken(
+        FETH.address,
+        parseEther("2"),
+        parseEther("2").mul(BigNumber.from("96")).div(BigNumber.from("100"))
+      )
+    ).to.emit(pool, "StopLossCreated");
+    await expect(
+      pool.stopLossFromToken(
+        FETH.address,
+        parseEther("2"),
+        parseEther("2").mul(BigNumber.from("56")).div(BigNumber.from("100"))
+      )
+    ).to.emit(pool, "StopLossCreated");
+    await expect(
+      pool.stopLossFromToken(
+        FETH.address,
+        parseEther("2"),
+        parseEther("2").mul(BigNumber.from("56")).div(BigNumber.from("100"))
+      )
+    ).to.emit(pool, "StopLossCreated");
+    pool = await ethers.getContractAt("SLPool", poolAddress, liqSigner);
+    await expect(pool.executeStopLoss(1, FDAI.address)).to.be.revertedWith(
+      "revert SLPOOL: RATIO_CONDITION"
+    );
+    await expect(pool.executeStopLoss(1, FETH.address)).to.be.revertedWith(
+      "revert SLPOOL: RATIO_CONDITION"
+    );
+    await expect(pool.executeStopLoss(0, FDAI.address)).to.emit(
+      pool,
+      "StopLossExecuted"
+    );
+    await expect(pool.executeStopLoss(0, FETH.address)).to.emit(
+      pool,
+      "StopLossExecuted"
+    );
+    pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
+    await expect(pool.withdraw(2, FDAI.address)).to.emit(
+      pool,
+      "WithdrawStopLoss"
+    );
+    await expect(pool.withdraw(2, FETH.address)).to.emit(
       pool,
       "WithdrawStopLoss"
     );
