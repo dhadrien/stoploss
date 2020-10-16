@@ -64,6 +64,7 @@
     "rinkeby:export": "buidler --network rinkeby export",
     "rinkeby:seed": "cross-env BUIDLER_NETWORK=rinkeby ts-node --files scripts/seed.ts",
     "kovan:deploy": "buidler --network kovan deploy",
+		"kovan:subgraph": "cp -r ./deployments/kovan/SLPool* ../stoploss-subgraph/build/contracts/kovan/",
     "kovan:export": "buidler --network kovan export",
     "kovan:sendDeployments": "cp -r ./deployments/kovan/* ../dapp/src/sl-sdk/lib/deployments/",
     "goerli:deploy": "buidler --network goerli deploy",
