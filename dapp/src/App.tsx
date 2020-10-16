@@ -67,7 +67,7 @@ const Providers: React.FC = ({ children }) => {
     uri: process.env.REACT_APP_GRAPHQL_ENDPOINT || "http://localhost:8000/subgraphs/name/dhadrien/stoploss-subgraph",
     cache: new InMemoryCache(),
   })
-  const [darkModeSetting] = useLocalStorage('darkMode', false)
+  const [darkModeSetting] = useLocalStorage('darkMode', true)
   const { dark: darkTheme, light: lightTheme } = useMemo(() => {
     return createTheme({
       baseColor: { h: 45, s: 63, l: 59 },

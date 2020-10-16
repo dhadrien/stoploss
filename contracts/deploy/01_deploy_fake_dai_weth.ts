@@ -99,7 +99,7 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
       weiAmountToString(FDAIDeployerBalance)
     );
   } else {
-    const WETH = await getArtifact("ERC20");
+    const WETH = await getArtifact("WETH9");
     save("WETH", {abi: WETH.abi, address: process.env["WETH_" + chain] || ""});
   }
   // throw new Error("");

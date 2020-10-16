@@ -59,7 +59,7 @@ const CreateOrder: React.FC<CreateOrderProps> = ({
 
   return (
     <Modal isOpen={isOpen}>
-      <ModalTitle text="Create stop loss offer" />
+      <ModalTitle text={`Provide Liquidity to ${pool} with ${token}`} />
       <ModalContent>
         <TokenInput
           value={amount}
