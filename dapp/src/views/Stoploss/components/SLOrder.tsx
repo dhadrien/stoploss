@@ -79,6 +79,17 @@ const SLOrder: React.FC<SLOrderProps> = ({
         />
       )
     }
+    if (balance?.toString() === '0') {
+      return (
+        <Button
+          disabled={false}
+          full
+          text={`Get Some Fake ${token == "FETH" ? "ETH" : token}`}
+          variant="default"
+          onClick={() => {window.open("https://discord.gg/GBufWeY", "_blank")}}
+        />
+      )
+    }
     if (isMakingOffer) {
       return (
         <Button
@@ -96,7 +107,7 @@ const SLOrder: React.FC<SLOrderProps> = ({
           full
           onClick={onApprove}
           text={!isApproving ? "Approve Stop Loss" : "Approving..."}
-          variant={isApproving || status !== 'connected' ? 'default' : 'secondary'}
+          variant={isApproving || status !== 'connected' ? 'default' : 'default'}
         />
       )
     }
@@ -138,9 +149,11 @@ const SLOrders: React.FC = () => {
   const tokenMappingWithBalance = useBalances();
   const { status } = useWallet()
   const toRend: React.ReactNode[] = [];
-  tokenNames.filter(name => {
-    const pools = tokenMappingWithBalance[name].pools
-    return tokenMappingWithBalance[name].balance?.toString() != "0"
+  tokenNames
+  .sort((name1, name2) => {
+    const balance1 = tokenMappingWithBalance[name1].balance || new BigNumber(0)
+    const balance2 = tokenMappingWithBalance[name2].balance 
+    return balance2?.isGreaterThan(balance1) as (number | undefined) || -1
   }).map(name =>{
       tokenMappingWithBalance[name].pools?.map(pool =>{
         toRend.push( <Card>
@@ -151,8 +164,7 @@ const SLOrders: React.FC = () => {
               column
             >
               <Value value={tokenMappingWithBalance[name].balance? tokenMappingWithBalance[name].balance?.decimalPlaces(2).toString() + " " + name : "--"} />
-              <Label text={pool} />
-              
+              <Label text={`🦄 Uniswap ${pool} Pair`}/>
             </Box>
           </CardContent>
           <SLOrderProvider token={name} pool={pool}>

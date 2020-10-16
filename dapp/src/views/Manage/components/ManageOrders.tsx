@@ -31,6 +31,7 @@ import Paper from '@material-ui/core/Paper';
 
 
 interface CreateOrderProps extends ContextValues, ModalProps {
+  open: boolean
 }
 const StyledMain = styled.div`
   align-items: center;
@@ -44,16 +45,17 @@ const StyledMain = styled.div`
   position:relative;
   padding: ${props => props.theme.spacing[6]}px 0;
 `
-const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdrawing}) => {
+const ManageOrders: React.FC<CreateOrderProps> = ({open, orders, onWithdraw, isWithdrawing}) => {
   const openOrders = orders.stopLosses.filter(order => order.status === "Created")
   const cancelledOrders = orders.stopLosses.filter(order => order.status === "Withdrawn")
   const executedOrders = orders.stopLosses.filter(order => order.status === "Executed")
   const prices = usePrice(tokenMapping["FETH"].pools || [""]);
-  return (
+  return open ? (
     (
-      
-      <><StyledMain>
-      {openOrders.length === 0 ? <p>no open Orders</p> : 
+      <>
+      <StyledMain>
+        
+      {openOrders.length === 0 ? <p>No open Orders</p> : 
         <table>
         <TableHead>
           <tr>
@@ -71,7 +73,12 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
         {openOrders.map(order => <OpenOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} prices={prices}/> )}
         </tbody>
         </table>}
-        {cancelledOrders.length === 0 && executedOrders.length === 0 ? <p>No Past orders</p> : 
+      </StyledMain>
+      </>
+    )
+  ) : (
+      <StyledMain>
+      {cancelledOrders.length === 0 && executedOrders.length === 0 ? <p>No Past orders</p> : 
         <table>
         <TableHead>
           <tr>
@@ -87,36 +94,7 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
         {executedOrders.map(order => <CancelledOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} /> )}
         </tbody>
         </table>}
-      {/* <h3>Stop Losses: UniPair DAI/ETH {orders?.stopLosses[0]?.uniPair}</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>status</th>
-            <th>Token Guaranteed</th>
-            <th>Amount Guaranteed</th>
-            <th>Lp Amount</th>
-            <th>Amount Withdrawn</th>
-            <th>Fees to Liquidator</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders && orders.stopLosses.map(order => {
-           return (
-            <tr>
-              <td>{order.status}</td>
-              <td>{order.tokenToGuarantee == dai.toLowerCase() ? "DAI" : "ETH"}</td>
-              <td>{order.amountToGuarantee}</td>
-              <td>{order.lpAmount}</td>
-              <td>{order.amountWithdrawn}</td>
-              <td>{order.amountToLiquidator}</td>
-            </tr>
-          ) 
-          })}
-        </tbody>
-      </table> */}
       </StyledMain>
-      </>
-    )
   )
 }
 

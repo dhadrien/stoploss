@@ -53,7 +53,7 @@ const App: React.FC = () => {
               <Liquidate />
             </LiquidateProvider>
           </Route>
-          <Route path="/stoploss">
+          <Route path="/">
             <Stoploss />
           </Route>
         </Switch>
@@ -94,7 +94,7 @@ const Providers: React.FC = ({ children }) => {
       lightTheme={lightTheme}
     >
       <UseWalletProvider
-        chainId={1337}
+        chainId={42}
         connectors={{
           walletconnect: { rpcUrl: 'https://mainnet.eth.aragon.network/' },
         }}

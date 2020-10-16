@@ -32,19 +32,30 @@ import {ManageProvider} from 'contexts/Manage'
 const Manage: React.FC = () => {
   const {orders, onWithdraw, isWithdrawing} = useManage();
   const {account} = useWallet();
+  const [open, setOpen] = useState<boolean>(true);
+  const toggleShow = () => {
+    const oldShow:boolean = open;
+    setOpen(!oldShow);
+  }
   const sl = useSL();
   // return (<p>hi</p>)
   return (
     <ManageProvider>
         <Page>
         <PageHeader
-          icon="📊"
+          icon="🤓"
           subtitle="Your stop-losses"
           title="MANAGE"
         />  
-        <Container>
+        
         {account && sl ? 
         <div>
+        <Button 
+          onClick={toggleShow} 
+          text={open ? "Past Orders" : "Open Orders"}
+          variant="default"
+        />
+        <Container>
         {orders.loading ? (
           <>
           <h3>Stop Losses</h3>
@@ -55,11 +66,11 @@ const Manage: React.FC = () => {
         orders ={orders}
         onWithdraw={onWithdraw}
         isWithdrawing={isWithdrawing}
+        open={open}
         />}
+        </Container>
       </div> :
       <h3> Unlock your wallet!</h3>}
-        
-        </Container>
       </Page>
     </ManageProvider>
   )
