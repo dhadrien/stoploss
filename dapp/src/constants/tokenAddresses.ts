@@ -85,7 +85,7 @@ export const tokenMapping: TokenMapping= {
   //   pools: ["DAIWETH", "USDCWETH", "USDTWETH", "WBTCWETH"]
   // },
   "FETH": {
-    address: fwethAddress.toLowerCase(),
+    address: fethAddress.toLowerCase(),
     pools: ["DAIFETH", "USDCFETH", "USDTFETH", "WBTCFETH"]
   },
   // "SLPoolDAIWETH": {
