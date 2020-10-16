@@ -41,7 +41,7 @@ const ToLiquidateOrders: React.FC = () => {
   const {orders, onLiquidate, isLiquidating} = useToLiquidate();
   const {account} = useWallet();
   const sl = useSL();
-  const prices = usePrice(tokenMapping["ETH"].pools || [""]);
+  const prices = usePrice(tokenMapping["FETH"].pools || [""]);
   return (
     (
       <>

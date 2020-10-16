@@ -37,14 +37,16 @@ const OpenOrder: React.FC<CreateOrderProps> = ({order, onLiquidate, isLiquidatin
   const [value, setValue] = useState<BigNumber>()
   const [healthFactor, setHealthFactor] = useState<BigNumber>()
   useEffect(() => {
-    const _price = prices?.[addressMapping[order.uniPair]].price;
+    const _tokenA = prices?.[addressMapping[order.uniPair]].tokenA;
+    const _tokenB = prices?.[addressMapping[order.uniPair]].tokenB;
+    const _price = prices?.[addressMapping[order.uniPair]].priceA;
     const _ratioA = prices?.[addressMapping[order.uniPair]].ratioA
     const _ratioB = prices?.[addressMapping[order.uniPair]].ratioB
     if(_price && _ratioA && _ratioB) {
-      const _value = order.tokenToGuarantee == weth.address? 
+      const _value = order.tokenToGuarantee == _tokenA? 
         _ratioA.multipliedBy(order.lpAmount).dividedBy(new BigNumber(10).pow(18+6)).decimalPlaces(3) :
         _ratioB.multipliedBy(order.lpAmount).dividedBy(new BigNumber(10).pow(18+6)).decimalPlaces(3)
-      const _healthFactor = order.tokenToGuarantee == weth.address? 
+        const _healthFactor = order.tokenToGuarantee == _tokenA? 
         _ratioA.dividedBy(order.ratio.multipliedBy(new BigNumber(105))).multipliedBy(new BigNumber(100)).decimalPlaces(2) :
         _ratioB.dividedBy(order.ratio.multipliedBy(new BigNumber(105))).multipliedBy(new BigNumber(100)).decimalPlaces(2)
       setValue(_value);

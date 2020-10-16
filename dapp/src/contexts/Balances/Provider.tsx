@@ -16,8 +16,8 @@ const Provider: React.FC = ({ children }) => {
   const { account, ethereum, balance }: { account: string | null, ethereum: provider, balance: string | null } = useWallet()
 
   const fetchBalances = useCallback(async (userAddress: string, provider: provider) => {
-    await Promise.all(tokenNames.map(async (name) => name === "ETH" ?
-      tokenMapping["ETH"].balance = new BigNumber(balance).dividedBy(new BigNumber(10).pow(18)) :
+    await Promise.all(tokenNames.map(async (name) => name === "WETH" ?
+      tokenMapping["WETH"].balance = new BigNumber(balance).dividedBy(new BigNumber(10).pow(18)) :
       tokenMapping[name].balance = new BigNumber(await getBalance(provider, tokenMapping[name].address, userAddress)).dividedBy(new BigNumber(10).pow(18))
     ))
     setTokenBalances(tokenMapping);

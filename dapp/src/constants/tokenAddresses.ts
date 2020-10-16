@@ -2,6 +2,8 @@ import {address as daiAddress} from '../sl-sdk/lib/deployments/FDAI.json';
 import {address as usdcAddress} from '../sl-sdk/lib/deployments/FUSDC.json';
 import {address as usdtAddress} from '../sl-sdk/lib/deployments/FUSDT.json';
 import {address as wbtcAddress} from '../sl-sdk/lib/deployments/FWBTC.json';
+import {address as fwethAddress} from '../sl-sdk/lib/deployments/FWETH.json';
+import {address as fethAddress} from '../sl-sdk/lib/deployments/FETH.json';
 import {address as UniPairFDAIFWETHAddress} from '../sl-sdk/lib/deployments/UniPairFDAIFWETH.json';
 import {address as UniPairFUSDCFWETHAddress} from '../sl-sdk/lib/deployments/UniPairFUSDCFWETH.json';
 import {address as UniPairFUSDTFWETHAddress} from '../sl-sdk/lib/deployments/UniPairFUSDTFWETH.json';
@@ -10,20 +12,29 @@ import {address as SLPoolFDAIFWETHAddress} from '../sl-sdk/lib/deployments/SLPoo
 import {address as SLPoolFUSDCFWETHAddress} from '../sl-sdk/lib/deployments/SLPoolFUSDCFWETH.json';
 import {address as SLPoolFUSDTFWETHAddress} from '../sl-sdk/lib/deployments/SLPoolFUSDTFWETH.json';
 import {address as SLPoolFWBTCFWETHAddress} from '../sl-sdk/lib/deployments/SLPoolFWBTCFWETH.json';
-import {address as wethAddress} from '../sl-sdk/lib/deployments/FWETH.json';
+import {address as UniPairFDAIFETHAddress} from '../sl-sdk/lib/deployments/UniPairFDAIFETH.json';
+import {address as UniPairFUSDCFETHAddress} from '../sl-sdk/lib/deployments/UniPairFUSDCFETH.json';
+import {address as UniPairFUSDTFETHAddress} from '../sl-sdk/lib/deployments/UniPairFUSDTFETH.json';
+import {address as UniPairFWBTCFETHAddress} from '../sl-sdk/lib/deployments/UniPairFWBTCFETH.json';
+import {address as SLPoolFDAIFETHAddress} from '../sl-sdk/lib/deployments/SLPoolFDAIFETH.json';
+import {address as SLPoolFUSDCFETHAddress} from '../sl-sdk/lib/deployments/SLPoolFUSDCFETH.json';
+import {address as SLPoolFUSDTFETHAddress} from '../sl-sdk/lib/deployments/SLPoolFUSDTFETH.json';
+import {address as SLPoolFWBTCFETHAddress} from '../sl-sdk/lib/deployments/SLPoolFWBTCFETH.json';
 import {address as unirouterAddress} from '../sl-sdk/lib/deployments/UniswapV2Router02.json';
 import BigNumber from 'bignumber.js';
 export const dai = {name: "DAI", address: daiAddress.toLowerCase()};
 export const usdc = {name: "USDC", address: usdcAddress.toLowerCase()};
 export const usdt = {name: "USDT", address: usdtAddress.toLowerCase()};
 export const wbtc = {name: "WBTC", address: wbtcAddress.toLowerCase()};
-export const weth = {name: "WETH", address: wethAddress.toLowerCase()};
+export const weth = {name: "WETH", address: fwethAddress.toLowerCase()};
+export const feth = {name: "FETH", address: fethAddress.toLowerCase()};
 export const addressMapping:Record<string,string> = {}
 addressMapping[daiAddress.toLowerCase()] = "DAI";
 addressMapping[usdcAddress.toLowerCase()] = "USDC";
 addressMapping[usdtAddress.toLowerCase()] = "USDT";
 addressMapping[wbtcAddress.toLowerCase()] = "WBTC";
-addressMapping[wethAddress.toLowerCase()] = "ETH";
+addressMapping[fwethAddress.toLowerCase()] = "WETH";
+addressMapping[fethAddress.toLowerCase()] = "FETH";
 
 addressMapping[SLPoolFDAIFWETHAddress.toLowerCase()] = "DAIWETH";
 addressMapping[SLPoolFUSDCFWETHAddress.toLowerCase()] = "USDCWETH";
@@ -33,49 +44,74 @@ addressMapping[UniPairFDAIFWETHAddress.toLowerCase()] = "DAIWETH";
 addressMapping[UniPairFUSDCFWETHAddress.toLowerCase()] = "USDCWETH";
 addressMapping[UniPairFUSDTFWETHAddress.toLowerCase()] = "USDTWETH";
 addressMapping[UniPairFWBTCFWETHAddress.toLowerCase()] = "WBTCWETH";
+addressMapping[SLPoolFDAIFETHAddress.toLowerCase()] = "DAIFETH";
+addressMapping[SLPoolFUSDCFETHAddress.toLowerCase()] = "USDCFETH";
+addressMapping[SLPoolFUSDTFETHAddress.toLowerCase()] = "USDTFETH";
+addressMapping[SLPoolFWBTCFETHAddress.toLowerCase()] = "WBTCFETH";
+addressMapping[UniPairFDAIFETHAddress.toLowerCase()] = "DAIFETH";
+addressMapping[UniPairFUSDCFETHAddress.toLowerCase()] = "USDCFETH";
+addressMapping[UniPairFUSDTFETHAddress.toLowerCase()] = "USDTFETH";
+addressMapping[UniPairFWBTCFETHAddress.toLowerCase()] = "WBTCFETH";
 
 export interface TokenMapping extends Record<string, {address: string, pools?: string[], balance?:BigNumber}>{
   
 }
 
-export const tokenNames:string[]= ["DAI","USDC", "USDT", "WBTC", "ETH"];
+// export const tokenNames:string[]= ["DAI","USDC", "USDT", "WBTC", "WETH", "FETH"];
+export const tokenNames:string[]= ["DAI","USDC", "USDT", "WBTC", "FETH"];
 export const tokenMapping: TokenMapping= {
   "DAI": {
     address: daiAddress.toLowerCase(),
-    pools: ["DAIWETH"]
+    pools: ["DAIFETH"]
+    // pools: ["DAIWETH","DAIFETH"]
   },
   "USDC": {
     address: usdcAddress.toLowerCase(),
-    pools: ["USDCWETH"]
+    pools: ["USDCFETH"]
+    // pools: ["USDCWETH","USDCFETH"]
   },
   "USDT": {
     address: usdtAddress.toLowerCase(),
-    pools: ["USDTWETH"]
+    pools: ["USDTFETH"]
+    // pools: ["USDTWETH","USDTFETH"]
   },
   "WBTC": {
     address: wbtcAddress.toLowerCase(),
-    pools: ["WBTCWETH"]
+    pools: ["WBTCFETH"]
+    // pools: ["WBTCWETH","WBTCFETH"]
   },
-  "ETH": {
-    address: wethAddress.toLowerCase(),
-    pools: ["DAIWETH", "USDCWETH", "USDTWETH", "WBTCWETH"]
+  // "WETH": {
+  //   address: fwethAddress.toLowerCase(),
+  //   pools: ["DAIWETH", "USDCWETH", "USDTWETH", "WBTCWETH"]
+  // },
+  "FETH": {
+    address: fwethAddress.toLowerCase(),
+    pools: ["DAIFETH", "USDCFETH", "USDTFETH", "WBTCFETH"]
   },
-  "SLPoolDAIWETH": {
-    address: SLPoolFDAIFWETHAddress
+  // "SLPoolDAIWETH": {
+  //   address: SLPoolFDAIFWETHAddress
+  // },
+  // "SLPoolUSDTWETH": {
+  //   address: SLPoolFUSDTFWETHAddress
+  // },
+  // "SLPoolUSDCWETH": {
+  //   address: SLPoolFUSDCFWETHAddress
+  // },
+  // "SLPoolWBTCWETH": {
+  //   address: SLPoolFWBTCFWETHAddress
+  // },
+  "SLPoolDAIFETH": {
+    address: SLPoolFDAIFETHAddress
   },
-  "SLPoolUSDTWETH": {
-    address: SLPoolFUSDTFWETHAddress
+  "SLPoolUSDTFETH": {
+    address: SLPoolFUSDTFETHAddress
   },
-  "SLPoolUSDCWETH": {
-    address: SLPoolFUSDCFWETHAddress
+  "SLPoolUSDCFETH": {
+    address: SLPoolFUSDCFETHAddress
   },
-  "SLPoolWBTCWETH": {
-    address: SLPoolFWBTCFWETHAddress
+  "SLPoolWBTCFETH": {
+    address: SLPoolFWBTCFETHAddress
   },
-  // "USDC": usdcAddress.toLowerCase(),
-  // "USDT": usdtAddress.toLowerCase(),
-  // "WBTC": wbtcAddress.toLowerCase(),
-  // "ETH": wethAddress.toLowerCase()
 }
 // export const daiwethpool = daiwethpoolAddress;
 export const unirouter = unirouterAddress;

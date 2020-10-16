@@ -40,11 +40,10 @@ export const makeStopLoss = async (sl, amount, pool, token, amountGuaranteeed, a
   const fweth = sl.contracts.fweth;
   const uniPair = sl.contracts.uniPair;
   const slPool = sl.contracts["SLPool" + pool];
-  // const tokenToGuarnatee = token == fdai.address ? fdai.address : fweth.address;
+  const Token = token == "FETH" ? sl.contracts[token] : sl.contracts["F" +token];
   let now = new Date().getTime() / 1000;
-  // const gas = GAS_LIMIT.STAKING[tokenName.toUpperCase()] || GAS_LIMIT.STAKING.DEFAULT;
   const gas = GAS_LIMIT.STAKING.DEFAULT
-    return token == "ETH" ? 
+    return token == "WETH" ? 
     slPool.methods
       .stopLossFromEther(
         (new BigNumber(amountGuaranteeed).times(new BigNumber(10).pow(18))).toString(),
@@ -65,6 +64,7 @@ export const makeStopLoss = async (sl, amount, pool, token, amountGuaranteeed, a
       }) : 
       slPool.methods
       .stopLossFromToken(
+        Token.options.address,
         (new BigNumber(amount).times(new BigNumber(10).pow(18))).toString(),
         (new BigNumber(amountGuaranteeed).times(new BigNumber(10).pow(18))).toString(),
         )

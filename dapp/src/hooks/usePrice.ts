@@ -7,9 +7,11 @@ import useSL from 'hooks/useSL';
 // import { getAllowance } from 'utils'
 
 export interface Price {
-  price: BigNumber,
+  priceA: BigNumber,
   ratioA: BigNumber,
-  ratioB: BigNumber
+  ratioB: BigNumber,
+  tokenA: string,
+  tokenB: string,
 }
 export interface Prices extends Record<string,Price> {}
 
@@ -22,9 +24,11 @@ const usePrice = (pools: string[]) => {
       const newPrices: Record<string,Price>={};
         await Promise.all(pools.map(async (pool) => {
           newPrices[pool] = {
-            price: (new BigNumber(await sl.contracts["SLPool" + pool].methods.priceA().call())),
+            priceA: (new BigNumber(await sl.contracts["SLPool" + pool].methods.priceA().call())),
             ratioA: (new BigNumber(await sl.contracts["SLPool" + pool].methods.lastRatioA().call())),
             ratioB: (new BigNumber(await sl.contracts["SLPool" + pool].methods.lastRatioB().call())),
+            tokenA:(await sl.contracts["SLPool" + pool].methods.tokenA().call()).toLowerCase(),
+            tokenB: (await sl.contracts["SLPool" + pool].methods.tokenB().call()).toLowerCase(),
           }
         }))  
       setPrices(newPrices);

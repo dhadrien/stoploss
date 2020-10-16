@@ -7,6 +7,7 @@ import FDAI from '../deployments/FDAI.json';
 import FUSDC from '../deployments/FUSDC.json';
 import FUSDT from '../deployments/FUSDT.json';
 import FWBTC from '../deployments/FWBTC.json';
+import FETH from '../deployments/FETH.json';
 import FWETH from '../deployments/FWETH.json';
 import SLFactory from '../deployments/SLFactory.json';
 import SLOracle from '../deployments/SLOracle.json';
@@ -18,6 +19,14 @@ import UniPairDAIWETH from '../deployments/UniPairFDAIFWETH.json';
 import UniPairUSDCWETH from '../deployments/UniPairFUSDCFWETH.json';
 import UniPairUSDTWETH from '../deployments/UniPairFUSDTFWETH.json';
 import UniPairWBTCWETH from '../deployments/UniPairFWBTCFWETH.json';
+import SLPoolDAIFETH from '../deployments/SLPoolFDAIFETH.json';
+import SLPoolUSDCFETH from '../deployments/SLPoolFUSDCFETH.json';
+import SLPoolUSDTFETH from '../deployments/SLPoolFUSDTFETH.json';
+import SLPoolWBTCFETH from '../deployments/SLPoolFWBTCFETH.json';
+import UniPairDAIFETH from '../deployments/UniPairFDAIFETH.json';
+import UniPairUSDCFETH from '../deployments/UniPairFUSDCFETH.json';
+import UniPairUSDTFETH from '../deployments/UniPairFUSDTFETH.json';
+import UniPairWBTCFETH from '../deployments/UniPairFWBTCFETH.json';
 import UniswapV2Factory from '../deployments/UniswapV2Factory.json';
 import UniswapV2Router02 from '../deployments/UniswapV2Router02.json';
 
@@ -35,11 +44,12 @@ export class Contracts {
     this.defaultGas = options.defaultGas;
     this.defaultGasPrice = options.defaultGasPrice;
 
-    this.fdai = new this.web3.eth.Contract(FDAI.abi, FDAI.address);
-    this.fusdc = new this.web3.eth.Contract(FUSDC.abi, FUSDC.address);
-    this.fusdt = new this.web3.eth.Contract(FUSDT.abi, FDAI.address);
-    this.fwbtc = new this.web3.eth.Contract(FWBTC.abi, FWBTC.address);
-    this.fweth = new this.web3.eth.Contract(FWETH.abi, FWETH.address);
+    this.FDAI = new this.web3.eth.Contract(FDAI.abi, FDAI.address);
+    this.FUSDC = new this.web3.eth.Contract(FUSDC.abi, FUSDC.address);
+    this.FUSDT = new this.web3.eth.Contract(FUSDT.abi, FUSDT.address);
+    this.FWBTC = new this.web3.eth.Contract(FWBTC.abi, FWBTC.address);
+    this.FWETH = new this.web3.eth.Contract(FWETH.abi, FWETH.address);
+    this.FETH = new this.web3.eth.Contract(FETH.abi, FETH.address);
     this.slFactory = new this.web3.eth.Contract(SLFactory.abi, SLFactory.address);
     this.slOracle = new this.web3.eth.Contract(SLOracle.abi, SLOracle.address);
     // this.SLPoolDAIWETH = new this.web3.eth.Contract(SLPoolDAIWETH.abi, SLPoolDAIWETH.address); //legacy pool will be changed one day
@@ -52,6 +62,14 @@ export class Contracts {
     this.UniPairUSDCWETH = new this.web3.eth.Contract(UniPairUSDCWETH.abi, UniPairUSDCWETH.address);
     this.UniPairUSDTWETH = new this.web3.eth.Contract(UniPairUSDTWETH.abi, UniPairUSDTWETH.address);
     this.UniPairWBTCWETH = new this.web3.eth.Contract(UniPairWBTCWETH.abi, UniPairWBTCWETH.address);
+    this.SLPoolDAIFETH = new this.web3.eth.Contract(SLPoolDAIFETH.abi, SLPoolDAIFETH.address);
+    this.SLPoolUSDCFETH = new this.web3.eth.Contract(SLPoolUSDCFETH.abi, SLPoolUSDCFETH.address);
+    this.SLPoolUSDTFETH = new this.web3.eth.Contract(SLPoolUSDTFETH.abi, SLPoolUSDTFETH.address);
+    this.SLPoolWBTCFETH = new this.web3.eth.Contract(SLPoolWBTCFETH.abi, SLPoolWBTCFETH.address);
+    this.UniPairDAIFETH = new this.web3.eth.Contract(UniPairDAIFETH.abi, UniPairDAIFETH.address);
+    this.UniPairUSDCFETH = new this.web3.eth.Contract(UniPairUSDCFETH.abi, UniPairUSDCFETH.address);
+    this.UniPairUSDTFETH = new this.web3.eth.Contract(UniPairUSDTFETH.abi, UniPairUSDTFETH.address);
+    this.UniPairWBTCFETH = new this.web3.eth.Contract(UniPairWBTCFETH.abi, UniPairWBTCFETH.address);
     this.unifactory = new this.web3.eth.Contract(UniswapV2Factory.abi, UniswapV2Factory.address);
     this.uniRouter = new this.web3.eth.Contract(UniswapV2Router02.abi, UniswapV2Router02.address);
 
@@ -64,11 +82,11 @@ export class Contracts {
     provider,
     networkId
   ) {
-    this.fdai.setProvider(provider);
-    this.fusdc.setProvider(provider);
-    this.fusdt.setProvider(provider);
-    this.fwbtc.setProvider(provider);
-    this.fweth.setProvider(provider);
+    this.FDAI.setProvider(provider);
+    this.FUSDC.setProvider(provider);
+    this.FUSDT.setProvider(provider);
+    this.FWBTC.setProvider(provider);
+    this.FWETH.setProvider(provider);
     this.slOracle.setProvider(provider);
     this.slFactory.setProvider(provider);
     this.SLPoolDAIWETH.setProvider(provider);
@@ -76,11 +94,11 @@ export class Contracts {
     this.unifactory.setProvider(provider);
     this.uniRouter.setProvider(provider);
     const contracts = [
-      { contract: this.fdai, json: FDAI },
-      { contract: this.fusdt, json: FUSDT },
-      { contract: this.fusdc, json: FUSDC },
-      { contract: this.fwbtc, json: FWBTC },
-      { contract: this.fweth, json: FWETH },
+      { contract: this.FDAI, json: FDAI },
+      { contract: this.FUSDT, json: FUSDT },
+      { contract: this.FUSDC, json: FUSDC },
+      { contract: this.FWBTC, json: FWBTC },
+      { contract: this.FWETH, json: FWETH },
       { contract: this.slFactory, json: SLFactory },
       { contract: this.slOracle, json: SLOracle },
       { contract: this.SLPoolDAIWETH, json: SLPoolDAIWETH },
@@ -105,8 +123,8 @@ export class Contracts {
     ]
 
     this.names = {};
-    this.names[this.fdai.options.address] = "FDAI";
-    this.names[this.fweth.options.address] = "FWETH";
+    this.names[this.FDAI.options.address] = "FDAI";
+    this.names[this.FWETH.options.address] = "FWETH";
     this.names[this.slOracle.options.address] = "SL: Oracle";
     this.names[this.slFactory.options.address] = "SL: Factory";
     this.names[this.SLPoolUSDCWETH.options.address] = "SL: Pool FUSDC/FWETH";
@@ -117,6 +135,14 @@ export class Contracts {
     this.names[this.UniPairUSDCWETH.options.address] = "UNI: Pair FDUSDCFWETH";
     this.names[this.UniPairWBTCWETH.options.address] = "UNI: Pair FDAWBTCWETH";
     this.names[this.UniPairDAIWETH.options.address] = "UNI: Pair FDAI/FWETH";
+    this.names[this.SLPoolUSDCFETH.options.address] = "SL: Pool FUSDC/FFETH";
+    this.names[this.SLPoolUSDTFETH.options.address] = "SL: Pool FDUSDTFFETH";
+    this.names[this.SLPoolWBTCFETH.options.address] = "SL: Pool FDAWBTCFETH";
+    this.names[this.SLPoolDAIFETH.options.address] = "SL: Pool FDAI/FFETH";
+    this.names[this.UniPairUSDTFETH.options.address] = "UNI: Pair FUSDT/FFETH";
+    this.names[this.UniPairUSDCFETH.options.address] = "UNI: Pair FDUSDCFFETH";
+    this.names[this.UniPairWBTCFETH.options.address] = "UNI: Pair FDAWBTCFETH";
+    this.names[this.UniPairDAIFETH.options.address] = "UNI: Pair FDAI/FFETH";
     this.names[this.unifactory.options.address] = "UNI: Factory";
     this.names[this.uniRouter.options.address] = "UNI: Router";
   }
@@ -124,20 +150,28 @@ export class Contracts {
   setDefaultAccount(
     account
   ) {
-    this.fdai.options.from = account;
-    this.fweth.options.from = account;
+    this.FDAI.options.from = account;
+    this.FWETH.options.from = account;
+    this.uniRouter.options.from = account;
+    this.unifactory.options.from = account;
+    this.slFactory.options.from = account;
+    this.slOracle.options.from = account
     this.UniPairDAIWETH.options.from = account;
     this.UniPairUSDCWETH.options.from = account;
     this.UniPairUSDTWETH.options.from = account;
     this.UniPairWBTCWETH.options.from = account;
-    this.uniRouter.options.from = account;
-    this.unifactory.options.from = account;
     this.SLPoolDAIWETH.options.from = account;
     this.SLPoolUSDTWETH.options.from = account;
     this.SLPoolUSDCWETH.options.from = account;
     this.SLPoolWBTCWETH.options.from = account;
-    this.slFactory.options.from = account;
-    this.slOracle.options.from = account
+    this.UniPairDAIFETH.options.from = account;
+    this.UniPairUSDCFETH.options.from = account;
+    this.UniPairUSDTFETH.options.from = account;
+    this.UniPairWBTCFETH.options.from = account;
+    this.SLPoolDAIFETH.options.from = account;
+    this.SLPoolUSDTFETH.options.from = account;
+    this.SLPoolUSDCFETH.options.from = account;
+    this.SLPoolWBTCFETH.options.from = account;
   }
 
   async callContractFunction(

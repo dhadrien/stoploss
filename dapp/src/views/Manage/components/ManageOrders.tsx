@@ -48,7 +48,7 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
   const openOrders = orders.stopLosses.filter(order => order.status === "Created")
   const cancelledOrders = orders.stopLosses.filter(order => order.status === "Withdrawn")
   const executedOrders = orders.stopLosses.filter(order => order.status === "Executed")
-  const prices = usePrice(tokenMapping["ETH"].pools || [""]);
+  const prices = usePrice(tokenMapping["FETH"].pools || [""]);
   return (
     (
       
