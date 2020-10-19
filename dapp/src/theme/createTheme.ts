@@ -12,7 +12,7 @@ const createTheme = (config?: ThemeConfig): {
     baseGreyColor,
     baseGreyColorDark,
     borderRadius = 0,
-    siteWidth = 1200
+    siteWidth = 1920
   } = config || {}
 
   const { h, s } = baseColor
@@ -35,8 +35,8 @@ const createTheme = (config?: ThemeConfig): {
 
   const buttonSizes = {
     lg: 72,
-    md: 60,
-    sm: 48,
+    md: 48,
+    sm: 36,
   }
 
   // const buttonSizes = {
@@ -68,9 +68,9 @@ const createTheme = (config?: ThemeConfig): {
   }
 
   const spacing = {
-    0: 0,
-    1: 2,
-    2: 4,
+    0: 5,
+    1: 5,
+    2: 5,
     3: 8,
     4: 12,
     5: 16,
@@ -143,18 +143,33 @@ const hslToCssString = (hsla: HSLA) => {
 
 const generateGreys = (h: number) => {
   return {
-    100: hslToCssString({ h, s: 0, l: 100 }),
-    200: hslToCssString({ h, s: 40, l: 94 }),
-    300: hslToCssString({ h, s: 40, l: 90 }),
-    400: hslToCssString({ h, s: 40, l: 70 }),
-    500: hslToCssString({ h, s: 70, l: 100 }),
-    600: hslToCssString({ h, s: 10, l: 37 }),
-    700: hslToCssString({ h, s: 17, l: 15 }),
-    800: hslToCssString({ h, s: 40, l: 10 }),
-    900: hslToCssString({ h, s: 40, l: 5 }),
+    //?
+    100: hslToCssString({ h, s: 1, l: 100 }),
+    //?
+    200: hslToCssString({ h, s: 15, l: 90 }),
+    //?
+    300: hslToCssString({ h, s: 30, l: 80 }),
+    //?
+    400: hslToCssString({ h, s: 50, l: 100 }),
+    //Nav Active + Pair Txt
+    500: hslToCssString({ h, s: 100, l: 100 }),
+    //NavText
+    600: hslToCssString({ h, s: 80, l: 75 }),
+    //background
+    700: hslToCssString({ h, s: 62, l: 10 }),
+    //GradientInsideComponents
+    800: hslToCssString({ h, s: 62, l: 20 }),
+    //Borders
+    900: hslToCssString({ h, s: 77, l: 8 }),
   }
 }
 
+// YELLOW1 { h: 45, s: 63, l: 59 },
+// BLUE1 { h: 242, s: 62, l: 39 },
+// BLUE2 { h: 240, s: 50, l: 40 },
+// PURPLE1: { h: 259, s: 56, l: 35 },
+// PURPLE2: {h: 259, s: 56, l: 29 }
+// PURPLE3:{ h: 260, s: 77, l: 8 },
 
 const generateSurfaces = (
   base: {
@@ -170,32 +185,32 @@ const generateSurfaces = (
     N2: {
       background: `radial-gradient(circle at top, ${base.main}, ${base.dark})`,
       border: '0',
-      highlight: `inset 4px -4px 8px -4px ${highlight}`,
-      shadow: `inset -4px 4px 8px -4px ${shadow}`,
+      highlight: `2px -2px 3px -2px ${highlight}`,
+      shadow: `-2px 2px 3px -2px ${shadow}`,
     },
     N1: {
       background: baseBg,
       border: '0',
-      highlight: `inset 2px -2px 4px ${highlight}`,
-      shadow: `inset -2px 2px 4px ${shadow}`,
+      highlight: `1px -1px 2px ${highlight}`,
+      shadow: `-1px 1px 2px ${shadow}`,
     },
     0: {
       background: baseBg,
       border: `0`,
-      highlight: `inset -1px 1px 0px ${highlight}`,
+      highlight: `-1px 1px 0px ${highlight}`,
       shadow: `0px 0px 1px 1px ${shadow}`,
     },
     1: {
       background: baseBg,
       border: '0',
-      highlight: `4px -4px 8px 0px ${highlight}`,
-      shadow: `-4px 4px 8px 0 ${shadow}`,
+      highlight: `2px -2px 3px 0px ${highlight}`,
+      shadow: `-2px 2px 3px 0 ${shadow}`,
     },
     2: {
       background: baseBg,
       border: '0',
-      highlight: `8px -8px 16px 0px ${highlight}`,
-      shadow: `-8px 8px 16px 0 ${shadow}`,
+      highlight: `3px -3px 4px 0px ${highlight}`,
+      shadow: `-3px 3px 4px 0 ${shadow}`,
     }
   }
 }

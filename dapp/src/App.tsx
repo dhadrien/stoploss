@@ -70,14 +70,15 @@ const Providers: React.FC = ({ children }) => {
   const [darkModeSetting] = useLocalStorage('darkMode', true)
   const { dark: darkTheme, light: lightTheme } = useMemo(() => {
     return createTheme({
-      baseColor: { h: 45, s: 63, l: 59 },
-      baseColorDark: { h: 242, s: 62, l: 39 },
+      baseColor: { h: 240, s: 50, l: 40 },
+      baseColorDark: { h: 240, s: 50, l: 40 },
       baseGreyColor: { h: 259, s: 56, l: 35 },
-      baseGreyColorDark: { h: 242, s: 62, l: 39 },
-      borderRadius: 8,
+      baseGreyColorDark: { h: 240, s: 50, l: 40 },
+      borderRadius: 100,
       siteWidth: 1400,
     })
   }, [])
+
 
 // YELLOW1 { h: 45, s: 63, l: 59 },
 // BLUE1 { h: 242, s: 62, l: 39 },
