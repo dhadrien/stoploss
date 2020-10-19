@@ -53,7 +53,7 @@ addressMapping[UniPairFUSDCFETHAddress.toLowerCase()] = "USDCFETH";
 addressMapping[UniPairFUSDTFETHAddress.toLowerCase()] = "USDTFETH";
 addressMapping[UniPairFWBTCFETHAddress.toLowerCase()] = "WBTCFETH";
 
-export interface TokenMapping extends Record<string, {address: string, pools?: string[], balance?:BigNumber}>{
+export interface TokenMapping extends Record<string, {address: string, pools?: string[], balance?:BigNumber, tokens?:string[]}>{
   
 }
 
@@ -100,19 +100,23 @@ export const tokenMapping: TokenMapping= {
   // "SLPoolWBTCWETH": {
   //   address: SLPoolFWBTCFWETHAddress
   // },
-  "SLPoolDAIFETH": {
-    address: SLPoolFDAIFETHAddress
+  "DAIFETH": {
+    address: SLPoolFDAIFETHAddress,
   },
-  "SLPoolUSDTFETH": {
+  "USDTFETH": {
     address: SLPoolFUSDTFETHAddress
   },
-  "SLPoolUSDCFETH": {
+  "USDCFETH": {
     address: SLPoolFUSDCFETHAddress
   },
-  "SLPoolWBTCFETH": {
+  "WBTCFETH": {
     address: SLPoolFWBTCFETHAddress
   },
 }
+tokenMapping.DAIFETH.tokens = [tokenMapping.DAI.address, tokenMapping.FETH.address];
+tokenMapping.USDCFETH.tokens = [tokenMapping.USDC.address, tokenMapping.FETH.address];
+tokenMapping.USDTFETH.tokens = [tokenMapping.USDT.address, tokenMapping.FETH.address];
+tokenMapping.WBTCFETH.tokens = [tokenMapping.WBTC.address, tokenMapping.FETH.address];
 // export const daiwethpool = daiwethpoolAddress;
 export const unirouter = unirouterAddress;
 // export const yam = '0x0e2298e3bûse3390e3b945a5456fbf59ecc3f55da16'

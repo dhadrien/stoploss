@@ -1,8 +1,9 @@
 import React from 'react'
+import {ReactNode} from 'react'
 import styled from 'styled-components'
 
 interface LabelProps {
-  text?: string,
+  text?: ReactNode,
 }
 
 const Label: React.FC<LabelProps> = ({ text }) => (

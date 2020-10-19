@@ -24,7 +24,7 @@ import useBalances from 'hooks/useBalances';
 import CreateOrder from './CreateOrder'
 import Split from 'components/Split'
 import BigNumber from 'bignumber.js'
-import {tokenNames} from 'constants/tokenAddresses';
+import {tokenNames,} from 'constants/tokenAddresses';
 import { ReactComponent } from '*.svg'
 
 interface SLOrderProps extends ModalProps {
@@ -164,7 +164,7 @@ const SLOrders: React.FC = () => {
               column
             >
               <Value value={tokenMappingWithBalance[name].balance? tokenMappingWithBalance[name].balance?.decimalPlaces(2).toString() + " " + name : "--"} />
-              <Label text={`🦄 Uniswap ${pool} Pair`}/>
+              <Label text={<a target="_blank" href={`https://app.uniswap.org/#/swap?inputCurrency=${tokenMapping[pool].tokens?.[0]}&outputCurrency=${tokenMapping[pool].tokens?.[1]}`}>{`🦄 Uniswap ${pool} Pair`}</a> }/>
             </Box>
           </CardContent>
           <SLOrderProvider token={name} pool={pool}>

@@ -29,7 +29,7 @@ const Provider: React.FC<OrderProps> = ({ children, token, pool }) => {
   // const yycrvPoolAddress = yam ? yam.contracts.yycrv_pool.options.address : ''
   const { isApproved, isApproving, onApprove } = useApproval(
     tokenMapping[token].address,
-    tokenMapping["SLPool" + pool].address,
+    tokenMapping[pool || ""].address,
     () => setConfirmTxModalIsOpen(false)
   )
 
