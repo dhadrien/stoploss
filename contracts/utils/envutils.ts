@@ -9,9 +9,13 @@ export function getEnv(path: string): NodeJS.ProcessEnv {
 }
 
 export const DEFAULT_ENV_ADDRESS = "Address not defined in corresponding .env!";
-export const INIT_TOKEN_SUPPLY = parseEther("10000000");
+export const INIT_TOKEN_SUPPLY = parseEther("1000000000");
+export const INIT_WETH_SUPPLY = parseEther("10000000");
 export const INIT_ETH_LIQUIDITY = parseEther("1000");
+export const INIT_FETH_LIQUIDITY = parseEther("100000");
 export const INIT_DAI_LIQUIDITY = parseEther("300000");
+export const INIT_FSTABLECOINS_LIQUIDITY = parseEther("30000000");
+export const INIT_FWTBTC_LIQUIDITY = parseEther("333");
 export const INIT_DAI_USERBALANCE = parseEther("600");
 export const INIT_ETH_PRICE = BigNumber.from("300");
 export const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";

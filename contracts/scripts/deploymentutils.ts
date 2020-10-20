@@ -11,6 +11,9 @@ import {weiAmountToString} from "../utils/ethutils";
 import {
   NULL_ADDRESS,
   INIT_ETH_LIQUIDITY,
+  INIT_FETH_LIQUIDITY,
+  INIT_FSTABLECOINS_LIQUIDITY,
+  INIT_FWTBTC_LIQUIDITY,
   INIT_DAI_LIQUIDITY,
   INIT_TOKEN_SUPPLY,
   INFINITE_DEADLINE,
@@ -148,8 +151,8 @@ async function deployTokenFeth(
       await uniRouter.addLiquidity(
         FETH.address,
         Token.address,
-        INIT_ETH_LIQUIDITY,
-        INIT_DAI_LIQUIDITY,
+        INIT_FETH_LIQUIDITY,
+        token == "FWBTC" ? INIT_FWTBTC_LIQUIDITY : INIT_FSTABLECOINS_LIQUIDITY,
         parseEther("1"),
         parseEther("1"),
         deployer,

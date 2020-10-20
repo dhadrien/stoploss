@@ -8,6 +8,7 @@ import useSL from 'hooks/useSL';
 
 export interface Price {
   priceA: BigNumber,
+  priceB: BigNumber,
   ratioA: BigNumber,
   ratioB: BigNumber,
   tokenA: string,
@@ -24,7 +25,8 @@ const usePrice = (pools: string[]) => {
       const newPrices: Record<string,Price>={};
         await Promise.all(pools.map(async (pool) => {
           newPrices[pool] = {
-            priceA: (new BigNumber(await sl.contracts["SLPool" + pool].methods.priceA().call())),
+            priceA: (new BigNumber(await sl.contracts["SLPool" + pool].methods.update().call())).dividedBy(new BigNumber(10).pow(18)),
+            priceB: (new BigNumber(1)).multipliedBy(new BigNumber(10).pow(18)).div(new BigNumber(await sl.contracts["SLPool" + pool].methods.update().call())),
             ratioA: (new BigNumber(await sl.contracts["SLPool" + pool].methods.lastRatioA().call())),
             ratioB: (new BigNumber(await sl.contracts["SLPool" + pool].methods.lastRatioB().call())),
             tokenA:(await sl.contracts["SLPool" + pool].methods.tokenA().call()).toLowerCase(),

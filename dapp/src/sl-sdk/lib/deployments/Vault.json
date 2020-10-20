@@ -1,0 +1,259 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_feth",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_fdai",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_fusdc",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_fusdt",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_fwbtc",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "fdai",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "feth",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "fusdc",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "fusdt",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "fwbtc",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "getSome",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "receipt": {
+    "to": null,
+    "from": "0x7b462c0dBbD96128B172FfdB9b54b8Ec06E714CE",
+    "contractAddress": "0x239643AF83FEb95d6176D230cefe08a35F09aB77",
+    "transactionIndex": 12,
+    "gasUsed": "493239",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0xd11ec86a02ea2c9bcde596df7c3251c918c3e27a4dcb401fe0b6886095c5fd53",
+    "transactionHash": "0xe727f963c84b3a3ac70a296e0837a77a587bc3d2ac72b62472ec06fae8fe1027",
+    "logs": [],
+    "blockNumber": 21622930,
+    "cumulativeGasUsed": "2038473",
+    "status": 1,
+    "byzantium": true
+  },
+  "address": "0x239643AF83FEb95d6176D230cefe08a35F09aB77",
+  "args": [
+    "0x70B698D0A4dBF2D150adFA619C10BCBE6D61264c",
+    "0x49928AC7A8257cecB7B71464cA2CF4FAFE400AD5",
+    "0x62d85B8D88cA93FfAB6447519a60C0b13037E4A2",
+    "0x65B12e689973f1717D45D12dA42C8b40D2b21FBf",
+    "0x1ea4E7C4D36E52010907DA225e57Fd92abaC9E0d"
+  ],
+  "solcInputHash": "0x11e50249206d95b19b355b017394ce42b1ed72033d52f396e2da86710a7bbbbb",
+  "metadata": "{\"compiler\":{\"version\":\"0.7.1+commit.f4a555be\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_feth\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_fdai\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_fusdc\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_fusdt\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_fwbtc\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"fdai\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"feth\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"fusdc\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"fusdt\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"fwbtc\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"getSome\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/DumbVault.sol\":\"DumbVault\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":2000},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0xba96bc371ba999f452985a98717cca1e4c4abb598dc038a9a9c3db08129b1ba4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://26e50e3f7b6482fb6f598f2e006994a74aa492687daa4b3eee7fd4fb5398ce7f\",\"dweb:/ipfs/QmZudqoPSkA4USLMFsBBmt19dDPZFS8aaAmL5R7pECXu6t\"]},\"src/DumbVault.sol\":{\"keccak256\":\"0x3fed6fc73366c5d24601e32de22ebdbb017c51589c71aeccf965227d4c7c469d\",\"urls\":[\"bzz-raw://7c9e4211b7314cd32bf030fc4f6e8a532d45837e1396b1bc79e809fbc5084806\",\"dweb:/ipfs/QmZQWrnwDjKchGHioAiNGFfMeYPXnNpU2CUHHKkpZmnCFW\"]},\"src/interfaces/IERC20.sol\":{\"keccak256\":\"0x00fb1283b76f511d82653d28fac26b68adf01efaa513053ff59d25540649cf6d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://719f079e69c545373606187449b96ab6e3ab71313f951b3b30034af6872d283b\",\"dweb:/ipfs/QmezpNXUP2Hkw5YcDqPUdqPNHgzC1eyZTk81icDN3kg8ru\"]}},\"version\":1}",
+  "bytecode": "0x6080604052611c2060065534801561001657600080fd5b506040516105ec3803806105ec833981810160405260a081101561003957600080fd5b5080516020808301516040808501516060860151608090960151600080546001600160a01b03199081166001600160a01b03808a16919091178084558116835260078852858320671bc16d674ec800009055600180548316828916179081905581168352858320682086ac35105260000090819055600280548416838816179081905582168452868420819055600380548416838d1617908190558216845295909220949094556004805490941690821617909255939491939261011290670de0b6b3a76400009061012c90610138811b61027917901c565b6004546001600160a01b0316600090815260076020526040902055506102299350505050565b600061018083836040518060400160405280601a81526020017f536166654d6174683a206469766973696f6e206279207a65726f00000000000081525061018760201b60201c565b9392505050565b600081836102135760405162461bcd60e51b81526004018080602001828103825283818151815260200191508051906020019080838360005b838110156101d85781810151838201526020016101c0565b50505050905090810190601f1680156102055780820380516001836020036101000a031916815260200191505b509250505060405180910390fd5b50600083858161021f57fe5b0495945050505050565b6103b4806102386000396000f3fe608060405234801561001057600080fd5b50600436106100725760003560e01c80634cf1c52b116100505780634cf1c52b146100e55780634e1ea47c146100ed578063cc041b35146100f557610072565b806307e911ea1461007757806308024cc8146100ac57806333d11ea5146100dd575b600080fd5b6100aa6004803603602081101561008d57600080fd5b503573ffffffffffffffffffffffffffffffffffffffff166100fd565b005b6100b46101ed565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b6100b4610209565b6100b4610225565b6100b4610241565b6100b461025d565b60065433600090815260056020908152604080832073ffffffffffffffffffffffffffffffffffffffff8616845290915290205401421161013d57600080fd5b73ffffffffffffffffffffffffffffffffffffffff811660008181526007602090815260408083205481517fa9059cbb0000000000000000000000000000000000000000000000000000000081523360048201526024810191909152905163a9059cbb93604480840194938390030190829087803b1580156101be57600080fd5b505af11580156101d2573d6000803e3d6000fd5b505050506040513d60208110156101e857600080fd5b505050565b60025473ffffffffffffffffffffffffffffffffffffffff1681565b60045473ffffffffffffffffffffffffffffffffffffffff1681565b60005473ffffffffffffffffffffffffffffffffffffffff1681565b60035473ffffffffffffffffffffffffffffffffffffffff1681565b60015473ffffffffffffffffffffffffffffffffffffffff1681565b60006102bb83836040518060400160405280601a81526020017f536166654d6174683a206469766973696f6e206279207a65726f0000000000008152506102c2565b9392505050565b60008183610368576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825283818151815260200191508051906020019080838360005b8381101561032d578181015183820152602001610315565b50505050905090810190601f16801561035a5780820380516001836020036101000a031916815260200191505b509250505060405180910390fd5b50600083858161037457fe5b049594505050505056fea26469706673582212207f0b21e9b524ead3a60d91f2780d23c246ad1ee2ae878d19f78d7bb341dad9d964736f6c63430007010033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100725760003560e01c80634cf1c52b116100505780634cf1c52b146100e55780634e1ea47c146100ed578063cc041b35146100f557610072565b806307e911ea1461007757806308024cc8146100ac57806333d11ea5146100dd575b600080fd5b6100aa6004803603602081101561008d57600080fd5b503573ffffffffffffffffffffffffffffffffffffffff166100fd565b005b6100b46101ed565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b6100b4610209565b6100b4610225565b6100b4610241565b6100b461025d565b60065433600090815260056020908152604080832073ffffffffffffffffffffffffffffffffffffffff8616845290915290205401421161013d57600080fd5b73ffffffffffffffffffffffffffffffffffffffff811660008181526007602090815260408083205481517fa9059cbb0000000000000000000000000000000000000000000000000000000081523360048201526024810191909152905163a9059cbb93604480840194938390030190829087803b1580156101be57600080fd5b505af11580156101d2573d6000803e3d6000fd5b505050506040513d60208110156101e857600080fd5b505050565b60025473ffffffffffffffffffffffffffffffffffffffff1681565b60045473ffffffffffffffffffffffffffffffffffffffff1681565b60005473ffffffffffffffffffffffffffffffffffffffff1681565b60035473ffffffffffffffffffffffffffffffffffffffff1681565b60015473ffffffffffffffffffffffffffffffffffffffff1681565b60006102bb83836040518060400160405280601a81526020017f536166654d6174683a206469766973696f6e206279207a65726f0000000000008152506102c2565b9392505050565b60008183610368576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825283818151815260200191508051906020019080838360005b8381101561032d578181015183820152602001610315565b50505050905090810190601f16801561035a5780820380516001836020036101000a031916815260200191505b509250505060405180910390fd5b50600083858161037457fe5b049594505050505056fea26469706673582212207f0b21e9b524ead3a60d91f2780d23c246ad1ee2ae878d19f78d7bb341dad9d964736f6c63430007010033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 11251,
+        "contract": "src/DumbVault.sol:DumbVault",
+        "label": "feth",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 11253,
+        "contract": "src/DumbVault.sol:DumbVault",
+        "label": "fdai",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_address"
+      },
+      {
+        "astId": 11255,
+        "contract": "src/DumbVault.sol:DumbVault",
+        "label": "fusdc",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_address"
+      },
+      {
+        "astId": 11257,
+        "contract": "src/DumbVault.sol:DumbVault",
+        "label": "fusdt",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_address"
+      },
+      {
+        "astId": 11259,
+        "contract": "src/DumbVault.sol:DumbVault",
+        "label": "fwbtc",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_address"
+      },
+      {
+        "astId": 11265,
+        "contract": "src/DumbVault.sol:DumbVault",
+        "label": "lastGot",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))"
+      },
+      {
+        "astId": 11268,
+        "contract": "src/DumbVault.sol:DumbVault",
+        "label": "PERIOD",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 11272,
+        "contract": "src/DumbVault.sol:DumbVault",
+        "label": "amounts",
+        "offset": 0,
+        "slot": "7",
+        "type": "t_mapping(t_address,t_uint256)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => mapping(address => uint256))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_uint256)"
+      },
+      "t_mapping(t_address,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  "gasEstimates": {
+    "creation": {
+      "codeDepositCost": "189600",
+      "executionCost": "infinite",
+      "totalCost": "infinite"
+    },
+    "external": {
+      "fdai()": "1057",
+      "feth()": "1013",
+      "fusdc()": "1036",
+      "fusdt()": "1035",
+      "fwbtc()": "1058",
+      "getSome(address)": "infinite"
+    }
+  }
+}

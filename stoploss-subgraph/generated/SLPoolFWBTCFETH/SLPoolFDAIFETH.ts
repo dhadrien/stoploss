@@ -607,6 +607,21 @@ export class SLPoolFDAIFETH extends ethereum.SmartContract {
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
+
+  update(): BigInt {
+    let result = super.call("update", "update():(uint256)", []);
+
+    return result[0].toBigInt();
+  }
+
+  try_update(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("update", "update():(uint256)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
 }
 
 export class ConstructorCall extends ethereum.Call {
@@ -631,32 +646,6 @@ export class ConstructorCall__Outputs {
   _call: ConstructorCall;
 
   constructor(call: ConstructorCall) {
-    this._call = call;
-  }
-}
-
-export class _executeStopLossCall extends ethereum.Call {
-  get inputs(): _executeStopLossCall__Inputs {
-    return new _executeStopLossCall__Inputs(this);
-  }
-
-  get outputs(): _executeStopLossCall__Outputs {
-    return new _executeStopLossCall__Outputs(this);
-  }
-}
-
-export class _executeStopLossCall__Inputs {
-  _call: _executeStopLossCall;
-
-  constructor(call: _executeStopLossCall) {
-    this._call = call;
-  }
-}
-
-export class _executeStopLossCall__Outputs {
-  _call: _executeStopLossCall;
-
-  constructor(call: _executeStopLossCall) {
     this._call = call;
   }
 }
@@ -687,6 +676,40 @@ export class _executeStopLossEthCall__Outputs {
   _call: _executeStopLossEthCall;
 
   constructor(call: _executeStopLossEthCall) {
+    this._call = call;
+  }
+}
+
+export class _executeStopLossTokenCall extends ethereum.Call {
+  get inputs(): _executeStopLossTokenCall__Inputs {
+    return new _executeStopLossTokenCall__Inputs(this);
+  }
+
+  get outputs(): _executeStopLossTokenCall__Outputs {
+    return new _executeStopLossTokenCall__Outputs(this);
+  }
+}
+
+export class _executeStopLossTokenCall__Inputs {
+  _call: _executeStopLossTokenCall;
+
+  constructor(call: _executeStopLossTokenCall) {
+    this._call = call;
+  }
+
+  get stopLossindex(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get token(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class _executeStopLossTokenCall__Outputs {
+  _call: _executeStopLossTokenCall;
+
+  constructor(call: _executeStopLossTokenCall) {
     this._call = call;
   }
 }
@@ -767,6 +790,48 @@ export class _stopLossCall__Outputs {
   }
 }
 
+export class _stopLossFromTokenCall extends ethereum.Call {
+  get inputs(): _stopLossFromTokenCall__Inputs {
+    return new _stopLossFromTokenCall__Inputs(this);
+  }
+
+  get outputs(): _stopLossFromTokenCall__Outputs {
+    return new _stopLossFromTokenCall__Outputs(this);
+  }
+}
+
+export class _stopLossFromTokenCall__Inputs {
+  _call: _stopLossFromTokenCall;
+
+  constructor(call: _stopLossFromTokenCall) {
+    this._call = call;
+  }
+
+  get tokenIn(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get amountToSend(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get amountToGuarantee(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get fromEther(): boolean {
+    return this._call.inputValues[3].value.toBoolean();
+  }
+}
+
+export class _stopLossFromTokenCall__Outputs {
+  _call: _stopLossFromTokenCall;
+
+  constructor(call: _stopLossFromTokenCall) {
+    this._call = call;
+  }
+}
+
 export class _withdrawStopLossEthCall extends ethereum.Call {
   get inputs(): _withdrawStopLossEthCall__Inputs {
     return new _withdrawStopLossEthCall__Inputs(this);
@@ -793,6 +858,40 @@ export class _withdrawStopLossEthCall__Outputs {
   _call: _withdrawStopLossEthCall;
 
   constructor(call: _withdrawStopLossEthCall) {
+    this._call = call;
+  }
+}
+
+export class _withdrawStopLossTokenCall extends ethereum.Call {
+  get inputs(): _withdrawStopLossTokenCall__Inputs {
+    return new _withdrawStopLossTokenCall__Inputs(this);
+  }
+
+  get outputs(): _withdrawStopLossTokenCall__Outputs {
+    return new _withdrawStopLossTokenCall__Outputs(this);
+  }
+}
+
+export class _withdrawStopLossTokenCall__Inputs {
+  _call: _withdrawStopLossTokenCall;
+
+  constructor(call: _withdrawStopLossTokenCall) {
+    this._call = call;
+  }
+
+  get stopLossindex(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get token(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class _withdrawStopLossTokenCall__Outputs {
+  _call: _withdrawStopLossTokenCall;
+
+  constructor(call: _withdrawStopLossTokenCall) {
     this._call = call;
   }
 }
@@ -1026,12 +1125,16 @@ export class StopLossFromTokenCall__Inputs {
     this._call = call;
   }
 
-  get tokenToSend(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
+  get tokenIn(): Address {
+    return this._call.inputValues[0].value.toAddress();
   }
 
-  get tokenToGuarantee(): BigInt {
+  get amountToSend(): BigInt {
     return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get amountToGuarantee(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
   }
 }
 
@@ -1066,6 +1169,36 @@ export class SyncCall__Outputs {
 
   constructor(call: SyncCall) {
     this._call = call;
+  }
+}
+
+export class UpdateCall extends ethereum.Call {
+  get inputs(): UpdateCall__Inputs {
+    return new UpdateCall__Inputs(this);
+  }
+
+  get outputs(): UpdateCall__Outputs {
+    return new UpdateCall__Outputs(this);
+  }
+}
+
+export class UpdateCall__Inputs {
+  _call: UpdateCall;
+
+  constructor(call: UpdateCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateCall__Outputs {
+  _call: UpdateCall;
+
+  constructor(call: UpdateCall) {
+    this._call = call;
+  }
+
+  get value0(): BigInt {
+    return this._call.outputValues[0].value.toBigInt();
   }
 }
 

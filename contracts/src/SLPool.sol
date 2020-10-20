@@ -144,27 +144,34 @@ contract SLPool {
     }
 
      function update()
-        internal
+        public returns (uint) // returns weak oracle price for hackathon
     {
         (, , uint32 blockTimestamp) =
             UniswapV2OracleLibrary.currentCumulativePrices(uniPair);
         uint32 timeElapsed = blockTimestamp - blockTimestampLast; // overflow is desired
 
-        if (timeElapsed >= uint32(PERIOD)) {
+        // if (timeElapsed >= uint32(PERIOD)) {
           // Update price
-          SLOracle(oracle).update();
+          // SLOracle(oracle).update();
           blockTimestampLast = blockTimestamp;
           // Aproximations: hold in highly liquid pools. 
-          priceA = SLOracle(oracle).consult(tokenA, 1 ether); // Priice of 1WETH in token
+          // priceA = SLOracle(oracle).consult(tokenA, 1 ether); // Priice of 1WETH in token
           (uint reserve0, uint reserve1,) = IUniswapV2Pair(uniPair).getReserves();
           (reserveA, reserveB) = inverted ? (reserve1, reserve0) : (reserve0, reserve1);
+          // We make it as simple as possible for the hackathon, more work to be done on the oracle side
+          priceA = (reserveB.mul(1 ether)).div(reserveA);
           totalLpSupply = IUniswapV2Pair(uniPair).totalSupply(); // in storage for now, could be memory
           uint totalReserveinB = reserveB.add((reserveA.mul(priceA).div(1 ether)));
           uint totalReserveInA = totalReserveinB.div(priceA).mul(1 ether);
           lastRatioA = (totalReserveInA.mul(RATIO_PRECISION)).div(totalLpSupply);
           lastRatioB = (totalReserveinB.mul(RATIO_PRECISION)).div(totalLpSupply);
+          console.log("new update");
+          console.log("priceA", priceA);
+          console.log("lastRatioA", lastRatioA);
+          console.log("lastRatioB", lastRatioB);
           emit Update(block.timestamp, priceA, lastRatioA, lastRatioB);
-        }
+          return priceA;
+        // }
     }
 
     function getLpAmount() public view returns (uint) {
@@ -196,7 +203,10 @@ contract SLPool {
         delete getStopOrdersTokenA[orderIndex] :
         delete getStopOrdersTokenB[orderIndex];
     }
-    
+    // // for the hackathon weak oracle
+    // function _getPriceA() public view returns (uint) {
+
+    // }
 
     function stopLoss(uint lpAmount, address tokenToGuarantee, uint amountToGuarantee) public {
       _stopLoss(lpAmount, tokenToGuarantee, amountToGuarantee, 0, false);
@@ -262,12 +272,18 @@ contract SLPool {
         getStopOrdersTokenB.push(StopOrder(msg.sender, lpAmount, ratio, amountToGuarantee));
         length = getStopOrdersTokenB.length - 1;
       }
+      console.log("New stoploss ratio: ", ratio);
       emit StopLossCreated(uniPair, length, msg.sender, delegated, lpAmount, tokenToGuarantee, amountToGuarantee, tokenIn, ratio);
       update();
     }
 
     function _executeStopLossToken(uint stopLossindex, address token) public {
       bool isA = token == tokenA;
+      console.log("isA", isA);
+      console.log("Order Ratio", (_getRatio(stopLossindex, token)));
+      console.log("Ratio + Margin", (_getRatio(stopLossindex, token).mul(uint(100).add(MARGIN_RATIO))).div(100));
+      console.log("Last Ratio", isA ? lastRatioA : lastRatioB);
+      
       require((isA ? lastRatioA : lastRatioB) < (_getRatio(stopLossindex, token).mul(uint(100).add(MARGIN_RATIO))).div(100), 'SLPOOL: RATIO_CONDITION');
       (uint tokenReceived, uint otherTokenReceived) =
           IUniswapV2Router02(uniRouter).removeLiquidity(
@@ -280,6 +296,10 @@ contract SLPool {
             262156100447
           ); // infiinite deadline
       uint tokenGuaranted = _getAmountToGuarantee(stopLossindex, token);
+      console.log("Token guaranteed", tokenGuaranted);
+      console.log("Token Received", tokenReceived);
+      console.log("otherTokenReceived", otherTokenReceived);
+      console.log("Token Asked: ", tokenGuaranted.sub(tokenReceived));
       address[] memory path = new address[](2);
       path[0] = isA ? tokenB : tokenA;
       path[1] = token;
@@ -301,6 +321,7 @@ contract SLPool {
         isA ? tokenB : tokenA,
         otherTokenReceived - otherTokenSold[0]
       );
+      // update();
       _deleteOrder(stopLossindex, token);
     }     
 
@@ -338,12 +359,14 @@ contract SLPool {
         tokenA,
         ethReceived - etherSold[0]
       );
+      // update();
       delete getStopOrdersTokenB[stopLossindex];
     }
 
     // this function is currently public, should be internal, otherwise revert dont throw correct message
     function _executeStopLossEth(uint stopLossindex) public {
       require(lastRatioA < (getStopOrdersTokenA[stopLossindex].ratio.mul(uint(100).add(MARGIN_RATIO))).div(100), 'SLPOOL: RATIO_CONDITION');
+      update();
       (uint tokenReceived, uint ethReceived) =
           IUniswapV2Router02(uniRouter).removeLiquidityETH(
             tokenB, 
@@ -375,6 +398,7 @@ contract SLPool {
         tokenB,
         tokenReceived - tokenSold[0]
       );
+      update();
       delete getStopOrdersTokenA[stopLossindex];
     }
 
@@ -382,6 +406,7 @@ contract SLPool {
       if (token != tokenA) {
         require(token == tokenB, "SLPOOL: Wrong Token");
       }
+      update();
       if (isWETH) {
         if (token == tokenB) {
           _executeStopLossTokenWeth(stopLossindex);
@@ -414,6 +439,7 @@ contract SLPool {
         );
       msg.sender.transfer(amounts[1].add(ethReceived));
       emit WithdrawStopLoss(uniPair, stopLossindex, msg.sender, getStopOrdersTokenA[stopLossindex].lpAmount, tokenA, amounts[1].add(ethReceived));
+      // update();
       delete getStopOrdersTokenA[stopLossindex];
     }
 
@@ -438,6 +464,7 @@ contract SLPool {
         ); // infiinite deadline
       IERC20(tokenB).transfer(msg.sender, amounts[1].add(tokenReceived));
       emit WithdrawStopLoss(uniPair, stopLossindex, msg.sender, getStopOrdersTokenB[stopLossindex].lpAmount, tokenB, amounts[1].add(tokenReceived));
+      // update();
       delete getStopOrdersTokenB[stopLossindex];
     }
 
@@ -464,6 +491,7 @@ contract SLPool {
         ); // infiinite deadline
       IERC20(token).transfer(msg.sender, amounts[1].add(tokenReceived));
       emit WithdrawStopLoss(uniPair, stopLossindex, msg.sender, _getLpAmount(stopLossindex, token), token, amounts[1].add(tokenReceived));
+      // update();
       _deleteOrder(stopLossindex, token);
     }
 
@@ -471,6 +499,7 @@ contract SLPool {
       if (token != tokenA) {
         require(token == tokenB, "SLPOOL: Wrong Token");
       }
+      update();
       if (isWETH) {
         if (token == tokenB) {
           _withdrawStopLossTokenWeth(stopLossindex);

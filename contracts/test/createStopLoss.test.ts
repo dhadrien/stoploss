@@ -768,4 +768,72 @@ describe("[TOKEN/TOKEN PAIR] User add liquidity from one token, make a stop loss
       "WithdrawStopLoss"
     );
   });
+  it("should create 1 stoplosss with Token only, 1 with Ether. Should be or not be liquidated depending on Swaps in the uniPair", async function () {
+    const {deployer, user, liquidator} = await getNamedAccounts();
+    const liqSigner = await ethers.getSigner(liquidator);
+    const userSigner = await ethers.getSigner(user);
+    const deployerSigner = await ethers.getSigner(deployer);
+    const FDAI = await ethers.getContract("FDAI", userSigner);
+    const FETH = await ethers.getContract("FETH", userSigner);
+    const {address: poolAddress} = await deployments.get("SLPoolFDAIFETH");
+    let pool = await ethers.getContractAt("SLPool", poolAddress, userSigner);
+    const {address: pairAddress} = await deployments.get("UniPairFDAIFETH");
+    const router = await ethers.getContract(
+      "UniswapV2Router02",
+      deployerSigner
+    );
+    await (await FDAI.approve(pool.address, parseEther("5000000000"))).wait();
+    await (await FETH.approve(pool.address, parseEther("5000000000"))).wait();
+    await expect(
+      pool.stopLossFromToken(
+        FDAI.address,
+        parseEther("1").div(BigNumber.from("94")).mul(BigNumber.from("100")),
+        parseEther("1")
+      )
+    ).to.emit(pool, "StopLossCreated");
+    await expect(
+      pool.stopLossFromToken(
+        FETH.address,
+        parseEther("0.2"),
+        parseEther("0.2").mul(BigNumber.from("94")).div(BigNumber.from("100"))
+      )
+    ).to.emit(pool, "StopLossCreated");
+    pool = await ethers.getContractAt("SLPool", poolAddress, liqSigner);
+    await expect(pool.executeStopLoss(0, FDAI.address)).to.be.revertedWith(
+      "revert SLPOOL: RATIO_CONDITION"
+    );
+    await expect(pool.executeStopLoss(0, FETH.address)).to.be.revertedWith(
+      "revert SLPOOL: RATIO_CONDITION"
+    );
+    await (await FDAI.approve(router.address, parseEther("200000"))).wait();
+    await (await FETH.approve(router.address, parseEther("200000"))).wait();
+    // swaping eth => fdai
+    await router.swapExactTokensForTokens(
+      parseEther("5000"),
+      parseEther("1"),
+      [FETH.address, FDAI.address],
+      deployer,
+      INFINITE_DEADLINE
+    );
+    await pool.update();
+    await expect(pool.executeStopLoss(0, FETH.address)).to.be.revertedWith(
+      "revert SLPOOL: RATIO_CONDITION"
+    );
+    // console.log('hahahaha')
+    await expect(pool.executeStopLoss(0, FDAI.address)).to.emit(
+      pool,
+      "StopLossExecuted"
+    );
+    await router.swapExactTokensForTokens(
+      parseEther("3200000"),
+      parseEther("1"),
+      [FDAI.address, FETH.address],
+      deployer,
+      INFINITE_DEADLINE
+    );
+    await expect(pool.executeStopLoss(0, FETH.address)).to.emit(
+      pool,
+      "StopLossExecuted"
+    );
+  });
 });

@@ -1,15 +1,16 @@
 specVersion: 0.0.2
 description: Stop Loss
-repository: https://github.com/dhadrien/stoploss-subgraph
+repository: https://github.com/dhadrien/stoploss-subgraph-kovan
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
     name: SLPoolFDAIFETH
-    network: local
+    network: kovan
     source:
-      address: '0x48d22eCb9899C62cEA63fa58aD5356159D2ADB09'
+      address: '0xBe2bc673797Bf4e1D5E616e46231bB633dA15Dcb'
       abi: SLPoolFDAIFETH
+      startBlock: 21622418
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -31,10 +32,11 @@ dataSources:
       file: ./src/mapping.ts
   - kind: ethereum/contract
     name: SLPoolFUSDCFETH
-    network: local
+    network: kovan
     source:
-      address: '0x5C21E82e7E1E7bA0128ecEc690935399Fd39f34B'
+      address: '0xa603eac46B8f0C58aAf2455BB13a183a1d76CeEC'
       abi: SLPoolFDAIFETH
+      startBlock: 21622418
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -56,10 +58,11 @@ dataSources:
       file: ./src/mapping.ts
   - kind: ethereum/contract
     name: SLPoolFUSDTFETH
-    network: local
+    network: kovan
     source:
-      address: '0x5533dD4cd5a2b295Dc3C37C8BBe9aaC8717bB8C8'
+      address: '0x201c46eFaCbc694c44Ae05876Dc1e2122495Ff0f'
       abi: SLPoolFDAIFETH
+      startBlock: 21622418
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -81,10 +84,11 @@ dataSources:
       file: ./src/mapping.ts
   - kind: ethereum/contract
     name: SLPoolFWBTCFETH
-    network: local
+    network: kovan
     source:
-      address: '0x709A741615a6526CD5bA8b27b9d9AD3F42034742'
+      address: '0x2B3C9e97440d1e5FB43101501Adfa6599eec166A'
       abi: SLPoolFDAIFETH
+      startBlock: 21622418
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

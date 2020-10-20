@@ -113,6 +113,31 @@ export const withdrawStopLoss = async (sl, pool, orderIndex, token, account, onT
       return true
     })
 }
+
+export const update = async (sl, pool, account, onTxHash) => {
+  // const fdai = sl.contracts.fdai;
+  // const fweth = sl.contracts.fweth;
+  // const uniPair = sl.contracts.uniPair;
+  const slPool = sl.contracts["SLPool" + pool];
+  const gas = GAS_LIMIT.STAKING.DEFAULT
+    return slPool.methods
+    .update()
+    .send({ from: account, gas }, async (error, txHash) => {
+      if (error) {
+          onTxHash && onTxHash('')
+          console.log("Withdraw Stop Loss error", error)
+          return false
+      }
+      onTxHash && onTxHash(txHash)
+      const status = await waitTransaction(sl.web3.eth, txHash)
+      if (!status) {
+        console.log("Withdraw Stop Loss transaction failed.")
+        return false
+      }
+      return true
+    })
+}
+
 export const liquidateStopLoss = async (sl, pool, orderIndex, token, account, onTxHash) => {
   const slPool = sl.contracts["SLPool" + pool];
   const gas = GAS_LIMIT.STAKING.DEFAULT
@@ -136,6 +161,31 @@ export const liquidateStopLoss = async (sl, pool, orderIndex, token, account, on
       return true
     })
 }
+
+export const getSome = async (sl, token, account, onTxHash) => {
+  console.log('$$$$$$$$$$$', sl);
+  const vault = sl.contracts.Vault;
+  const gas = GAS_LIMIT.STAKING.DEFAULT
+    return vault.methods
+    .getSome(
+      token,
+    )
+    .send({ from: account, gas }, async (error, txHash) => {
+      if (error) {
+          onTxHash && onTxHash('')
+          console.log("Get some Loss error", error)
+          return false
+      }
+      onTxHash && onTxHash(txHash)
+      const status = await waitTransaction(sl.web3.eth, txHash)
+      if (!status) {
+        console.log("Get Some Loss failed.")
+        return false
+      }
+      return true
+    })
+}
+
 export const getPrice = async (sl) => {
   const slPool = sl.contracts.slPool;
   const price = await slPool.priceA.call();
@@ -146,108 +196,6 @@ export const approveSL = async (tokenContract, poolContract, account) => {
   return tokenContract.methods
     .approve(poolContract.options.address, ethers.constants.MaxUint256)
     .send({ from: account, gas: 80000 })
-}
-
-export const stake = async (yam, amount, account, onTxHash) => {
-  const poolContract = yam.contracts.yycrv_pool
-  let now = new Date().getTime() / 1000;
-  // const gas = GAS_LIMIT.STAKING[tokenName.toUpperCase()] || GAS_LIMIT.STAKING.DEFAULT;
-  const gas = GAS_LIMIT.STAKING.DEFAULT
-  if (now >= 1597172400) {
-    return poolContract.methods
-      .stake((new BigNumber(amount).times(new BigNumber(10).pow(18))).toString())
-      .send({ from: account, gas }, async (error, txHash) => {
-        if (error) {
-            onTxHash && onTxHash('')
-            console.log("Staking error", error)
-            return false
-        }
-        onTxHash && onTxHash(txHash)
-        const status = await waitTransaction(yam.web3.eth, txHash)
-        if (!status) {
-          console.log("Staking transaction failed.")
-          return false
-        }
-        return true
-      })
-  } else {
-    alert("pool not active");
-  }
-}
-
-export const unstake = async (yam, amount, account, onTxHash) => {
-  const poolContract = yam.contracts.yycrv_pool
-  let now = new Date().getTime() / 1000;
-  if (now >= 1597172400) {
-    return poolContract.methods
-      .withdraw((new BigNumber(amount).times(new BigNumber(10).pow(18))).toString())
-      .send({ from: account, gas: 200000 }, async (error, txHash) => {
-        if (error) {
-            onTxHash && onTxHash('')
-            console.log("Unstaking error", error)
-            return false
-        }
-        onTxHash && onTxHash(txHash)
-        const status = await waitTransaction(yam.web3.eth, txHash)
-        if (!status) {
-          console.log("Unstaking transaction failed.")
-          return false
-        }
-        return true
-      })
-  } else {
-    alert("pool not active");
-  }
-}
-
-export const harvest = async (yam, account, onTxHash) => {
-  const poolContract = yam.contracts.yycrv_pool
-  let now = new Date().getTime() / 1000;
-  if (now >= 1597172400) {
-    return poolContract.methods
-      .getReward()
-      .send({ from: account, gas: 200000 }, async (error, txHash) => {
-        if (error) {
-            onTxHash && onTxHash('')
-            console.log("Harvest error", error)
-            return false
-        }
-        onTxHash && onTxHash(txHash)
-        const status = await waitTransaction(yam.web3.eth, txHash)
-        if (!status) {
-          console.log("Harvest transaction failed.")
-          return false
-        }
-        return true
-      })
-  } else {
-    alert("pool not active");
-  }
-}
-
-export const redeem = async (yam, account, onTxHash) => {
-  const poolContract = yam.contracts.yycrv_pool
-  let now = new Date().getTime() / 1000;
-  if (now >= 1597172400) {
-    return poolContract.methods
-      .exit()
-      .send({ from: account, gas: 400000 }, async (error, txHash) => {
-        if (error) {
-            onTxHash && onTxHash('')
-            console.log("Redeem error", error)
-            return false
-        }
-        onTxHash && onTxHash(txHash)
-        const status = await waitTransaction(yam.web3.eth, txHash)
-        if (!status) {
-          console.log("Redeem transaction failed.")
-          return false
-        }
-        return true
-      })
-  } else {
-    alert("pool not active");
-  }
 }
 
 export const approve = async (tokenContract, poolContract, account) => {

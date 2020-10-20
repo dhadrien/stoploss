@@ -21,11 +21,14 @@ import Value from 'components/Value'
 import {SLOrderProvider} from 'contexts/SLOrder'
 import useSLOrder from 'hooks/useSLOrder';
 import useBalances from 'hooks/useBalances';
+import useSL from 'hooks/useSL';
 import CreateOrder from './CreateOrder'
 import Split from 'components/Split'
 import BigNumber from 'bignumber.js'
 import {tokenNames,} from 'constants/tokenAddresses';
 import { ReactComponent } from '*.svg'
+import usePrice from 'hooks/usePrice';
+import {getSome} from 'sl-sdk/utils'
 
 interface SLOrderProps extends ModalProps {
   token: string,
@@ -51,10 +54,17 @@ const SLOrder: React.FC<SLOrderProps> = ({
     onApprove,
   } = useSLOrder()
 
+  const sl = useSL();
+  const { account } = useWallet();
+
+  const [isGetting, setIsGetting] = useState(false);
+  const toggleIsGetting = () => {
+    const oldIsGetting:boolean = isGetting;
+    setIsGetting(!oldIsGetting);
+  }
   const handleDismissCreateOrderModal = useCallback(() => {
     setcreateOrderModalIsOpen(false)
   }, [setcreateOrderModalIsOpen])
-
 
 
   const handleOnOrder = useCallback((lpAmount: string, pool:string, token: string, amountGuaranteeed: string) => {
@@ -79,14 +89,24 @@ const SLOrder: React.FC<SLOrderProps> = ({
         />
       )
     }
-    if (balance?.toString() === '0') {
+    if (balance?.toString() === '0' && !isGetting) {
       return (
         <Button
           disabled={false}
           full
           text={`Get Some Fake ${token == "FETH" ? "ETH" : token}`}
           variant="default"
-          onClick={() => {window.open("https://discord.gg/GBufWeY", "_blank")}}
+          onClick={() => {getSome(sl, tokenMapping[token].address, account, () => {toggleIsGetting()})}}
+        />
+      )
+    }
+    if (balance?.toString() === '0' && isGetting) {
+      return (
+        <Button
+          disabled={false}
+          full
+          text={`Getting some ${token == "FETH" ? "ETH" : token}...`}
+          variant="secondary"
         />
       )
     }
@@ -95,7 +115,7 @@ const SLOrder: React.FC<SLOrderProps> = ({
         <Button
           disabled
           full
-          text="Creating the Stop Loss.."
+          text="Providing liquidity with Stoploss.."
           variant="secondary"
         />
       )
@@ -149,6 +169,7 @@ const SLOrders: React.FC = () => {
   const tokenMappingWithBalance = useBalances();
   const { status } = useWallet()
   const toRend: React.ReactNode[] = [];
+  const prices = usePrice(tokenMapping["FETH"].pools || [""]);
   tokenNames
   .sort((name1, name2) => {
     const balance1 = tokenMappingWithBalance[name1].balance || new BigNumber(0)
@@ -165,6 +186,12 @@ const SLOrders: React.FC = () => {
             >
               <Value value={tokenMappingWithBalance[name].balance? tokenMappingWithBalance[name].balance?.decimalPlaces(2).toString() + " " + name : "--"} />
               <Label text={<a target="_blank" href={`https://app.uniswap.org/#/swap?inputCurrency=${tokenMapping[pool].tokens?.[0]}&outputCurrency=${tokenMapping[pool].tokens?.[1]}`}>{`🦄 Uniswap ${pool} Pair`}</a> }/>
+              <Label text={
+                prices && name =="FETH" ? 
+                  `1 FETH = ${prices[pool].priceB.decimalPlaces(4).toString()} ${pool.substring(0,4)}` :
+                  prices ? 
+                  `1 ${name} = ${prices[pool].priceA.decimalPlaces(4).toString()} FETH`
+                  : "--"}/>
             </Box>
           </CardContent>
           <SLOrderProvider token={name} pool={pool}>

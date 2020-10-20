@@ -50,6 +50,7 @@ const ManageOrders: React.FC<CreateOrderProps> = ({open, orders, onWithdraw, isW
   const cancelledOrders = orders.stopLosses.filter(order => order.status === "Withdrawn")
   const executedOrders = orders.stopLosses.filter(order => order.status === "Executed")
   const prices = usePrice(tokenMapping["FETH"].pools || [""]);
+  console.log("PRRRRIIICe", prices);
   return open ? (
     (
       <>
@@ -67,6 +68,7 @@ const ManageOrders: React.FC<CreateOrderProps> = ({open, orders, onWithdraw, isW
             <th>Current Value</th>
             <th>Health Ratio</th>
             <th>Lp Amount</th>
+            <th>Current Price</th>
           </tr>
         </TableHead>
         <tbody>

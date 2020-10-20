@@ -56,17 +56,6 @@ const Provider: React.FC<OrderProps> = ({ children, token, pool }) => {
     sl
   ])
 
-  // useEffect(() => {
-  //   fetchBalances()
-  //   let refreshInterval = setInterval(() => fetchBalances(), 10000)
-  //   return () => clearInterval(refreshInterval)
-  // }, [fetchBalances])
-
-  // useEffect(() => {
-  //   let refreshInterval = setInterval(() => setCountdown(farmingStartTime - Date.now()), 1000)
-  //   return () => clearInterval(refreshInterval)
-  // }, [setCountdown])
-
   return (
     <Context.Provider value={{
       onMakeOffer: handleMakeOffer,
