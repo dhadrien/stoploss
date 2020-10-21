@@ -171,6 +171,7 @@ const SLOrders: React.FC = () => {
   const toRend: React.ReactNode[] = [];
   const prices = usePrice(tokenMapping["FETH"].pools || [""]);
   tokenNames
+  .sort((name1, name2) => name1 > name2 ? -1 : 1)
   .sort((name1, name2) => {
     const balance1 = tokenMappingWithBalance[name1].balance || new BigNumber(0)
     const balance2 = tokenMappingWithBalance[name2].balance 
