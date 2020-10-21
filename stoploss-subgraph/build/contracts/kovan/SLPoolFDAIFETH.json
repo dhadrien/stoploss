@@ -203,19 +203,6 @@
     },
     {
       "inputs": [],
-      "name": "PERIOD",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "WETH",
       "outputs": [
         {
@@ -592,19 +579,6 @@
     },
     {
       "inputs": [],
-      "name": "oracle",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "poolFactory",
       "outputs": [
         {
@@ -835,5 +809,5 @@
       "type": "receive"
     }
   ],
-  "address": "0xBe2bc673797Bf4e1D5E616e46231bB633dA15Dcb"
+  "address": "0x1CD5B30c584639B36dee6DD807325F5c0A1E0160"
 }

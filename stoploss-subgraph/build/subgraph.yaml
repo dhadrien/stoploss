@@ -8,7 +8,7 @@ dataSources:
     name: SLPoolFDAIFETH
     network: kovan
     source:
-      address: "0xBe2bc673797Bf4e1D5E616e46231bB633dA15Dcb"
+      address: "0x1CD5B30c584639B36dee6DD807325F5c0A1E0160"
       abi: SLPoolFDAIFETH
       startBlock: 21622418
     mapping:
@@ -34,7 +34,7 @@ dataSources:
     name: SLPoolFUSDCFETH
     network: kovan
     source:
-      address: "0xa603eac46B8f0C58aAf2455BB13a183a1d76CeEC"
+      address: "0x535556c75Fc17942570CacD9b59b21EEB13CC9be"
       abi: SLPoolFDAIFETH
       startBlock: 21622418
     mapping:
@@ -60,7 +60,7 @@ dataSources:
     name: SLPoolFUSDTFETH
     network: kovan
     source:
-      address: "0x201c46eFaCbc694c44Ae05876Dc1e2122495Ff0f"
+      address: "0x1eef0866Aae3c54c57CB185ceD586d604d0E5184"
       abi: SLPoolFDAIFETH
       startBlock: 21622418
     mapping:
