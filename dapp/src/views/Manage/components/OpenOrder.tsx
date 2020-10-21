@@ -9,7 +9,6 @@ import {
   ModalProps,
   ModalTitle,
 } from 'react-neu'
-
 import {StopLoss, StopLossDisplayed} from 'contexts/Manage/types'
 import TokenInput from 'components/TokenInput'
 import useBalances from 'hooks/useBalances'

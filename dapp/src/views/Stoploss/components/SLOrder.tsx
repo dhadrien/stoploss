@@ -12,6 +12,9 @@ import {
   CardIcon,
   Container
 } from 'react-neu'
+import {
+  Link
+ } from '@material-ui/core'
 import { useWallet } from 'use-wallet'
 import {
   tokenMapping,
@@ -186,7 +189,7 @@ const SLOrders: React.FC = () => {
               column
             >
               <Value value={tokenMappingWithBalance[name].balance? tokenMappingWithBalance[name].balance?.decimalPlaces(2).toString() + " " + name : "--"} />
-              <Label text={<a target="_blank" href={`https://app.uniswap.org/#/swap?inputCurrency=${tokenMapping[pool].tokens?.[0]}&outputCurrency=${tokenMapping[pool].tokens?.[1]}`}>{`🦄 Uniswap ${pool} Pair`}</a> }/>
+              <Label text={<Link target="_blank" href={`https://app.uniswap.org/#/swap?inputCurrency=${tokenMapping[pool].tokens?.[0]}&outputCurrency=${tokenMapping[pool].tokens?.[1]}`}>{`🦄 Uniswap ${pool} Pair`}</Link> }/>
               <Label text={
                 prices && name =="FETH" ? 
                   `1 FETH = ${prices[pool].priceB.decimalPlaces(4).toString()} ${pool.substring(0,4)}` :

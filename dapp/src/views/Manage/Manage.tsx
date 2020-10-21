@@ -7,15 +7,6 @@ import {
   Separator,
   Spacer,
 } from 'react-neu'
-import {
-  Grid,
-  LinearProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from '@material-ui/core'
 
 import { useWallet } from 'use-wallet'
 import useSL from 'hooks/useSL'
