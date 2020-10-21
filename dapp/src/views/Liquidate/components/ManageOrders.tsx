@@ -48,7 +48,7 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
     (
       
       <><StyledMain>
-        {cancelledOrders.length === 0 && executedOrders.length === 0 ? <p>No Past orders</p> : 
+        {cancelledOrders.length === 0 && executedOrders.length === 0 ? <p>No Past Liquidations From Your Account</p> : 
         <Table>
           <TableRow>
             <TableCell>Status</TableCell>
