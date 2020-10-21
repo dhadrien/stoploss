@@ -37,8 +37,6 @@ const OpenOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdrawing
   const [value, setValue] = useState<BigNumber>()
   const [healthFactor, setHealthFactor] = useState<BigNumber>()
   useEffect(() => {
-    console.log("$$$$$$$$$$$$$$", order.uniPair);
-    console.log("$$$$$$$$$$$$$$", addressMapping);
     const _tokenA = prices?.[addressMapping[order.uniPair]].tokenA
     const _tokenB = prices?.[addressMapping[order.uniPair]].tokenB
     const _ratioA = prices?.[addressMapping[order.uniPair]].ratioA
@@ -47,9 +45,8 @@ const OpenOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdrawing
     const _priceB = prices?.[addressMapping[order.uniPair]].priceB
     if(_priceA && _priceB &&  _ratioA && _ratioB && _tokenB) {
       const _price = order.tokenToGuarantee == _tokenA? 
-        _priceA.dividedBy(new BigNumber(10).pow(18)).decimalPlaces(3) : 
-        _priceB.decimalPlaces(3);
-      console.log("$$$$$$$$$$$$$$$$$",_priceA, _priceB);
+        _priceA : 
+        _priceB;
       const _value = order.tokenToGuarantee == _tokenA? 
         _ratioA.multipliedBy(order.lpAmount).dividedBy(new BigNumber(10).pow(18+6)).decimalPlaces(3) :
         _ratioB.multipliedBy(order.lpAmount).dividedBy(new BigNumber(10).pow(18+6)).decimalPlaces(3)

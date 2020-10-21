@@ -144,7 +144,7 @@ contract SLPool {
     }
 
      function update()
-        public returns (uint) // returns weak oracle price for hackathon
+        public returns (uint, uint, uint) // returns weak oracle price for hackathon
     {
         (, , uint32 blockTimestamp) =
             UniswapV2OracleLibrary.currentCumulativePrices(uniPair);
@@ -166,7 +166,7 @@ contract SLPool {
           lastRatioA = (totalReserveInA.mul(RATIO_PRECISION)).div(totalLpSupply);
           lastRatioB = (totalReserveinB.mul(RATIO_PRECISION)).div(totalLpSupply);
           emit Update(block.timestamp, priceA, lastRatioA, lastRatioB);
-          return (reserveB.mul(1 ether)).div(reserveA); // hackathon
+          return (priceA, lastRatioA, lastRatioB); // hackathon
         // }
     }
 

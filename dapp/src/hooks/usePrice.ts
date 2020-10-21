@@ -25,10 +25,10 @@ const usePrice = (pools: string[]) => {
       const newPrices: Record<string,Price>={};
         await Promise.all(pools.map(async (pool) => {
           newPrices[pool] = {
-            priceA: (new BigNumber(await sl.contracts["SLPool" + pool].methods.update().call())).dividedBy(new BigNumber(10).pow(18)),
-            priceB: (new BigNumber(1)).multipliedBy(new BigNumber(10).pow(18)).div(new BigNumber(await sl.contracts["SLPool" + pool].methods.update().call())),
-            ratioA: (new BigNumber(await sl.contracts["SLPool" + pool].methods.lastRatioA().call())),
-            ratioB: (new BigNumber(await sl.contracts["SLPool" + pool].methods.lastRatioB().call())),
+            priceA: (new BigNumber((await sl.contracts["SLPool" + pool].methods.update().call())[0])).dividedBy(new BigNumber(10).pow(18)),
+            priceB: (new BigNumber(1)).multipliedBy(new BigNumber(10).pow(18)).div(new BigNumber((await sl.contracts["SLPool" + pool].methods.update().call())[0])),
+            ratioA: (new BigNumber((await sl.contracts["SLPool" + pool].methods.update().call())[1])),
+            ratioB: (new BigNumber((await sl.contracts["SLPool" + pool].methods.update().call())[2])),
             tokenA:(await sl.contracts["SLPool" + pool].methods.tokenA().call()).toLowerCase(),
             tokenB: (await sl.contracts["SLPool" + pool].methods.tokenB().call()).toLowerCase(),
           }
