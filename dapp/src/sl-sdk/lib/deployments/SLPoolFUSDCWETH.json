@@ -800,6 +800,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "update",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -822,5 +835,5 @@
       "type": "receive"
     }
   ],
-  "address": "0xa573425aA866b0Afd8e7fde915Be58a799FAE6b3"
+  "address": "0x6d8266AD6BF6419A9014c5a7FC37C1d8D47B0243"
 }

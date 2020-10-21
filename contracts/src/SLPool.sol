@@ -24,11 +24,10 @@ contract SLPool {
     bool public inverted;// Is the sorting inverted compared to uniswap's?
 
     // oracle
-    address public oracle;
-    uint public constant PERIOD = 1 seconds;
+    // address public oracle;
+    // uint public constant PERIOD = 1 seconds;
     uint32 public blockTimestampLast;
-    uint public priceA; // 1 WETH = priceB Tokens
-    // uint public priceB; // 1 Token = priceA WETH
+    uint public priceA; // 1 tokenB = priceA tokenA
     uint public reserveA; // no real need for storage
     uint public reserveB; // no real need for storage
     uint public totalLpSupply; //no real need for storage
@@ -100,8 +99,9 @@ contract SLPool {
         WETH = _WETH;
         uniRouter = _uniRouter;
         (tokenA, tokenB) = specialSortTokens(_token1, _token2);
-        oracle = _oracle;
-        initPrice();
+        // oracle = _oracle;
+        // initPrice();
+        // for hackathon: simplify => infinite allowance
         IERC20(uniPair).approve(uniRouter, 10000000000000 ether);
         IERC20(tokenA).approve(uniRouter, 10000000000000 ether);
         IERC20(tokenB).approve(uniRouter, 10000000000000 ether);
@@ -139,32 +139,35 @@ contract SLPool {
     function initPrice()
         public
     {
-      blockTimestampLast = SLOracle(oracle).blockTimestampLast();
+      // blockTimestampLast = SLOracle(oracle).blockTimestampLast();
       update();
     }
 
      function update()
-        internal
+        public returns (uint) // returns weak oracle price for hackathon
     {
         (, , uint32 blockTimestamp) =
             UniswapV2OracleLibrary.currentCumulativePrices(uniPair);
         uint32 timeElapsed = blockTimestamp - blockTimestampLast; // overflow is desired
 
-        if (timeElapsed >= uint32(PERIOD)) {
+        // if (timeElapsed >= uint32(PERIOD)) {
           // Update price
-          SLOracle(oracle).update();
+          // SLOracle(oracle).update();
           blockTimestampLast = blockTimestamp;
           // Aproximations: hold in highly liquid pools. 
-          priceA = SLOracle(oracle).consult(tokenA, 1 ether); // Priice of 1WETH in token
+          // priceA = SLOracle(oracle).consult(tokenA, 1 ether); // Priice of 1WETH in token
           (uint reserve0, uint reserve1,) = IUniswapV2Pair(uniPair).getReserves();
           (reserveA, reserveB) = inverted ? (reserve1, reserve0) : (reserve0, reserve1);
+          // We make it as simple as possible for the hackathon, more work to be done on the oracle side
+          priceA = (reserveB.mul(1 ether)).div(reserveA);
           totalLpSupply = IUniswapV2Pair(uniPair).totalSupply(); // in storage for now, could be memory
           uint totalReserveinB = reserveB.add((reserveA.mul(priceA).div(1 ether)));
           uint totalReserveInA = totalReserveinB.div(priceA).mul(1 ether);
           lastRatioA = (totalReserveInA.mul(RATIO_PRECISION)).div(totalLpSupply);
           lastRatioB = (totalReserveinB.mul(RATIO_PRECISION)).div(totalLpSupply);
           emit Update(block.timestamp, priceA, lastRatioA, lastRatioB);
-        }
+          return (reserveB.mul(1 ether)).div(reserveA); // hackathon
+        // }
     }
 
     function getLpAmount() public view returns (uint) {
@@ -196,7 +199,10 @@ contract SLPool {
         delete getStopOrdersTokenA[orderIndex] :
         delete getStopOrdersTokenB[orderIndex];
     }
-    
+    // // for the hackathon weak oracle
+    // function _getPriceA() public view returns (uint) {
+
+    // }
 
     function stopLoss(uint lpAmount, address tokenToGuarantee, uint amountToGuarantee) public {
       _stopLoss(lpAmount, tokenToGuarantee, amountToGuarantee, 0, false);
@@ -301,6 +307,7 @@ contract SLPool {
         isA ? tokenB : tokenA,
         otherTokenReceived - otherTokenSold[0]
       );
+      // update();
       _deleteOrder(stopLossindex, token);
     }     
 
@@ -338,12 +345,14 @@ contract SLPool {
         tokenA,
         ethReceived - etherSold[0]
       );
+      // update();
       delete getStopOrdersTokenB[stopLossindex];
     }
 
     // this function is currently public, should be internal, otherwise revert dont throw correct message
     function _executeStopLossEth(uint stopLossindex) public {
       require(lastRatioA < (getStopOrdersTokenA[stopLossindex].ratio.mul(uint(100).add(MARGIN_RATIO))).div(100), 'SLPOOL: RATIO_CONDITION');
+      update();
       (uint tokenReceived, uint ethReceived) =
           IUniswapV2Router02(uniRouter).removeLiquidityETH(
             tokenB, 
@@ -375,6 +384,7 @@ contract SLPool {
         tokenB,
         tokenReceived - tokenSold[0]
       );
+      update();
       delete getStopOrdersTokenA[stopLossindex];
     }
 
@@ -382,6 +392,7 @@ contract SLPool {
       if (token != tokenA) {
         require(token == tokenB, "SLPOOL: Wrong Token");
       }
+      update();
       if (isWETH) {
         if (token == tokenB) {
           _executeStopLossTokenWeth(stopLossindex);
@@ -414,6 +425,7 @@ contract SLPool {
         );
       msg.sender.transfer(amounts[1].add(ethReceived));
       emit WithdrawStopLoss(uniPair, stopLossindex, msg.sender, getStopOrdersTokenA[stopLossindex].lpAmount, tokenA, amounts[1].add(ethReceived));
+      // update();
       delete getStopOrdersTokenA[stopLossindex];
     }
 
@@ -438,6 +450,7 @@ contract SLPool {
         ); // infiinite deadline
       IERC20(tokenB).transfer(msg.sender, amounts[1].add(tokenReceived));
       emit WithdrawStopLoss(uniPair, stopLossindex, msg.sender, getStopOrdersTokenB[stopLossindex].lpAmount, tokenB, amounts[1].add(tokenReceived));
+      // update();
       delete getStopOrdersTokenB[stopLossindex];
     }
 
@@ -464,6 +477,7 @@ contract SLPool {
         ); // infiinite deadline
       IERC20(token).transfer(msg.sender, amounts[1].add(tokenReceived));
       emit WithdrawStopLoss(uniPair, stopLossindex, msg.sender, _getLpAmount(stopLossindex, token), token, amounts[1].add(tokenReceived));
+      // update();
       _deleteOrder(stopLossindex, token);
     }
 
@@ -471,6 +485,7 @@ contract SLPool {
       if (token != tokenA) {
         require(token == tokenB, "SLPOOL: Wrong Token");
       }
+      update();
       if (isWETH) {
         if (token == tokenB) {
           _withdrawStopLossTokenWeth(stopLossindex);

@@ -21,7 +21,13 @@ import ToLiquidateOrder from './ToLiquidateOrder';
 import useToLiquidate from 'hooks/useToLiquidate'
 import { useWallet } from 'use-wallet'
 import useSL from 'hooks/useSL'
-
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 interface CreateOrderProps extends ContextValues, ModalProps {
 }
 
@@ -51,26 +57,26 @@ const ToLiquidateOrders: React.FC = () => {
               (
               <>
                 <h3>{"Fetched Stop Loss in danger: health factor < 1"}</h3>
-                <table>
-                <thead>
-                  <tr>
-                    <th>status</th>
-                    <th>Pair</th>
-                    <th>Token Guaranteed</th>
-                    <th>Token In</th>
-                    <th>Amount Guaranteed</th>
-                    <th>Current Value</th>
-                    <th>Health Factor </th>
-                  </tr>
-                </thead>
-                <tbody>
+                <TableContainer>
+                <Table>
+                  <TableRow>
+                    <TableCell>status</TableCell>
+                    <TableCell>Pair</TableCell>
+                    <TableCell>Token Guaranteed</TableCell>
+                    <TableCell>Token In</TableCell>
+                    <TableCell>Amount Guaranteed</TableCell>
+                    <TableCell>Current Value</TableCell>
+                    <TableCell>Health Factor</TableCell>
+                  </TableRow>
+                <TableBody>
                   {orders.stopLosses.map(order => <ToLiquidateOrder order={order} onLiquidate={onLiquidate} isLiquidating={isLiquidating} prices={prices} />)}
-                </tbody>
-                </table>
+                </TableBody>
+                </Table>
+                </TableContainer>
               </>)
             }
           </StyledMain></>) 
-        : <p>haha</p>
+        : <p></p>
       }
         
       </>

@@ -50,50 +50,50 @@ const ManageOrders: React.FC<CreateOrderProps> = ({open, orders, onWithdraw, isW
   const cancelledOrders = orders.stopLosses.filter(order => order.status === "Withdrawn")
   const executedOrders = orders.stopLosses.filter(order => order.status === "Executed")
   const prices = usePrice(tokenMapping["FETH"].pools || [""]);
+  console.log("PRRRRIIICe", prices);
   return open ? (
     (
       <>
       <StyledMain>
-        
+      <TableContainer>
       {openOrders.length === 0 ? <p>No open Orders</p> : 
-        <table>
-        <TableHead>
-          <tr>
-            <th>status</th>
-            <th>pair</th>
-            <th>Token Guaranteed</th>
-            <th>Token In</th>
-            <th>Amount Guaranteed</th>
-            <th>Current Value</th>
-            <th>Health Ratio</th>
-            <th>Lp Amount</th>
-          </tr>
-        </TableHead>
-        <tbody>
+        <Table>
+          <TableRow>
+            <TableCell>Status</TableCell>
+            <TableCell>Uniswap Pair</TableCell>
+            <TableCell>Token</TableCell>
+            <TableCell>Provided</TableCell>
+            <TableCell>Guaranteed</TableCell>
+            <TableCell>Current Value</TableCell>
+            <TableCell>Health Ratio</TableCell>
+            <TableCell>Lp Tokens Amount</TableCell>
+          </TableRow>
+        <TableBody>
         {openOrders.map(order => <OpenOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} prices={prices}/> )}
-        </tbody>
-        </table>}
+        </TableBody>
+        </Table>}
+      </TableContainer>
       </StyledMain>
       </>
     )
   ) : (
       <StyledMain>
+      <TableContainer>
       {cancelledOrders.length === 0 && executedOrders.length === 0 ? <p>No Past orders</p> : 
-        <table>
-        <TableHead>
-          <tr>
-            <th>status</th>
-            <th>Token Guaranteed</th>
-            <th>Token In</th>
-            <th>Amount Guaranteed</th>
-            <th>Amount Withdrawn</th>
-          </tr>
-        </TableHead>
-        <tbody>
+        <Table>
+          <TableRow>
+            <TableCell>status</TableCell>
+            <TableCell>Token Guaranteed</TableCell>
+            <TableCell>Token In</TableCell>
+            <TableCell>Amount Guaranteed</TableCell>
+            <TableCell>Amount Withdrawn</TableCell>
+          </TableRow>
+        <TableBody>
         {cancelledOrders.map(order => <CancelledOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} /> )}
         {executedOrders.map(order => <CancelledOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} /> )}
-        </tbody>
-        </table>}
+        </TableBody>
+        </Table>}
+      </TableContainer>
       </StyledMain>
   )
 }

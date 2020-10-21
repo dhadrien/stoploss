@@ -29,6 +29,7 @@ import UniPairUSDTFETH from '../deployments/UniPairFUSDTFETH.json';
 import UniPairWBTCFETH from '../deployments/UniPairFWBTCFETH.json';
 import UniswapV2Factory from '../deployments/UniswapV2Factory.json';
 import UniswapV2Router02 from '../deployments/UniswapV2Router02.json';
+import Vault from '../deployments/Vault.json';
 
 export class Contracts {
   constructor(
@@ -52,6 +53,7 @@ export class Contracts {
     this.FETH = new this.web3.eth.Contract(FETH.abi, FETH.address);
     this.slFactory = new this.web3.eth.Contract(SLFactory.abi, SLFactory.address);
     this.slOracle = new this.web3.eth.Contract(SLOracle.abi, SLOracle.address);
+    this.Vault = new this.web3.eth.Contract(Vault.abi, Vault.address);
     // this.SLPoolDAIWETH = new this.web3.eth.Contract(SLPoolDAIWETH.abi, SLPoolDAIWETH.address); //legacy pool will be changed one day
     // this.uniPair = new this.web3.eth.Contract(UniPairDAIWETH.abi, UniPairDAIWETH.address);
     this.SLPoolDAIWETH = new this.web3.eth.Contract(SLPoolDAIWETH.abi, SLPoolDAIWETH.address);
@@ -87,6 +89,7 @@ export class Contracts {
     this.FUSDT.setProvider(provider);
     this.FWBTC.setProvider(provider);
     this.FWETH.setProvider(provider);
+    this.Vault.setProvider(provider);
     this.slOracle.setProvider(provider);
     this.slFactory.setProvider(provider);
     this.SLPoolDAIWETH.setProvider(provider);
@@ -172,6 +175,7 @@ export class Contracts {
     this.SLPoolUSDTFETH.options.from = account;
     this.SLPoolUSDCFETH.options.from = account;
     this.SLPoolWBTCFETH.options.from = account;
+    this.Vault.options.from = account;
   }
 
   async callContractFunction(

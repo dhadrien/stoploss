@@ -43,9 +43,10 @@ const Provider: React.FC = ({ children }) => {
   const { account } = useWallet()
   const { loading, data } = useQuery<StopLossData, StopLossVar>(
     STOPLOSSES_QUERY, 
+
     {
       // variables: {liquidator: account || "", },
-      // pollInterval: 10000,
+      pollInterval: 10000,
       // notifyOnNetworkStatusChange: true,
       onCompleted: () => {setOrders({loading, stopLosses: (data?.stopLosses.map(order => 
         ({

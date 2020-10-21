@@ -227,8 +227,14 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "_executeStopLoss",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "stopLossindex",
+        "type": "uint256"
+      }
+    ],
+    "name": "_executeStopLossEth",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -239,9 +245,14 @@
         "internalType": "uint256",
         "name": "stopLossindex",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
       }
     ],
-    "name": "_executeStopLossEth",
+    "name": "_executeStopLossToken",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -295,12 +306,58 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "tokenIn",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountToSend",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountToGuarantee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "fromEther",
+        "type": "bool"
+      }
+    ],
+    "name": "_stopLossFromToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "stopLossindex",
         "type": "uint256"
       }
     ],
     "name": "_withdrawStopLossEth",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "stopLossindex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "_withdrawStopLossToken",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -636,13 +693,18 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "tokenIn",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
-        "name": "tokenToSend",
+        "name": "amountToSend",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "tokenToGuarantee",
+        "name": "amountToGuarantee",
         "type": "uint256"
       }
     ],
@@ -734,6 +796,19 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "update",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

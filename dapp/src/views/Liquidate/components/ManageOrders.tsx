@@ -18,7 +18,13 @@ import {
   tokenMapping
 } from 'constants/tokenAddresses'
 import LiquidatedOrder from './LiquidatedOrder';
-
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 interface CreateOrderProps extends ContextValues, ModalProps {
 }
 const StyledMain = styled.div`
@@ -42,23 +48,21 @@ const ManageOrders: React.FC<CreateOrderProps> = ({orders, onWithdraw, isWithdra
     (
       
       <><StyledMain>
-        {cancelledOrders.length === 0 && executedOrders.length === 0 ? <p>No Past orders</p> : 
-        <table>
-        <thead>
-          <tr>
-            <th>status</th>
-            <th>Pair</th>
-            <th>Token Guaranteed</th>
-            <th>Token In</th>
-            <th>Amount Guaranteed</th>
-            <th>Amount Withdrawn</th>
-            <th>Fees Received </th>
-          </tr>
-        </thead>
-        <tbody>
+        {cancelledOrders.length === 0 && executedOrders.length === 0 ? <p>No Past Liquidations From Your Account</p> : 
+        <Table>
+          <TableRow>
+            <TableCell>Status</TableCell>
+            <TableCell>Uniswap Pair</TableCell>
+            <TableCell>Token</TableCell>
+            <TableCell>Order Size</TableCell>
+            <TableCell>Amount Guaranteed</TableCell>
+            <TableCell>Amount Withdrawn</TableCell>
+            <TableCell>Fees Received</TableCell>
+          </TableRow>
+        <TableBody>
         {executedOrders.map(order => <LiquidatedOrder order={order} onWithdraw={onWithdraw} isWithdrawing={isWithdrawing} /> )}
-        </tbody>
-        </table>}
+        </TableBody>
+        </Table>}
       </StyledMain>
       </>
     )
