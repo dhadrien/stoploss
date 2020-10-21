@@ -549,7 +549,7 @@ describe("[TOKEN/TOKEN PAIR] User add liquidity from one token, make a stop loss
       pool.stopLossFromToken(FDAI.address, parseEther("200"), parseEther("150"))
     ).to.emit(pool, "StopLossCreated");
     await expect(
-      pool.stopLossFromToken(FETH.address,parseEther("2"), parseEther("1"))
+      pool.stopLossFromToken(FETH.address, parseEther("2"), parseEther("1"))
     ).to.emit(pool, "StopLossCreated");
   });
   it("should create a stoploss with FETH only and withdraw", async function () {
@@ -815,11 +815,9 @@ describe("[TOKEN/TOKEN PAIR] User add liquidity from one token, make a stop loss
       deployer,
       INFINITE_DEADLINE
     );
-    await pool.update();
     await expect(pool.executeStopLoss(0, FETH.address)).to.be.revertedWith(
       "revert SLPOOL: RATIO_CONDITION"
     );
-    // console.log('hahahaha')
     await expect(pool.executeStopLoss(0, FDAI.address)).to.emit(
       pool,
       "StopLossExecuted"

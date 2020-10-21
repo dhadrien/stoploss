@@ -19,7 +19,17 @@ import {
   weth,
   addressMapping,
 } from 'constants/tokenAddresses'
-
+import ToLiquidateOrder from './ToLiquidateOrder';
+import useToLiquidate from 'hooks/useToLiquidate'
+import { useWallet } from 'use-wallet'
+import useSL from 'hooks/useSL'
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 import {Price, Prices} from 'hooks/usePrice';
 
 interface CreateOrderProps extends ModalProps {
@@ -78,8 +88,9 @@ const OpenOrder: React.FC<CreateOrderProps> = ({order, onLiquidate, isLiquidatin
             {/* <td>{order.lpAmountString}</td> */}
             <Button
         // disabled={!lpAmount || !Number(lpAmount)}
+        size="sm"
         onClick={handleCreateOrderClick}
-        text="LIQUIDATE ORDER"
+        text={isLiquidating ? "LIQUIDATING..." :"LIQUIDATE ORDER"}
         // variant={!lpAmount || !Number(lpAmount) ? 'secondary' : 'default'}
       />
           </tr>

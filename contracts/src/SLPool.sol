@@ -24,11 +24,10 @@ contract SLPool {
     bool public inverted;// Is the sorting inverted compared to uniswap's?
 
     // oracle
-    address public oracle;
-    uint public constant PERIOD = 1 seconds;
+    // address public oracle;
+    // uint public constant PERIOD = 1 seconds;
     uint32 public blockTimestampLast;
-    uint public priceA; // 1 WETH = priceB Tokens
-    // uint public priceB; // 1 Token = priceA WETH
+    uint public priceA; // 1 tokenB = priceA tokenA
     uint public reserveA; // no real need for storage
     uint public reserveB; // no real need for storage
     uint public totalLpSupply; //no real need for storage
@@ -100,8 +99,9 @@ contract SLPool {
         WETH = _WETH;
         uniRouter = _uniRouter;
         (tokenA, tokenB) = specialSortTokens(_token1, _token2);
-        oracle = _oracle;
-        initPrice();
+        // oracle = _oracle;
+        // initPrice();
+        // for hackathon: simplify => infinite allowance
         IERC20(uniPair).approve(uniRouter, 10000000000000 ether);
         IERC20(tokenA).approve(uniRouter, 10000000000000 ether);
         IERC20(tokenB).approve(uniRouter, 10000000000000 ether);
@@ -139,7 +139,7 @@ contract SLPool {
     function initPrice()
         public
     {
-      blockTimestampLast = SLOracle(oracle).blockTimestampLast();
+      // blockTimestampLast = SLOracle(oracle).blockTimestampLast();
       update();
     }
 
@@ -165,12 +165,8 @@ contract SLPool {
           uint totalReserveInA = totalReserveinB.div(priceA).mul(1 ether);
           lastRatioA = (totalReserveInA.mul(RATIO_PRECISION)).div(totalLpSupply);
           lastRatioB = (totalReserveinB.mul(RATIO_PRECISION)).div(totalLpSupply);
-          console.log("new update");
-          console.log("priceA", priceA);
-          console.log("lastRatioA", lastRatioA);
-          console.log("lastRatioB", lastRatioB);
           emit Update(block.timestamp, priceA, lastRatioA, lastRatioB);
-          return priceA;
+          return (reserveB.mul(1 ether)).div(reserveA); // hackathon
         // }
     }
 
@@ -272,18 +268,12 @@ contract SLPool {
         getStopOrdersTokenB.push(StopOrder(msg.sender, lpAmount, ratio, amountToGuarantee));
         length = getStopOrdersTokenB.length - 1;
       }
-      console.log("New stoploss ratio: ", ratio);
       emit StopLossCreated(uniPair, length, msg.sender, delegated, lpAmount, tokenToGuarantee, amountToGuarantee, tokenIn, ratio);
       update();
     }
 
     function _executeStopLossToken(uint stopLossindex, address token) public {
       bool isA = token == tokenA;
-      console.log("isA", isA);
-      console.log("Order Ratio", (_getRatio(stopLossindex, token)));
-      console.log("Ratio + Margin", (_getRatio(stopLossindex, token).mul(uint(100).add(MARGIN_RATIO))).div(100));
-      console.log("Last Ratio", isA ? lastRatioA : lastRatioB);
-      
       require((isA ? lastRatioA : lastRatioB) < (_getRatio(stopLossindex, token).mul(uint(100).add(MARGIN_RATIO))).div(100), 'SLPOOL: RATIO_CONDITION');
       (uint tokenReceived, uint otherTokenReceived) =
           IUniswapV2Router02(uniRouter).removeLiquidity(
@@ -296,10 +286,6 @@ contract SLPool {
             262156100447
           ); // infiinite deadline
       uint tokenGuaranted = _getAmountToGuarantee(stopLossindex, token);
-      console.log("Token guaranteed", tokenGuaranted);
-      console.log("Token Received", tokenReceived);
-      console.log("otherTokenReceived", otherTokenReceived);
-      console.log("Token Asked: ", tokenGuaranted.sub(tokenReceived));
       address[] memory path = new address[](2);
       path[0] = isA ? tokenB : tokenA;
       path[1] = token;

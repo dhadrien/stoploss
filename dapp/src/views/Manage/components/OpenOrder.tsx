@@ -84,10 +84,11 @@ const OpenOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdrawing
                   healthFactor.toString()
                   : "loading"}</td>
             <td>{order.lpAmountString}</td>
-            <td>{price ? price.toString(): "loading"}</td>
+            {/* <td>{price ? price.toString(): "loading"}</td> */}
             
             <Button
         // disabled={!lpAmount || !Number(lpAmount)}
+        size="sm"
         onClick={handleCreateOrderClick}
         text="Cancel StopLoss"
         // variant={!lpAmount || !Number(lpAmount) ? 'secondary' : 'default'}

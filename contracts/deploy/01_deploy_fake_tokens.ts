@@ -12,12 +12,10 @@ const {
 import {INIT_TOKEN_SUPPLY, INIT_WETH_SUPPLY} from "../utils/envutils";
 import {weiAmountToString} from "../utils/ethutils";
 
-console.log("$------------------", process.env);
-
 const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const {deployer, user} = await bre.getNamedAccounts();
   const chain = await bre.getChainId();
-  console.log("kovaaaaaan", chain);
+  console.log("Chain ID: ", chain);
   const deployerSigner = await bre.ethers.getSigner(deployer);
   const {deploy, save, getArtifact} = bre.deployments;
   const useProxy = !bre.network.live;
@@ -125,11 +123,11 @@ const func: DeployFunction = async function (bre: BuidlerRuntimeEnvironment) {
   const Vault = await ethers.getContract("Vault", deployerSigner);
   // throw new Error("");
   logStep("SENDING TOKENS TO VAULT"); // to mimiq eth liquidity
-  // await FETH.transfer(Vault.address, INIT_TOKEN_SUPPLY.div(3));
-  // await FDAI.transfer(Vault.address, INIT_TOKEN_SUPPLY.div(3));
-  // await FUSDC.transfer(Vault.address, INIT_TOKEN_SUPPLY.div(3));
-  // await FUSDT.transfer(Vault.address, INIT_TOKEN_SUPPLY.div(3));
-  await FWBTC.transfer(Vault.address, INIT_TOKEN_SUPPLY.div(3));
+  await (await FETH.transfer(Vault.address, INIT_TOKEN_SUPPLY.div(3))).wait();
+  await (await FDAI.transfer(Vault.address, INIT_TOKEN_SUPPLY.div(3))).wait();
+  await (await FUSDC.transfer(Vault.address, INIT_TOKEN_SUPPLY.div(3))).wait();
+  await (await FUSDT.transfer(Vault.address, INIT_TOKEN_SUPPLY.div(3))).wait();
+  await (await FWBTC.transfer(Vault.address, INIT_TOKEN_SUPPLY.div(3))).wait();
   return !useProxy; // when live network, record the script as executed to prevent rexecution
 };
 export default func;
