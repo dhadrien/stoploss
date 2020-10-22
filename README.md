@@ -24,7 +24,7 @@ The alpha version will allow users on [https://stoploss.finance](https://stoplos
 1. Provide Liquidity to the 4 [UNI Pools](https://app.uniswap.org/#/uni) [(](https://uniswap.org/blog/uni/)[ETH/USDT](https://uniswap.info/pair/0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852), [ETH/USDC,](https://uniswap.info/pair/0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc) [ETH/DAI](https://uniswap.info/pair/0xa478c2975ab1ea89e8196811f51a7b7ade33eb11) & [ETH/WBTC](https://uniswap.info/pair/0xbb2b8038a1640196fbe3e38816f3e67cba72d940))
 2. Set a stop loss order to limit impermanent losses with a guaranteed amount in Tokens
 
-![MiroBoard](https://drive.google.com/uc?export=view&id=1gFhqoo0UMI6e-wCAdj6hqIzUdcH3fueW)
+![MiroBoard](https://drive.google.com/uc?export=view&id=1ZaDDQf9Ccfw1hVstczXKTQ9biqd3Ytu-)
 
 Example: 
 
