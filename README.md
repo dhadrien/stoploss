@@ -25,6 +25,7 @@ The alpha version will allow users on [https://stoploss.finance](https://stoplos
 2. Set a stop loss order to limit impermanent losses with a guaranteed amount in Tokens
 
 ![MiroBoard](https://drive.google.com/file/d/1gFhqoo0UMI6e-wCAdj6hqIzUdcH3fueW/view?usp=sharing)
+![MiroBoard](https://drive.google.com/uc?export=view&id=1gFhqoo0UMI6e-wCAdj6hqIzUdcH3fueW)
 
 Example: 
 
