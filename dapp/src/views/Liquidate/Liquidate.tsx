@@ -1,27 +1,12 @@
 import React, { useMemo, useState } from 'react'
 
 import {
-  Box,
   Button,
   Container,
-  Separator,
-  Spacer,
 } from 'react-neu'
-import {
-  Grid,
-  LinearProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from '@material-ui/core'
 
 import { useWallet } from 'use-wallet'
 import useSL from 'hooks/useSL'
-import {
-  dai
-} from 'constants/tokenAddresses'
 import Page from 'components/Page'
 import PageHeader from 'components/PageHeader'
 import ManageOrders from './components/ManageOrders'

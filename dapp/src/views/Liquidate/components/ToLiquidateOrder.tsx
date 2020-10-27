@@ -3,34 +3,14 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import BigNumber from 'bignumber.js'
 import {
   Button,
-  Modal,
-  ModalActions,
-  ModalContent,
   ModalProps,
-  ModalTitle,
 } from 'react-neu'
 
-import {StopLoss, StopLossDisplayed} from 'contexts/Manage/types'
-import TokenInput from 'components/TokenInput'
-import useBalances from 'hooks/useBalances'
-import { getFullDisplayBalance } from 'utils'
+import {StopLossDisplayed} from 'contexts/Manage/types'
 import {
-  dai,
-  weth,
   addressMapping,
 } from 'constants/tokenAddresses'
-import ToLiquidateOrder from './ToLiquidateOrder';
-import useToLiquidate from 'hooks/useToLiquidate'
-import { useWallet } from 'use-wallet'
-import useSL from 'hooks/useSL'
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import {Price, Prices} from 'hooks/usePrice';
+import {Prices} from 'hooks/usePrice';
 
 interface CreateOrderProps extends ModalProps {
   order: StopLossDisplayed;
@@ -48,7 +28,6 @@ const OpenOrder: React.FC<CreateOrderProps> = ({order, onLiquidate, isLiquidatin
   const [healthFactor, setHealthFactor] = useState<BigNumber>()
   useEffect(() => {
     const _tokenA = prices?.[addressMapping[order.uniPair]].tokenA;
-    const _tokenB = prices?.[addressMapping[order.uniPair]].tokenB;
     const _price = prices?.[addressMapping[order.uniPair]].priceA;
     const _ratioA = prices?.[addressMapping[order.uniPair]].ratioA
     const _ratioB = prices?.[addressMapping[order.uniPair]].ratioB
@@ -85,13 +64,10 @@ const OpenOrder: React.FC<CreateOrderProps> = ({order, onLiquidate, isLiquidatin
             <td>{healthFactor ? 
                   healthFactor.toString()
                   : "loading"}</td>
-            {/* <td>{order.lpAmountString}</td> */}
             <Button
-        // disabled={!lpAmount || !Number(lpAmount)}
         size="sm"
         onClick={handleCreateOrderClick}
         text={isLiquidating ? "LIQUIDATING..." :"LIQUIDATE ORDER"}
-        // variant={!lpAmount || !Number(lpAmount) ? 'secondary' : 'default'}
       />
           </tr>
         

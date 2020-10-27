@@ -1,22 +1,15 @@
 import React, { useMemo, useState } from 'react'
 
 import {
-  Box,
   Button,
   Container,
-  Separator,
-  Spacer,
 } from 'react-neu'
 
 import { useWallet } from 'use-wallet'
 import useSL from 'hooks/useSL'
-import {
-  dai
-} from 'constants/tokenAddresses'
 import Page from 'components/Page'
 import PageHeader from 'components/PageHeader'
 import useManage from 'hooks/useManage'
-import ManagerOrders from './components/ManageOrders'
 import ManageOrders from './components/ManageOrders'
 import {ManageProvider} from 'contexts/Manage'
 
@@ -29,7 +22,6 @@ const Manage: React.FC = () => {
     setOpen(!oldShow);
   }
   const sl = useSL();
-  // return (<p>hi</p>)
   return (
     <ManageProvider>
         <Page>

@@ -3,23 +3,14 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import BigNumber from 'bignumber.js'
 import {
   Button,
-  Modal,
-  ModalActions,
-  ModalContent,
   ModalProps,
-  ModalTitle,
 } from 'react-neu'
-import {StopLoss, StopLossDisplayed} from 'contexts/Manage/types'
-import TokenInput from 'components/TokenInput'
-import useBalances from 'hooks/useBalances'
-import { getFullDisplayBalance } from 'utils'
+import {StopLossDisplayed} from 'contexts/Manage/types'
 import {
-  dai,
-  weth,
   addressMapping,
 } from 'constants/tokenAddresses'
 
-import {Price, Prices} from 'hooks/usePrice';
+import {Prices} from 'hooks/usePrice';
 
 interface CreateOrderProps extends ModalProps {
   order: StopLossDisplayed;
@@ -80,14 +71,10 @@ const OpenOrder: React.FC<CreateOrderProps> = ({order, onWithdraw, isWithdrawing
                   healthFactor.toString()
                   : "loading"}</td>
             <td>{order.lpAmountString}</td>
-            {/* <td>{price ? price.toString(): "loading"}</td> */}
-            
             <Button
-        // disabled={!lpAmount || !Number(lpAmount)}
         size="sm"
         onClick={handleCreateOrderClick}
         text="Cancel StopLoss"
-        // variant={!lpAmount || !Number(lpAmount) ? 'secondary' : 'default'}
       />
           </tr>
         
