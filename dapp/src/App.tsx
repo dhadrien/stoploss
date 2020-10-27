@@ -79,15 +79,6 @@ const Providers: React.FC = ({ children }) => {
     })
   }, [])
 
-
-// YELLOW1 { h: 45, s: 63, l: 59 },
-// BLUE1 { h: 242, s: 62, l: 39 },
-// BLUE2 { h: 227, s: 63, l: 37 },
-// PINK1 { h: 292, s: 63, l: 37 }
-// PURPLE1: { h: 259, s: 56, l: 35 },
-// PURPLE2: { h: 260, s: 77, l: 8 },
-
-
   return (
     <ThemeProvider
       darkModeEnabled={darkModeSetting}

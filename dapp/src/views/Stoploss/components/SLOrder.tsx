@@ -1,7 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react'
 
-import Countdown, { CountdownRenderProps} from 'react-countdown'
-import numeral from 'numeral'
 import {
   Box,
   Button,
@@ -29,7 +27,6 @@ import CreateOrder from './CreateOrder'
 import Split from 'components/Split'
 import BigNumber from 'bignumber.js'
 import {tokenNames,} from 'constants/tokenAddresses';
-import { ReactComponent } from '*.svg'
 import usePrice from 'hooks/usePrice';
 import {getSome} from 'sl-sdk/utils'
 
@@ -218,7 +215,6 @@ const SLOrders: React.FC = () => {
         {toRend[k]}
         {toRend[k+1]}
         {toRend[k+2]}
-        {/* {toRend[k+3]} */}
       </Split>)
     })}
   </Container></>)

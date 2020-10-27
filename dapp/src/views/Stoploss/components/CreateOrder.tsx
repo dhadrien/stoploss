@@ -11,12 +11,7 @@ import {
 } from 'react-neu'
 
 import TokenInput from 'components/TokenInput'
-import useBalances from 'hooks/useBalances'
 import { getFullDisplayBalance } from 'utils'
-import {
-  dai,
-} from 'constants/tokenAddresses'
-import Split from 'components/Split'
 interface CreateOrderProps extends ModalProps {
   onOrder: (amount: string, pool:string, token: string, amountGuaranteed: string) => void,
   token: string,
@@ -34,7 +29,6 @@ const CreateOrder: React.FC<CreateOrderProps> = ({
 }) => {
 
   const [amount, setAmount] = useState('')
-  // const [token, setToken] = useState(dai)
   const [amountGuaranteed, setAmountGuaranteed] = useState('')
 
   const fullBalance = useMemo(() => {
@@ -70,9 +64,7 @@ const CreateOrder: React.FC<CreateOrderProps> = ({
         />
         <TokenInput
           value={amountGuaranteed}
-          // onSelectMax={handleSelectMaxGuaranteed}
           onChange={handleChangeGuaranteed}
-          // max={fullBalance}
           symbol={token + " GUARANTEED"}
         />
         
