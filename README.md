@@ -49,6 +49,8 @@ OR For the most bullish of us
 
 ### Kovan Deployment
 
+http://kovan.stoploss.finance/
+
 - Subgraph: https://thegraph.com/explorer/subgraph/dhadrien/stoploss-subgraph-kovan
 
 - StopLoss factory on kovan: 0xdF2Bde4940EFA578068DD44f11b06d066dA07253
